@@ -56,6 +56,8 @@ cyfer/
 │   │   │   │   └── route.ts       # Audit trail
 │   │   │   ├── budget/
 │   │   │   │   └── route.ts       # Budget CRUD
+│   │   │   ├── summarize/
+│   │   │   │   └── route.ts       # AI document summarization
 │   │   │   └── auth/
 │   │   │       └── route.ts       # Authentication
 │   │   ├── layout.tsx
@@ -90,6 +92,7 @@ cyfer/
 │   │   ├── supabase.ts            # Supabase client
 │   │   ├── blockchain.ts          # Blockchain logic
 │   │   ├── hash.ts                # SHA-256 hashing utils
+│   │   ├── ai.ts                  # AI API client + summarization prompt
 │   │   └── types.ts               # TypeScript types
 │   └── utils/
 │       ├── formatters.ts          # Date, number formatters
@@ -119,30 +122,42 @@ cyfer/
 - [ ] Store Supabase URL and anon key in `.env.local`
 
 ### Task 0.3: Install Dependencies
-```bash
-npm install @supabase/supabase-js   # Supabase client
-npm install recharts                 # Charts for budget dashboard
-npm install crypto-js                # SHA-256 hashing (or use Web Crypto API)
-npm install lucide-react             # Icons
-npm install date-fns                 # Date formatting
-npm install zustand                  # Lightweight state management (optional)
-```
+- [x] ✅ Installed `@supabase/supabase-js` — Supabase client
+- [x] ✅ Installed `recharts` — Charts for budget dashboard
+- [x] ✅ Installed `lucide-react` — Icons
+- [x] ✅ Installed `date-fns` — Date formatting
+- [x] ✅ Installed `@anthropic-ai/sdk` — Anthropic Claude API for AI summarization
+- [x] ✅ **Note:** Did NOT install `crypto-js` — using built-in Web Crypto API instead
 
 ### Task 0.4: Set Up Core Utilities
-- [ ] Implement `lib/supabase.ts` — Supabase client initialization
-- [ ] Implement `lib/hash.ts` — SHA-256 hashing function for files
-- [ ] Implement `lib/blockchain.ts` — Core blockchain class:
-  - [ ] `createGenesisBlock()`
-  - [ ] `addBlock(data)`
-  - [ ] `getLatestBlock()`
-  - [ ] `validateChain()`
-  - [ ] `computeHash(block)`
-- [ ] Implement `lib/types.ts` — All TypeScript interfaces
+- [x] ✅ Implement `lib/supabase.ts` — Supabase client initialization (browser + server clients)
+- [x] ✅ Implement `lib/hash.ts` — SHA-256 hashing function for files (hashFile, hashBuffer, hashString)
+- [x] ✅ Implement `lib/blockchain.ts` — Core blockchain class:
+  - [x] ✅ `createGenesisBlock()`
+  - [x] ✅ `addBlock(data)`
+  - [x] ✅ `getLatestBlock()`
+  - [x] ✅ `validateChain()`
+  - [x] ✅ `computeHash(block)`
+  - [x] ✅ `initialize()` — bonus helper method
+- [x] ✅ Implement `lib/types.ts` — All TypeScript interfaces and enums
+- [x] ✅ Implement `lib/ai.ts` — Anthropic Claude API client with summarization prompt template
+- [x] ✅ Implement `utils/formatters.ts` — Date/number formatting helpers (9 utility functions)
+- [x] ✅ Implement `utils/constants.ts` — App-wide constants (categories, statuses, file constraints, etc.)
+- [x] ✅ Create `app/api/summarize/route.ts` — AI summarization API endpoint
 
 ### Task 0.5: Seed Demo Data
-- [ ] Create 3 admin accounts (for UCP demo — need at least 3 officials)
-- [ ] Seed sample budget data for a fictional municipality
-- [ ] Create genesis block in the blockchain table
+- [x] ✅ Created `supabase/migrations/001_initial_schema.sql` — Complete database schema (6 tables)
+- [x] ✅ Created `supabase/policies/001_rls_policies.sql` — Row-Level Security policies
+- [x] ✅ Created `supabase/seeds/001_demo_data.sql` — Demo data:
+  - [x] ✅ 3 admin accounts (Mayor, Treasurer, Municipal Secretary)
+  - [x] ✅ Sample budget data for "Municipality of Sample City" (8 categories, FY 2026)
+  - [x] ✅ Genesis block in blockchain table
+  - [x] ✅ 1 sample published ordinance with full approval chain
+  - [x] ✅ Sample audit trail transactions
+- [x] ✅ Created `SUPABASE_SETUP.md` — Complete step-by-step setup guide (10 steps + troubleshooting)
+- [x] ✅ Updated `.env.local.example` — Added ANTHROPIC_API_KEY
+
+**✅ Phase 0 COMPLETE! Build verified (TypeScript compilation successful)**
 
 **Estimated Time:** 3-4 hours
 **Assignee:** Team lead + backend-focused member
@@ -209,6 +224,17 @@ npm install zustand                  # Lightweight state management (optional)
 - [ ] `POST /api/auth/logout` — Admin logout
 - [ ] Middleware to protect admin routes
 
+### Task 1.9: AI Document Summarization API
+**Endpoint:** `POST /api/summarize`
+- [ ] Accept `document_id` in request body
+- [ ] Fetch document content/text from Supabase Storage
+- [ ] Send document text to Anthropic Claude API with structured summarization prompt
+- [ ] Prompt should request: key points, affected parties, budget implications (if any), plain-language explanation
+- [ ] Return structured AI summary as JSON
+- [ ] Handle errors gracefully (API rate limits, unavailable service, oversized documents)
+- [ ] Cache summaries in memory or DB to avoid re-calling AI for same document
+- [ ] API key stored server-side only (`ANTHROPIC_API_KEY` in env)
+
 **Estimated Time:** Full day (8-10 hours)
 **Assignee:** 2 backend-focused members working in parallel
 
@@ -249,6 +275,8 @@ npm install zustand                  # Lightweight state management (optional)
 - [ ] Approval chain: Show which officials approved and when
 - [ ] Download button
 - [ ] "Verify This Document" shortcut button
+- [ ] **"AI Summary" button** — calls `/api/summarize`, shows loading spinner, then displays structured summary card with key points, affected parties, budget implications, and plain-language explanation
+- [ ] Summary card with clean typography and collapsible sections
 - [ ] Related audit trail entries for this document
 
 ### Task 2.5: Verification Tool (`/verify`)
@@ -344,6 +372,7 @@ npm install zustand                  # Lightweight state management (optional)
 - [ ] Wire all admin pages to their respective API endpoints
 - [ ] Test complete flows end-to-end:
   - [ ] Admin login → upload document → other admins approve → document appears on public portal
+  - [ ] Citizen clicks "AI Summary" on a published document → summary generates correctly
   - [ ] Citizen verifies document → verified result
   - [ ] Citizen verifies tampered document → tampered result
   - [ ] View budget dashboard with real data
@@ -411,16 +440,21 @@ Structure the script as follows:
 - Document goes live on public portal
 - Show what happens if one official rejects
 
-**5. Demo: Citizen Verification (30-40 seconds)**
+**5. Demo: AI Document Summarizer (20-30 seconds)**
+- Click "AI Summary" on a complex ordinance
+- Show loading state → AI generates plain-language breakdown
+- Highlight: "Even non-technical citizens can now understand complex government documents"
+
+**6. Demo: Citizen Verification (30-40 seconds)**
 - Citizen uploads a document → Verified (green checkmark)
 - Citizen uploads a tampered document → Tampered (red warning)
 - Show the audit trail of all actions
 
-**6. Tech Stack & SDGs (15-20 seconds)**
-- "Built with Next.js, Tailwind CSS, Supabase, and custom SHA-256 blockchain."
+**7. Tech Stack & SDGs (15-20 seconds)**
+- "Built with Next.js, Tailwind CSS, Supabase, custom SHA-256 blockchain, and Anthropic Claude AI."
 - "CYFER supports SDG 16: Peace, Justice and Strong Institutions by promoting transparency, accountability, and citizen participation in governance."
 
-**7. Closing (10 seconds)**
+**8. Closing (10 seconds)**
 - Team name and members
 - CYFER logo
 
@@ -458,7 +492,7 @@ Structure the script as follows:
   - [ ] Proposed solution explained
   - [ ] Real-world application shown
   - [ ] SDGs mentioned
-  - [ ] Technologies listed (languages, frameworks, APIs, platforms)
+  - [ ] Technologies listed (languages, frameworks, APIs, platforms, AI tools)
 - [ ] Submit before deadline
 
 **Estimated Time:** 6-8 hours across 2 days
@@ -495,6 +529,7 @@ Structure the script as follows:
 
 1. **MUST HAVE:** Document upload + hashing + verification + tamper detection (this IS the demo)
 2. **MUST HAVE:** UCP approval workflow (this is the differentiator)
-3. **SHOULD HAVE:** Audit trail / transaction chain
-4. **NICE TO HAVE:** Budget transparency dashboard
-5. **NICE TO HAVE:** Polished landing page with animations
+3. **SHOULD HAVE:** AI Document Summarizer
+4. **SHOULD HAVE:** Audit trail / transaction chain
+5. **NICE TO HAVE:** Budget transparency dashboard
+6. **NICE TO HAVE:** Polished landing page with animations

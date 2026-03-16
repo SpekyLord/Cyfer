@@ -24,7 +24,7 @@ Corruption and governance challenges continue to hinder public trust and the eff
 
 ## Proposed Solution
 
-CYFER v2 is a web-based blockchain-powered platform where local government units (LGUs) at the city/municipal level can publish official documents in a tamper-proof manner, and citizens can publicly verify, track, and monitor government actions. The system uses a custom blockchain ledger with SHA-256 hashing for document integrity and Unanimous Consensus Protocols (UCP) requiring multiple officials to approve documents before public release.
+CYFER v2 is a web-based blockchain-powered platform where local government units (LGUs) at the city/municipal level can publish official documents in a tamper-proof manner, and citizens can publicly verify, track, and monitor government actions. The system uses a custom blockchain ledger with SHA-256 hashing for document integrity and Unanimous Consensus Protocols (UCP) requiring multiple officials to approve documents before public release. An AI-powered document summarizer makes complex government documents accessible to citizens by generating plain-language summaries on demand.
 
 ---
 
@@ -118,6 +118,27 @@ CYFER v2 is a web-based blockchain-powered platform where local government units
 
 ---
 
+### Feature 5: AI Document Summarizer
+**Priority:** High
+**Description:** An AI-powered tool that generates plain-language summaries of complex government documents (ordinances, budgets, resolutions, contracts). Citizens can click "Summarize" on any published document to receive an easy-to-understand breakdown of its contents. This bridges the accessibility gap — making government information understandable to citizens who may not have legal or technical backgrounds.
+
+**User Stories:**
+- As a citizen, I can click "AI Summary" on any published document to get a plain-language breakdown.
+- As a citizen, I can understand complex legal or financial documents without specialized knowledge.
+- As an admin, I can see AI-generated summaries before a document is published to ensure clarity.
+
+**Acceptance Criteria:**
+- "Summarize" button on every published document's detail page
+- AI generates a structured summary: key points, affected parties, budget implications (if applicable), and plain-language explanation
+- Summary is generated on-demand (not pre-computed) via server-side API call to AI provider
+- Loading state while summary generates (2-5 seconds expected)
+- Summary is displayed in a clean, readable card below the document
+- Summaries can be regenerated if needed
+- AI provider: Anthropic Claude API (server-side only — API key never exposed to client)
+- Fallback: If AI API is unavailable, show a graceful error message
+
+---
+
 ## System Architecture
 
 ### Tech Stack
@@ -128,6 +149,7 @@ CYFER v2 is a web-based blockchain-powered platform where local government units
 - **Blockchain:** Custom implementation using SHA-256 hashing (simulated chain — no external blockchain dependency)
 - **Authentication:** Supabase Auth (for admin roles) / No auth required for public portal
 - **Charts:** Recharts or Chart.js for budget dashboard visualizations
+- **AI:** Anthropic Claude API for document summarization (server-side only)
 - **Deployment:** Vercel
 
 ### Architecture Overview
@@ -151,6 +173,7 @@ CYFER v2 is a web-based blockchain-powered platform where local government units
 │  /api/consensus    - UCP approval workflow        │
 │  /api/audit        - Transaction logging          │
 │  /api/budget       - Budget data management       │
+│  /api/summarize    - AI document summarization    │
 │  /api/auth         - Admin authentication         │
 └───────────────────────┬─────────────────────────┘
                         │
@@ -318,18 +341,19 @@ The video should demonstrate the following flow:
 3. **Admin uploads a document** — Show upload flow, hash generation
 4. **UCP in action** — Show multiple officials approving the document. Show what happens when one rejects.
 5. **Document goes public** — After unanimous approval, document appears on public portal
-6. **Citizen verification** — Upload a document copy → verified. Upload a tampered version → flagged as tampered.
-7. **Audit trail** — Show the complete chain of actions
-8. **SDG alignment** — Explain how this supports SDG 16
-9. **Tech stack mention** — Next.js, Tailwind, Supabase, SHA-256, custom blockchain
+6. **AI Summarizer** — Click "Summarize" on a complex ordinance → AI generates a plain-language breakdown in seconds
+7. **Citizen verification** — Upload a document copy → verified. Upload a tampered version → flagged as tampered.
+8. **Audit trail** — Show the complete chain of actions
+9. **SDG alignment** — Explain how this supports SDG 16
+10. **Tech stack mention** — Next.js, Tailwind, Supabase, SHA-256, custom blockchain, Anthropic Claude AI
 
 ---
 
-## Success Metrics (Hackathon Judging)
+## Success Metrics
 
-- Working prototype demonstrating all 4 core features
+- Working prototype demonstrating all 5 core features
 - Clear problem-solution narrative in the video
 - Strong SDG 16 alignment
 - Clean, professional UI
 - Smooth demo flow without bugs
-- Clear mention of technologies used
+- Clear mention of technologies used (including AI tools)

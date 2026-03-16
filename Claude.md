@@ -16,6 +16,7 @@ CYFER v2 is a blockchain-powered government document transparency platform for t
 - **File Storage:** Supabase Storage
 - **Auth:** Supabase Auth (admin roles only)
 - **Charts:** Recharts
+- **AI:** Anthropic Claude API (`@anthropic-ai/sdk`) for document summarization — server-side only
 - **Hashing:** SHA-256 via Web Crypto API (preferred) or crypto-js
 - **Icons:** lucide-react
 - **Date Utils:** date-fns
@@ -42,6 +43,7 @@ src/
 │       ├── consensus/      # UCP approval workflow
 │       ├── audit/          # Transaction/audit trail
 │       ├── budget/         # Budget data CRUD
+│       ├── summarize/      # AI document summarization
 │       └── auth/           # Authentication
 ├── components/
 │   ├── ui/                 # Reusable UI primitives (Button, Card, Badge, etc.)
@@ -54,6 +56,7 @@ src/
 │   ├── supabase.ts         # Supabase client (browser + server)
 │   ├── blockchain.ts       # Blockchain class — genesis, addBlock, validate
 │   ├── hash.ts             # SHA-256 file hashing utility
+│   ├── ai.ts               # Anthropic Claude API client + summarization prompt
 │   └── types.ts            # All TypeScript interfaces and types
 └── utils/
     ├── formatters.ts       # Date/number formatting helpers
@@ -86,7 +89,19 @@ src/
 ### User Roles
 - **Super Admin:** Full access, can manage users and all admin functions
 - **Admin:** Can upload documents, approve/reject, manage budget data
-- **Public (no account):** Can browse published documents, verify files, view budget dashboard and audit trail
+- **Public (no account):** Can browse published documents, verify files, view budget dashboard, use AI summarizer, and view audit trail
+
+### AI Document Summarization
+- Uses Anthropic Claude API (`@anthropic-ai/sdk`) — server-side only
+- API key (`ANTHROPIC_API_KEY`) must NEVER be exposed to the client
+- Endpoint: `POST /api/summarize` accepts `{ document_id: string }`
+- Flow: Fetch document text from Supabase Storage → send to Claude API with structured prompt → return summary
+- Prompt should request: key points (bullet list), affected parties, budget/financial implications (if any), plain-language explanation, and a one-sentence TLDR
+- Use model `claude-sonnet-4-20250514` for speed/cost balance
+- Set `max_tokens: 1024` for summaries
+- Cache summaries: store in a `document_summaries` column (JSONB) on the `documents` table or a separate cache table to avoid repeated API calls for the same document
+- Handle errors gracefully: API timeout, rate limit, document too large → return user-friendly error message
+- Frontend: "AI Summary" button on `/documents/[id]` page → loading spinner → display summary card with collapsible sections
 
 ## Database Tables
 
@@ -115,6 +130,7 @@ See the PRD (CYFER-v2-PRD.md) for full schema details.
 | GET | /api/audit | Get audit trail with pagination | Public |
 | GET | /api/budget | Get budget data for dashboard | Public |
 | POST | /api/budget | Add/update budget entries | Admin |
+| POST | /api/summarize | AI-summarize a document by ID | Public |
 | POST | /api/auth/login | Admin login | Public |
 | POST | /api/auth/logout | Admin logout | Admin |
 
@@ -192,13 +208,14 @@ See the PRD (CYFER-v2-PRD.md) for full schema details.
 - This is a hackathon project with a 6-day timeline — prioritize working features over perfect code
 - The prototype needs to look good on video — visual polish matters
 - If a feature is taking too long, move on and come back to it
-- The demo flow for the video is: Problem → Solution → Public Portal → Document Upload → UCP Approval → Citizen Verification → Tamper Detection → Audit Trail → Budget Dashboard → SDG/Tech Stack → Closing
+- The demo flow for the video is: Problem → Solution → Public Portal → Document Upload → UCP Approval → AI Summarizer → Citizen Verification → Tamper Detection → Audit Trail → Budget Dashboard → SDG/Tech Stack → Closing
 - Feature priority if running out of time:
   1. MUST: Document upload + hashing + verification + tamper detection
   2. MUST: UCP approval workflow
-  3. SHOULD: Audit trail
-  4. NICE: Budget dashboard
-  5. NICE: Polished landing page
+  3. SHOULD: AI Document Summarizer
+  4. SHOULD: Audit trail
+  5. NICE: Budget dashboard
+  6. NICE: Polished landing page
 
 ## Environment Variables
 
@@ -206,6 +223,7 @@ See the PRD (CYFER-v2-PRD.md) for full schema details.
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
 SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+ANTHROPIC_API_KEY=your_anthropic_api_key
 ```
 
 ## Commands
