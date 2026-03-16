@@ -1,4 +1,4 @@
-# CYFER v2: Governance Edition — Phase Task Breakdown
+# CYFER: Governance Edition — Phase Task Breakdown
 
 ## Timeline: March 16 - March 22, 2026 (6 Days)
 
@@ -10,10 +10,10 @@
 ## Phase 0: Project Setup (Day 1 — March 16)
 
 ### Task 0.1: Initialize Next.js Project
-- [x] Run `npx create-next-app@latest cyfer-v2` with App Router, TypeScript, Tailwind CSS, ESLint
+- [x] Run `npx create-next-app@latest cyfer` with App Router, TypeScript, Tailwind CSS, ESLint
 - [x] Set up project folder structure:
 ```
-cyfer-v2/
+cyfer/
 ├── src/
 │   ├── app/
 │   │   ├── (public)/              # Public-facing pages
