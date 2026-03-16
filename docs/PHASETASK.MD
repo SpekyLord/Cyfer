@@ -168,72 +168,79 @@ cyfer/
 
 ### Task 1.1: Document Upload API
 **Endpoint:** `POST /api/documents`
-- [ ] Accept file upload (multipart form data)
-- [ ] Compute SHA-256 hash of the uploaded file
-- [ ] Store file in Supabase Storage
-- [ ] Create document record in `documents` table with status `pending_approval`
-- [ ] Add a new block to the blockchain with the document hash
-- [ ] Create a transaction entry in the audit trail
-- [ ] Create approval requests in `approvals` table for all other admins
+- [x] ✅ Accept file upload (multipart form data)
+- [x] ✅ Compute SHA-256 hash of the uploaded file
+- [x] ✅ Store file in Supabase Storage
+- [x] ✅ Create document record in `documents` table with status `pending_approval`
+- [x] ✅ Add a new block to the blockchain with the document hash
+- [x] ✅ Create a transaction entry in the audit trail
+- [x] ✅ Create approval requests in `approvals` table for all other admins
 
 ### Task 1.2: Document Retrieval APIs
 **Endpoints:**
-- [ ] `GET /api/documents` — List all published documents (public) or all documents (admin)
-- [ ] `GET /api/documents/[id]` — Get single document with approval chain details
-- [ ] Support query params: `category`, `search`, `status`, `page`, `limit`
+- [x] ✅ `GET /api/documents` — List all published documents (public) or all documents (admin)
+- [x] ✅ `GET /api/documents/[id]` — Get single document with approval chain details
+- [x] ✅ Support query params: `category`, `search`, `status`, `page`, `limit`
 
 ### Task 1.3: Document Verification API
 **Endpoint:** `POST /api/verify`
-- [ ] Accept file upload from citizen
-- [ ] Compute SHA-256 hash of the uploaded file
-- [ ] Search blockchain for matching hash
-- [ ] Return verification result:
-  - [ ] Match found → `verified: true` with document details
-  - [ ] No match → `verified: false` with tampering warning
-- [ ] Log verification action in the audit trail
+- [x] ✅ Accept file upload from citizen
+- [x] ✅ Compute SHA-256 hash of the uploaded file
+- [x] ✅ Search blockchain for matching hash
+- [x] ✅ Return verification result:
+  - [x] ✅ Match found → `verified: true` with document details
+  - [x] ✅ No match → `verified: false` with tampering warning
+- [x] ✅ Log verification action in the audit trail
 
 ### Task 1.4: Blockchain Integrity API
 **Endpoint:** `GET /api/blockchain/validate`
-- [ ] Fetch all blocks from the blockchain table
-- [ ] Run chain validation (verify hashes and previous_hash links)
-- [ ] Return validation result: `valid: true/false` with details on any broken links
+- [x] ✅ Fetch all blocks from the blockchain table
+- [x] ✅ Run chain validation (verify hashes and previous_hash links)
+- [x] ✅ Return validation result: `valid: true/false` with details on any broken links
 
 ### Task 1.5: UCP Consensus API
 **Endpoints:**
-- [ ] `GET /api/consensus/pending` — Get all documents pending approval for current admin
-- [ ] `POST /api/consensus/[documentId]/approve` — Approve a document
-- [ ] `POST /api/consensus/[documentId]/reject` — Reject a document with reason
-- [ ] On approve: Check if ALL admins have now approved → if yes, change document status to `published` and record on blockchain
-- [ ] On reject: Change document status to `rejected`, log reason
-- [ ] All actions recorded in audit trail
+- [x] ✅ `GET /api/consensus` — Get all documents pending approval for current admin (with `?status=` filter)
+- [x] ✅ `POST /api/consensus/[documentId]/approve` — Approve a document
+- [x] ✅ `POST /api/consensus/[documentId]/reject` — Reject a document with reason
+- [x] ✅ On approve: Check if ALL admins have now approved → if yes, change document status to `published` and record on blockchain
+- [x] ✅ On reject: Change document status to `rejected`, log reason
+- [x] ✅ All actions recorded in audit trail
 
 ### Task 1.6: Audit Trail API
 **Endpoints:**
-- [ ] `GET /api/audit` — Get all transactions, newest first, with pagination
-- [ ] Support filters: `action_type`, `date_range`, `document_id`
+- [x] ✅ `GET /api/audit` — Get all transactions, newest first, with pagination
+- [x] ✅ Support filters: `action_type`, `date_range`, `document_id`
 
 ### Task 1.7: Budget Data API
 **Endpoints:**
-- [ ] `GET /api/budget` — Get budget data for dashboard (public)
-- [ ] `POST /api/budget` — Add/update budget entries (admin only)
-- [ ] `GET /api/budget/summary` — Aggregated data for charts
+- [x] ✅ `GET /api/budget` — Get budget data for dashboard (public)
+- [x] ✅ `POST /api/budget` — Add/update budget entries (admin only)
+- [x] ✅ `GET /api/budget?summary=true` — Aggregated data for charts (integrated as query param)
 
 ### Task 1.8: Authentication API
 **Endpoints:**
-- [ ] `POST /api/auth/login` — Admin login via Supabase Auth
-- [ ] `POST /api/auth/logout` — Admin logout
-- [ ] Middleware to protect admin routes
+- [x] ✅ `POST /api/auth/login` — Admin login via Supabase Auth
+- [x] ✅ `POST /api/auth/logout` — Admin logout
+- [x] ✅ `GET /api/auth` — Get current user session
+- [x] ✅ Authentication middleware helper (`lib/auth.ts`) to protect admin routes
 
 ### Task 1.9: AI Document Summarization API
 **Endpoint:** `POST /api/summarize`
-- [ ] Accept `document_id` in request body
-- [ ] Fetch document content/text from Supabase Storage
-- [ ] Send document text to Anthropic Claude API with structured summarization prompt
-- [ ] Prompt should request: key points, affected parties, budget implications (if any), plain-language explanation
-- [ ] Return structured AI summary as JSON
-- [ ] Handle errors gracefully (API rate limits, unavailable service, oversized documents)
-- [ ] Cache summaries in memory or DB to avoid re-calling AI for same document
-- [ ] API key stored server-side only (`ANTHROPIC_API_KEY` in env)
+- [x] ✅ Accept `document_id` in request body
+- [x] ✅ Fetch document content/text from Supabase Storage
+- [x] ✅ Send document text to Anthropic Claude API with structured summarization prompt
+- [x] ✅ Prompt should request: key points, affected parties, budget implications (if any), plain-language explanation
+- [x] ✅ Return structured AI summary as JSON
+- [x] ✅ Handle errors gracefully (API rate limits, unavailable service, oversized documents)
+- [ ] Cache summaries in memory or DB to avoid re-calling AI for same document (deferred — will implement during integration)
+- [x] ✅ API key stored server-side only (`ANTHROPIC_API_KEY` in env)
+
+**Additional files created:**
+- ✅ `lib/audit.ts` — Reusable audit trail logging helper with hash-linked transactions
+- ✅ `lib/auth.ts` — Authentication middleware for admin route protection (Bearer token + Supabase Auth)
+
+**✅ Phase 1 COMPLETE! Build verified (Next.js 16.1.6 Turbopack compilation successful)**
 
 **Estimated Time:** Full day (8-10 hours)
 **Assignee:** 2 backend-focused members working in parallel
