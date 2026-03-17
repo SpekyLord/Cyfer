@@ -34,7 +34,7 @@ export function Footer() {
           </div>
         </div>
         <div className="border-t border-white/10 mt-8 pt-4 text-center text-xs text-white/40">
-          CYFER v2 — Secure Document Access Blockchain Network for Governance Transparency
+          CYFER — Secure Document Access Blockchain Network for Governance Transparency
         </div>
       </div>
     </footer>

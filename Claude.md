@@ -1,8 +1,8 @@
-# CLAUDE.md — CYFER v2: Governance Edition
+# CLAUDE.md — CYFER: Governance Edition
 
 ## Project Overview
 
-CYFER v2 is a blockchain-powered government document transparency platform for the InterCICSkwela Hackathon (Challenge #3: Transparency, Accountability, and Good Governance). It enables local government units (LGUs) to publish tamper-proof documents and allows citizens to publicly verify their integrity.
+CYFER  is a blockchain-powered government document transparency platform for the InterCICSkwela Hackathon (Challenge #3: Transparency, Accountability, and Good Governance). It enables local government units (LGUs) to publish tamper-proof documents and allows citizens to publicly verify their integrity.
 
 **SDG Alignment:** SDG 16 — Peace, Justice and Strong Institutions
 **Target:** City/Municipal level government in the Philippines
@@ -113,7 +113,7 @@ Six tables in Supabase:
 5. `transactions` — Audit trail of every platform action
 6. `budget_data` — Municipal budget entries by category and fiscal year
 
-See the PRD (CYFER-v2-PRD.md) for full schema details.
+See the PRD (CYFER-PRD.md) for full schema details.
 
 ## Key API Endpoints
 

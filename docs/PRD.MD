@@ -1,8 +1,8 @@
-# CYFER v2: Governance Edition — Product Requirements Document
+# CYFER : Governance Edition — Product Requirements Document
 
 ## Overview
 
-**Product Name:** CYFER v2 — Secure Document Access Blockchain Network for Governance Transparency
+**Product Name:** CYFER  — Secure Document Access Blockchain Network for Governance Transparency
 
 **Tagline:** Tamper-proof government document management for transparent, accountable governance.
 
@@ -24,7 +24,7 @@ Corruption and governance challenges continue to hinder public trust and the eff
 
 ## Proposed Solution
 
-CYFER v2 is a web-based blockchain-powered platform where local government units (LGUs) at the city/municipal level can publish official documents in a tamper-proof manner, and citizens can publicly verify, track, and monitor government actions. The system uses a custom blockchain ledger with SHA-256 hashing for document integrity and Unanimous Consensus Protocols (UCP) requiring multiple officials to approve documents before public release. An AI-powered document summarizer makes complex government documents accessible to citizens by generating plain-language summaries on demand.
+CYFER is a web-based blockchain-powered platform where local government units (LGUs) at the city/municipal level can publish official documents in a tamper-proof manner, and citizens can publicly verify, track, and monitor government actions. The system uses a custom blockchain ledger with SHA-256 hashing for document integrity and Unanimous Consensus Protocols (UCP) requiring multiple officials to approve documents before public release. An AI-powered document summarizer makes complex government documents accessible to citizens by generating plain-language summaries on demand.
 
 ---
 
