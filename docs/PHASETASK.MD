@@ -106,20 +106,23 @@ cyfer/
 ```
 
 ### Task 0.2: Set Up Supabase
-- [ ] Create Supabase project
-- [ ] Create all database tables per the PRD schema:
-  - [ ] `users`
-  - [ ] `documents`
-  - [ ] `blockchain`
-  - [ ] `approvals`
-  - [ ] `transactions`
-  - [ ] `budget_data`
-- [ ] Set up Supabase Storage bucket for document files
-- [ ] Configure Row Level Security (RLS) policies:
-  - [ ] Public read access for published documents, budget data, audit trail
-  - [ ] Admin-only write access for uploads, approvals, budget management
-- [ ] Set up Supabase Auth for admin accounts
-- [ ] Store Supabase URL and anon key in `.env.local`
+- [x] ✅ Create Supabase project (Singapore region, free tier)
+- [x] ✅ Create all database tables per the PRD schema:
+  - [x] ✅ `users`
+  - [x] ✅ `documents`
+  - [x] ✅ `blockchain`
+  - [x] ✅ `approvals`
+  - [x] ✅ `transactions`
+  - [x] ✅ `budget_data`
+- [x] ✅ Set up Supabase Storage bucket `documents` (public, 50MB limit, 2 policies)
+- [x] ✅ Configure Row Level Security (RLS) policies:
+  - [x] ✅ Public read access for published documents, budget data, audit trail
+  - [x] ✅ Admin-only write access for uploads, approvals, budget management
+  - [x] ✅ Security fixes applied (002_security_fixes.sql — no user_metadata in RLS)
+- [x] ✅ Set up Supabase Auth (email provider, confirm email OFF)
+- [x] ✅ Store Supabase URL, anon key, and service role key in `.env.local`
+- [x] ✅ Seed data inserted and verified (3 admins, genesis block, budget data, sample document)
+- [x] ✅ Blockchain hash bug fixed (timestamp normalization + JSONB key sort)
 
 ### Task 0.3: Install Dependencies
 - [x] ✅ Installed `@supabase/supabase-js` — Supabase client
