@@ -28,9 +28,9 @@ export default function UserManagementPage() {
           headers: { Authorization: `Bearer ${token}` },
         });
         const json = await res.json();
-        if (json.success && json.data?.user) {
+        if (json.success && json.data) {
           // For now show current user; full user list requires a dedicated endpoint
-          setUsers([json.data.user]);
+          setUsers([json.data]);
         }
       } catch (err) { console.error('Failed to fetch users:', err); }
       finally { setLoading(false); }

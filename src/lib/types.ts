@@ -129,6 +129,7 @@ export interface ChainValidationResult {
 // Document verification result
 export interface VerificationResult {
   verified: boolean;
+  fileHash: string;
   document?: Document;
   block?: Block;
   message: string;

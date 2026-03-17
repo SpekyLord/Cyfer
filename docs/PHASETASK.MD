@@ -468,15 +468,23 @@ During the auth user cleanup, `documents.uploaded_by` and `budget_data.uploaded_
 Supabase now issues `sb_secret_*` format secret keys instead of JWT format. This key works for all database operations via `supabase-js`, but **does NOT work** with `supabase.auth.admin.*` methods. For admin auth operations, use the Supabase Dashboard directly.
 
 ### Task 4.1: Connect Frontend to Backend
-- [ ] Wire all public pages to their respective API endpoints
-- [ ] Wire all admin pages to their respective API endpoints
-- [ ] Test complete flows end-to-end:
-  - [ ] Admin login → upload document → other admins approve → document appears on public portal
-  - [ ] Citizen clicks "AI Summary" on a published document → summary generates correctly
-  - [ ] Citizen verifies document → verified result
-  - [ ] Citizen verifies tampered document → tampered result
-  - [ ] View budget dashboard with real data
-  - [ ] View audit trail with real entries
+- [x] ✅ Wire all public pages to their respective API endpoints (already wired from Phase 2/3)
+- [x] ✅ Wire all admin pages to their respective API endpoints (already wired from Phase 2/3)
+- [x] ✅ Fix: Verify API now returns `fileHash` in response to match frontend expectations
+- [x] ✅ Fix: Users page data access corrected (`json.data` instead of `json.data.user`)
+- [x] ✅ Fix: Admin dashboard now shows correct published count (separate API call for published vs total)
+- [x] ✅ Fix: Admin layout now has client-side auth guard (redirects to `/login` if no token)
+- [x] ✅ Fix: `VerificationResult` type updated to include `fileHash` field
+- [x] ✅ Production build verified — 28 routes compiled, 0 errors
+- [x] ✅ Fix `uploaded_by = NULL` — updated 1 document + 8 budget entries with mayor UUID
+- [x] ✅ Test complete flows end-to-end:
+  - [x] ✅ Admin login → upload document → other admins approve → document appears on public portal
+  - [ ] Citizen clicks "AI Summary" on a published document → summary generates correctly (requires ANTHROPIC_API_KEY — test manually)
+  - [x] ✅ Citizen verifies document → verified result (with fileHash displayed)
+  - [x] ✅ Citizen verifies tampered document → tampered result (different hash, not found)
+  - [x] ✅ View budget dashboard with real data (8 categories, ₱60M total, FY 2026)
+  - [x] ✅ View audit trail with real entries (11 transactions — uploads, approvals, verifications, publish)
+  - [x] ✅ Blockchain validation — 6 blocks, chain integrity verified, all hashes valid
 
 ### Task 4.2: Tamper Detection Demo
 - [ ] Implement a way to demonstrate tamper detection for the video:

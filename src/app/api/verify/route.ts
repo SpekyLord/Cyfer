@@ -55,6 +55,7 @@ export async function POST(request: NextRequest) {
     if (document) {
       result = {
         verified: true,
+        fileHash,
         document,
         block,
         message: 'Document verified successfully. This file matches a record on the CYFER blockchain.',
@@ -62,6 +63,7 @@ export async function POST(request: NextRequest) {
     } else {
       result = {
         verified: false,
+        fileHash,
         message: 'Document NOT found on the blockchain. This file may have been tampered with or is not registered in the system.',
       };
     }

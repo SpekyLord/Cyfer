@@ -25,17 +25,19 @@ export default function AdminDashboardPage() {
       const token = localStorage.getItem('cyfer_token');
       const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {};
       try {
-        const [docsRes, auditRes, pendingRes] = await Promise.all([
+        const [docsRes, publishedRes, auditRes, pendingRes] = await Promise.all([
           fetch('/api/documents?limit=1', { headers }),
+          fetch('/api/documents?status=published&limit=1', { headers }),
           fetch('/api/audit?limit=10'),
           fetch('/api/consensus?status=pending', { headers }),
         ]);
         const docsJson = await docsRes.json();
+        const publishedJson = await publishedRes.json();
         const auditJson = await auditRes.json();
         const pendingJson = await pendingRes.json();
         setStats({
           total: docsJson.data?.total ?? 0,
-          published: docsJson.data?.total ?? 0,
+          published: publishedJson.data?.total ?? 0,
           pending: Array.isArray(pendingJson.data) ? pendingJson.data.length : 0,
         });
         const entries = auditJson.data?.transactions ?? auditJson.data ?? [];
