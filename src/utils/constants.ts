@@ -104,7 +104,7 @@ export const CURRENT_FISCAL_YEAR = new Date().getFullYear();
 // Application metadata
 export const APP_NAME = 'CYFER';
 export const APP_FULL_NAME = 'Secure Document Access Blockchain Network';
-export const APP_VERSION = '1.0. 0';
+export const APP_VERSION = '1.0.0';
 export const APP_DESCRIPTION = 'Tamper-proof government document management for transparent, accountable governance';
 
 // SDG Information
@@ -113,7 +113,7 @@ export const SDG_NAME = 'Peace, Justice and Strong Institutions';
 export const SDG_DESCRIPTION = 'Promote peaceful and inclusive societies for sustainable development, provide access to justice for all and build effective, accountable and inclusive institutions at all levels';
 
 // Contact/Team info (for footer)
-export const TEAM_NAME = 'CYFER Team';
+export const TEAM_NAME = 'RPG Team';
 export const TEAM_MEMBERS = [
   'Francis Gabriel P. Austria',
   'Om Shanti Limpin',

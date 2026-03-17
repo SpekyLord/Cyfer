@@ -62,7 +62,19 @@ This guide will walk you through setting up Supabase for the CYFER project.
 
 ---
 
-## Step 4: Run Seed Data
+## Step 4: Configure Authentication
+
+1. Navigate to **Authentication** → **Providers** in the left sidebar
+2. Enable **Email** provider:
+   - Toggle it ON
+   - **Confirm email:** OFF (for demo purposes, we'll skip email verification)
+   - Click **Save**
+
+**Note:** You do NOT need to manually create users. The seed data (next step) creates 3 demo admin accounts automatically in both `auth.users` and `public.users` with matching UUIDs.
+
+---
+
+## Step 5: Run Seed Data
 
 1. In the **SQL Editor**, create a new query
 2. Copy the entire contents of `supabase/seeds/001_demo_data.sql`
@@ -74,17 +86,31 @@ This guide will walk you through setting up Supabase for the CYFER project.
    - Check `budget_data` table → should have 8 budget entries
    - Check `blockchain` table → should have genesis block (id = 0)
    - Check `documents` table → should have 1 sample ordinance
+6. Verify auth users were created:
+   - Navigate to **Authentication** → **Users**
+   - Should see 3 users:
+     - `mayor@samplecity.gov.ph`
+     - `treasurer@samplecity.gov.ph`
+     - `clerk@samplecity.gov.ph`
 
 **Seed Data Includes:**
-- 3 demo admin accounts (Mayor, Treasurer, Municipal Secretary)
+- 3 demo admin accounts with **matching auth + public records** (login-ready!)
 - Genesis block for the blockchain
 - Sample budget data for "Municipality of Sample City" (FY 2026)
 - 1 published ordinance with full approval chain
 - Sample transactions in the audit trail
 
+**Demo Login Credentials:**
+
+| Role | Email | Password |
+|------|-------|----------|
+| Super Admin (Mayor) | `mayor@samplecity.gov.ph` | `DemoPassword123!` |
+| Admin (Treasurer) | `treasurer@samplecity.gov.ph` | `DemoPassword123!` |
+| Admin (Secretary) | `clerk@samplecity.gov.ph` | `DemoPassword123!` |
+
 ---
 
-## Step 5: Set Up Supabase Storage
+## Step 6: Set Up Supabase Storage
 
 1. Navigate to **Storage** in the left sidebar
 2. Click **"Create a new bucket"**
@@ -115,30 +141,6 @@ This guide will walk you through setting up Supabase for the CYFER project.
 
 ---
 
-## Step 6: Configure Authentication
-
-1. Navigate to **Authentication** → **Providers** in the left sidebar
-2. Enable **Email** provider:
-   - Toggle it ON
-   - **Confirm email:** OFF (for demo purposes, we'll skip email verification)
-   - Click **Save**
-
-3. (Optional) Add demo admin users to Supabase Auth:
-   - Go to **Authentication** → **Users**
-   - Click **"Add user"**
-   - Add the 3 demo admins:
-     - Email: `mayor@samplecity.gov.ph`, Password: `DemoPassword123!`
-     - Email: `treasurer@samplecity.gov.ph`, Password: `DemoPassword123!`
-     - Email: `clerk@samplecity.gov.ph`, Password: `DemoPassword123!`
-   - For each user, go to **User metadata** and add:
-     ```json
-     {
-       "role": "admin"
-     }
-     ```
-
----
-
 ## Step 7: Get API Keys
 
 1. Navigate to **Settings** → **API** in the left sidebar
@@ -152,7 +154,7 @@ This guide will walk you through setting up Supabase for the CYFER project.
    NEXT_PUBLIC_SUPABASE_URL=https://xxxxxxxxxxxxx.supabase.co
    NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key_here
    SUPABASE_SERVICE_ROLE_KEY=your_service_role_key_here
-ANTHROPIC_API_KEY=your_anthropic_api_key_here
+   ANTHROPIC_API_KEY=your_anthropic_api_key_here
    ```
 
 4. **Never commit `.env.local` to Git!** (it's already in `.gitignore`)
@@ -188,7 +190,8 @@ ANTHROPIC_API_KEY=your_anthropic_api_key_here
    - [ ] Navigate to `/documents` → should show the sample ordinance
    - [ ] Navigate to `/budget` → should show budget dashboard with 8 categories
    - [ ] Navigate to `/audit` → should show sample transactions
-   - [ ] Try admin login at `/login` (use demo credentials if you added them)
+   - [ ] Navigate to `/login` → login with `mayor@samplecity.gov.ph` / `DemoPassword123!`
+   - [ ] After login → admin dashboard loads with stats
 
 4. Check for any console errors related to Supabase connection
 
@@ -208,10 +211,25 @@ If the genesis block is missing, you can create it via the application later whe
 
 ---
 
+## Quick Reference: Setup Order
+
+Run these SQL files **in order** in the Supabase SQL Editor:
+
+1. `supabase/migrations/001_initial_schema.sql` — Creates tables
+2. `supabase/policies/001_rls_policies.sql` — Sets up security
+3. `supabase/seeds/001_demo_data.sql` — Creates auth users + demo data
+
+Then manually:
+4. Create Storage bucket named `documents` (public, 50MB limit)
+5. Add storage policies (public read, authenticated upload)
+6. Copy API keys to `.env.local`
+
+---
+
 ## Troubleshooting
 
 ### "relation does not exist" error
-- Ensure you ran the migration SQL (`001_initial_schema.sql`)
+- Ensure you ran the migration SQL (`001_initial_schema.sql`) **first**
 - Check the SQL editor for any error messages
 - Verify you're connected to the correct Supabase project
 
@@ -220,6 +238,21 @@ If the genesis block is missing, you can create it via the application later whe
 - Check that RLS is enabled on the table
 - Verify you're using the correct API key (service_role for admin operations)
 
+### Seed data fails with "duplicate key" error
+- The seed data may have already been inserted
+- Clear the tables first: run `TRUNCATE users, documents, blockchain, approvals, transactions, budget_data CASCADE;`
+- Then re-run the seed SQL
+
+### Auth users not appearing in Authentication tab
+- The seed SQL inserts directly into `auth.users` and `auth.identities`
+- If it fails, check that email provider is enabled first (Step 4)
+- Try running the seed SQL again after enabling email auth
+
+### Login fails with "Invalid email or password"
+- Verify the auth users were created: check **Authentication** → **Users** in dashboard
+- Verify the `users` table has matching records with the same UUIDs
+- Make sure you're using the exact credentials: `DemoPassword123!`
+
 ### Storage upload fails
 - Verify the `documents` bucket was created
 - Check that storage policies allow uploads from authenticated users
@@ -227,18 +260,8 @@ If the genesis block is missing, you can create it via the application later whe
 
 ### Authentication fails
 - Verify email provider is enabled in Supabase Auth settings
-- Check that user metadata was added correctly
 - Ensure `.env.local` has the correct Supabase URL and keys
-
----
-
-## Next Steps
-
-Once Supabase is set up:
-- Continue with **Phase 1** backend implementation (API routes)
-- Test document upload and blockchain functionality
-- Implement admin authentication  flow
-- Build out the admin and public frontend pages
+- Check that both `auth.users` and `public.users` have matching UUIDs
 
 ---
 
@@ -260,5 +283,3 @@ If you encounter issues:
 2. Review the SQL migration files for syntax errors
 3. Check Supabase dashboard logs (**Logs** tab in sidebar)
 4. Ensure your Supabase project is running (not paused)
-
-Good luck building CYFER! 🚀

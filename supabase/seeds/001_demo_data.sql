@@ -1,9 +1,89 @@
 -- CYFER: Demo/Seed Data
 -- Version: 001
 -- Description: Sample data for development and demo purposes
+-- IMPORTANT: Run this AFTER 001_initial_schema.sql and 001_rls_policies.sql
 
 -- =====================================================
--- Seed 1: Create demo admin accounts
+-- Seed 0: Create demo admin accounts in Supabase Auth
+-- These MUST be created first so the UUIDs match the public users table
+-- Password for all demo accounts: DemoPassword123!
+-- =====================================================
+
+-- Enable pgcrypto for password hashing (should already be enabled in Supabase)
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
+-- Insert into auth.users with known UUIDs so they match public.users
+INSERT INTO auth.users (
+  instance_id, id, aud, role, email,
+  encrypted_password, email_confirmed_at,
+  created_at, updated_at,
+  raw_app_meta_data, raw_user_meta_data,
+  is_super_admin, confirmation_token
+) VALUES
+  (
+    '00000000-0000-0000-0000-000000000000',
+    '11111111-1111-1111-1111-111111111111',
+    'authenticated', 'authenticated',
+    'mayor@samplecity.gov.ph',
+    crypt('DemoPassword123!', gen_salt('bf')),
+    NOW(), NOW(), NOW(),
+    '{"provider":"email","providers":["email"]}',
+    '{"role":"super_admin"}',
+    false, ''
+  ),
+  (
+    '00000000-0000-0000-0000-000000000000',
+    '22222222-2222-2222-2222-222222222222',
+    'authenticated', 'authenticated',
+    'treasurer@samplecity.gov.ph',
+    crypt('DemoPassword123!', gen_salt('bf')),
+    NOW(), NOW(), NOW(),
+    '{"provider":"email","providers":["email"]}',
+    '{"role":"admin"}',
+    false, ''
+  ),
+  (
+    '00000000-0000-0000-0000-000000000000',
+    '33333333-3333-3333-3333-333333333333',
+    'authenticated', 'authenticated',
+    'clerk@samplecity.gov.ph',
+    crypt('DemoPassword123!', gen_salt('bf')),
+    NOW(), NOW(), NOW(),
+    '{"provider":"email","providers":["email"]}',
+    '{"role":"admin"}',
+    false, ''
+  );
+
+-- Insert matching identity records (required for Supabase Auth login to work)
+INSERT INTO auth.identities (
+  id, user_id, identity_data, provider, provider_id,
+  last_sign_in_at, created_at, updated_at
+) VALUES
+  (
+    '11111111-1111-1111-1111-111111111111',
+    '11111111-1111-1111-1111-111111111111',
+    jsonb_build_object('sub', '11111111-1111-1111-1111-111111111111', 'email', 'mayor@samplecity.gov.ph'),
+    'email', '11111111-1111-1111-1111-111111111111',
+    NOW(), NOW(), NOW()
+  ),
+  (
+    '22222222-2222-2222-2222-222222222222',
+    '22222222-2222-2222-2222-222222222222',
+    jsonb_build_object('sub', '22222222-2222-2222-2222-222222222222', 'email', 'treasurer@samplecity.gov.ph'),
+    'email', '22222222-2222-2222-2222-222222222222',
+    NOW(), NOW(), NOW()
+  ),
+  (
+    '33333333-3333-3333-3333-333333333333',
+    '33333333-3333-3333-3333-333333333333',
+    jsonb_build_object('sub', '33333333-3333-3333-3333-333333333333', 'email', 'clerk@samplecity.gov.ph'),
+    'email', '33333333-3333-3333-3333-333333333333',
+    NOW(), NOW(), NOW()
+  );
+
+-- =====================================================
+-- Seed 1: Create demo admin accounts in public.users table
+-- UUIDs match the auth.users entries above
 -- =====================================================
 INSERT INTO users (id, email, name, role, department) VALUES
   ('11111111-1111-1111-1111-111111111111', 'mayor@samplecity.gov.ph', 'Mayor Juan Santos', 'super_admin', 'Office of the Mayor'),
@@ -30,25 +110,12 @@ INSERT INTO budget_data (fiscal_year, category, allocated_amount, description, u
   (2026, 'Economic Development', 2500000.00, 'Business support, livelihood programs, market development', '22222222-2222-2222-2222-222222222222');
 
 -- =====================================================
--- Seed 4: Sample published document (Optional - for demo)
+-- Seed 4: Sample published document
 -- =====================================================
--- Note: In a real scenario, documents would be uploaded via the application
--- This is just a placeholder to show a published document in the demo
-
 INSERT INTO documents (
-  id,
-  title,
-  category,
-  description,
-  file_name,
-  file_ext,
-  file_size,
-  file_url,
-  file_hash,
-  uploaded_by,
-  status,
-  published_at,
-  created_at
+  id, title, category, description,
+  file_name, file_ext, file_size, file_url, file_hash,
+  uploaded_by, status, published_at, created_at
 ) VALUES (
   '44444444-4444-4444-4444-444444444444',
   'Municipal Ordinance No. 2026-01: Public Market Operating Hours',
@@ -58,7 +125,7 @@ INSERT INTO documents (
   '.pdf',
   245600,
   'https://placeholder-storage-url.com/ordinance-2026-01.pdf',
-  'a1b2c3d4e5f6789011121314151617181920212223242526272829303132',
+  'a1b2c3d4e5f67890111213141516171819202122232425262728293031320a',
   '11111111-1111-1111-1111-111111111111',
   'published',
   NOW() - INTERVAL '7 days',
@@ -82,11 +149,11 @@ INSERT INTO blockchain (timestamp, data, previous_hash, hash, nonce) VALUES
     jsonb_build_object(
       'action', 'document_published',
       'document_id', '44444444-4444-4444-4444-444444444444',
-      'document_hash', 'a1b2c3d4e5f6789011121314151617181920212223242526272829303132',
+      'document_hash', 'a1b2c3d4e5f67890111213141516171819202122232425262728293031320a',
       'title', 'Municipal Ordinance No. 2026-01: Public Market Operating Hours'
     ),
     '0000000000000000000000000000000000000000000000000000000000000000',
-    'b1c2d3e4f5a6789012131415161718192021222324252627282930313233343',
+    'b1c2d3e4f5a678901213141516171819202122232425262728293031323334',
     123456
   );
 
@@ -139,10 +206,3 @@ INSERT INTO transactions (action_type, description, document_id, performed_by, t
     'tx000000000000000000000000000000000000000000000000000000000004',
     NOW() - INTERVAL '7 days'
   );
-
--- =====================================================
--- Comments
--- =====================================================
-COMMENT ON TABLE users IS 'Demo: 3 admin accounts for UCP demonstration';
-COMMENT ON TABLE budget_data IS 'Demo: Sample budget data for Municipality of Sample City (FY 2026)';
-COMMENT ON TABLE documents IS 'Demo: One published ordinance to show in the public portal';
