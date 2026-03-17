@@ -3,7 +3,48 @@
 ## Timeline: March 16 - March 22, 2026 (6 Days)
 
 **Team Size:** 4 members
-**Video Deadline:** March 22, 2026
+**Video Deadline:** March 22, 2026 (11:59 PM)
+**GitHub Repo:** Must be public before submission
+**Challenge:** #3 — Transparency, Accountability, and Good Governance
+
+---
+
+## Hackathon Judging Criteria & How CYFER Addresses Each
+
+| Criterion | Weight | How CYFER Addresses It |
+|-----------|--------|------------------------|
+| **Mastery and Use of Software Concepts** | 30% | Custom SHA-256 blockchain, UCP consensus protocol, Next.js App Router, Supabase with RLS, Anthropic Claude AI API, TypeScript strict typing, server-side security |
+| **Novelty and Innovation** | 30% | Blockchain-backed document verification for LGUs is rare in PH gov tech. UCP (unanimous multi-official approval) is a novel accountability mechanism. AI summarizer bridges the literacy gap for citizens. |
+| **Real-world Impact and Viability** | 30% | Targets city/municipal LGUs in the Philippines. Directly addresses document tampering, lack of transparency, and single-point-of-failure publishing. Deployable on Vercel + Supabase free tier. SDG 16 aligned. |
+| **Compliance to Rules and Restrictions** | 10% | Must disclose AI use (Anthropic Claude API). Video 3-5 min. Public GitHub repo. Working prototype demonstrated (not slides-only). |
+
+## Video Requirements Checklist (Due March 22, 11:59 PM)
+- [ ] 3-5 minutes (strictly enforced — deductions for violations)
+- [ ] Demonstrates working prototype (not slides-only)
+- [ ] Explains the **problem** (corruption, document tampering, lack of transparency in PH LGUs)
+- [ ] Explains the **solution** (CYFER — blockchain verification, UCP, AI summarizer)
+- [ ] Shows **real-world application** (city/municipal government use case)
+- [ ] **Clearly states all technologies used:**
+  - Languages: TypeScript, SQL
+  - Framework: Next.js 14+ (App Router)
+  - Styling: Tailwind CSS
+  - Database: Supabase (PostgreSQL)
+  - Storage: Supabase Storage
+  - Auth: Supabase Auth
+  - Blockchain: Custom SHA-256 (Web Crypto API)
+  - AI: **Anthropic Claude API** (`claude-sonnet-4-20250514`) ← must disclose
+  - Icons: lucide-react
+  - Charts: Custom bar chart (Recharts installed)
+  - Deployment: Vercel
+- [ ] Source code submitted via **public GitHub repository**
+- [ ] README file included (encouraged by judges)
+
+## Key Selling Points to Emphasize in Video
+1. **Tamper-proof** — SHA-256 hash stored on custom blockchain. Any modification is instantly detectable.
+2. **Unanimous Consensus** — No single official can unilaterally publish. All must approve.
+3. **AI Accessibility** — Complex ordinances/budgets summarized in plain language for citizens.
+4. **Public Verifiability** — Anyone can verify any document with no account needed.
+5. **SDG 16 alignment** — Peace, Justice and Strong Institutions.
 
 ---
 
