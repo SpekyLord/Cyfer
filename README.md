@@ -30,7 +30,7 @@ The result: eroded public trust, unchecked corruption, and a citizenry kept in t
 
 ## Features
 
-### 🔐 Blockchain Document Verification
+### Blockchain Document Verification
 Every document gets a unique SHA-256 fingerprint the moment it is uploaded. That fingerprint is stored on our custom blockchain — a cryptographically linked chain of blocks stored in Supabase. If anyone modifies the document after publication, the hash will not match, and CYFER instantly flags it as **TAMPERED**.
 
 - Citizens can upload any government document to verify its authenticity
@@ -38,7 +38,7 @@ Every document gets a unique SHA-256 fingerprint the moment it is uploaded. That
 - No account required — fully public
 - Blockchain integrity can be independently validated via `/api/blockchain/validate`
 
-### 👥 Unanimous Consensus Protocol (UCP)
+### Unanimous Consensus Protocol (UCP)
 Inspired by multi-signature authorization, CYFER's UCP ensures no document reaches the public portal without 100% approval from all registered officials.
 
 - Admin uploads a document → approval requests are automatically sent to all other admins
@@ -47,7 +47,7 @@ Inspired by multi-signature authorization, CYFER's UCP ensures no document reach
 - A single rejection blocks publication and logs the reason
 - All approval actions are recorded on the audit trail
 
-### 🤖 AI Document Summarizer *(powered by Anthropic Claude)*
+### AI Document Summarizer *(powered by Anthropic Claude)*
 Government documents are often dense and written in legal language. CYFER uses the **Anthropic Claude API** to generate plain-language summaries that any citizen can understand.
 
 - Click "AI Summary" on any published document
@@ -55,7 +55,7 @@ Government documents are often dense and written in legal language. CYFER uses t
 - Generated server-side — the API key is never exposed to the browser
 - Graceful fallback if the AI service is unavailable
 
-### 📊 Budget Transparency Dashboard
+### Budget Transparency Dashboard
 A public-facing visual dashboard showing how the municipality allocates its budget across sectors.
 
 - Breakdown by category: Infrastructure, Health, Education, Social Services, General Administration, and more
@@ -63,7 +63,7 @@ A public-facing visual dashboard showing how the municipality allocates its budg
 - Philippine Peso (PHP) formatting
 - Admins can update budget data; changes are immediately reflected publicly
 
-### 📜 Public Audit Trail
+### Public Audit Trail
 Every action taken on the platform is recorded in a hash-linked transaction chain — an immutable log of who did what, and when.
 
 - Public-facing timeline of all document uploads, approvals, rejections, and verifications
