@@ -20,10 +20,15 @@ ON users FOR SELECT
 USING (auth.role() = 'authenticated');
 
 -- Only super admins can insert/update/delete users
+-- NOTE: Check against public.users table — never use user_metadata (user-editable)
 CREATE POLICY "Super admins can manage users"
 ON users FOR ALL
 USING (
-  auth.jwt() -> 'user_metadata' ->> 'role' = 'super_admin'
+  EXISTS (
+    SELECT 1 FROM public.users
+    WHERE id = auth.uid()
+    AND role = 'super_admin'
+  )
 );
 
 -- =====================================================
@@ -125,9 +130,13 @@ USING (auth.role() = 'authenticated');
 CREATE OR REPLACE FUNCTION is_admin()
 RETURNS BOOLEAN AS $$
 BEGIN
-  RETURN auth.role() = 'authenticated';
+  RETURN EXISTS (
+    SELECT 1 FROM public.users
+    WHERE id = auth.uid()
+    AND role IN ('admin', 'super_admin')
+  );
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 
 -- =====================================================
 -- Comments

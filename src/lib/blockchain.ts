@@ -37,7 +37,13 @@ export class Blockchain {
    * Hash = SHA-256(id + timestamp + JSON.stringify(data) + previous_hash + nonce)
    */
   static async computeHash(block: Partial<Block>): Promise<string> {
-    const hashInput = `${block.id}${block.timestamp}${JSON.stringify(block.data)}${block.previous_hash}${block.nonce}`;
+    // Normalize timestamp to Unix ms to avoid format differences between
+    // JS ISO strings and Supabase-returned timestamp formats
+    const ts = new Date(block.timestamp!).getTime();
+    // Sort JSON keys for deterministic output — PostgreSQL JSONB does not
+    // preserve insertion order, so keys may come back in a different order
+    const dataSorted = JSON.stringify(block.data, Object.keys(block.data as object).sort());
+    const hashInput = `${block.id}${ts}${dataSorted}${block.previous_hash}${block.nonce}`;
     return await hashString(hashInput);
   }
 
