@@ -383,16 +383,48 @@ cyfer/
 ## Phase 4: Integration & Polish (Day 4 — March 19)
 
 ### Infrastructure Completed (March 17) ✅
-- [x] ✅ Supabase project created (Singapore region)
-- [x] ✅ Database schema deployed (all 6 tables)
-- [x] ✅ RLS policies applied + security fixes (002_security_fixes.sql)
+- [x] ✅ Supabase project created (Singapore region, free tier)
+- [x] ✅ Database schema deployed (`001_initial_schema.sql` — all 6 tables)
+- [x] ✅ RLS policies applied (`001_rls_policies.sql` + `002_security_fixes.sql`)
 - [x] ✅ Supabase Auth configured (email provider, confirm email OFF)
-- [x] ✅ Storage bucket `documents` created (public, 50MB)
-- [x] ✅ Seed data inserted (3 admins, 8 budget entries, genesis block, sample document)
-- [x] ✅ `.env.local` configured with Supabase URL, anon key, service role key
-- [x] ✅ Blockchain hash bug fixed — timestamp normalization + JSONB key sorting
-- [x] ✅ Production build verified — 26 routes compiled (0 errors)
-- [x] ✅ All tests passing (`test-supabase.ts` — connection, tables, seed data, blockchain)
+- [x] ✅ Storage bucket `documents` created (public, 50MB, 2 policies)
+- [x] ✅ `.env.local` configured with Supabase URL, anon key, service role key, Anthropic key
+- [x] ✅ Blockchain hash bug fixed in `lib/blockchain.ts`:
+  - Timestamps normalized to Unix ms (JS ISO string ≠ Supabase-returned format)
+  - JSON keys sorted before hashing (PostgreSQL JSONB doesn't preserve insertion order)
+- [x] ✅ Production build verified — 26 routes compiled, 0 errors
+- [x] ✅ All tests passing (`test-supabase.ts` — connection, tables, blockchain validation)
+
+### ⚠️ Known Issues & Lessons Learned (IMPORTANT for Phase 4)
+
+#### 1. Auth Users — Do NOT use seed SQL to create auth.users
+The seed SQL (`001_demo_data.sql`) attempts to insert directly into `auth.users` and `auth.identities` with hardcoded UUIDs. **This does not work reliably.** The Supabase new secret key format (`sb_secret_*`) also does not support `auth.admin.*` API methods.
+
+**What actually worked:** Create auth users manually in Supabase Dashboard → Authentication → Users → Add User (with "Auto Confirm User" checked).
+
+**Current admin credentials:**
+| Role | Email | Password | Auth UUID |
+|------|-------|----------|-----------|
+| Super Admin | `mayor@samplecity.gov.ph` | `DemoPassword123!` | `d471eda7-f4a7-42ab-b835-541756fce3e3` |
+| Admin | `treasurer@samplecity.gov.ph` | `DemoPassword123!` | `159291dd-7701-4264-995b-6e31295bf930` |
+| Admin | `clerk@samplecity.gov.ph` | `DemoPassword123!` | `c28d6485-36a0-42ef-b144-6ebf4fab3ad0` |
+
+`public.users` table has been synced with these real auth UUIDs.
+
+#### 2. RLS Infinite Recursion on public.users
+The `Super admins can manage users` RLS policy queries `public.users` to check role. When a client that has called `signInWithPassword()` tries to write to `public.users`, the policy evaluates and queries the same table → infinite recursion.
+
+**Fix:** Always use a **separate** Supabase client instance for DB writes after calling auth methods. The session from `signInWithPassword` contaminates the client's subsequent requests.
+
+**In API routes:** `createServerClient()` (service role key) bypasses RLS entirely — this is correct and will work fine. The issue only occurs in scripts that mix auth + DB operations on the same client.
+
+#### 3. Sample Document & Budget Data — uploaded_by is NULL
+During the auth user cleanup, `documents.uploaded_by` and `budget_data.uploaded_by` were set to NULL to clear FK constraints. The sample data still exists but has no uploader linked.
+
+**Action needed in Task 4.5:** Re-seed proper demo documents with correct uploaded_by UUIDs (use the real UUIDs above, not the old hardcoded ones).
+
+#### 4. Service Role Key Format
+Supabase now issues `sb_secret_*` format secret keys instead of JWT format. This key works for all database operations via `supabase-js`, but **does NOT work** with `supabase.auth.admin.*` methods. For admin auth operations, use the Supabase Dashboard directly.
 
 ### Task 4.1: Connect Frontend to Backend
 - [ ] Wire all public pages to their respective API endpoints
