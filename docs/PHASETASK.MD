@@ -379,6 +379,18 @@ cyfer/
 
 ## Phase 4: Integration & Polish (Day 4 — March 19)
 
+### Infrastructure Completed (March 17) ✅
+- [x] ✅ Supabase project created (Singapore region)
+- [x] ✅ Database schema deployed (all 6 tables)
+- [x] ✅ RLS policies applied + security fixes (002_security_fixes.sql)
+- [x] ✅ Supabase Auth configured (email provider, confirm email OFF)
+- [x] ✅ Storage bucket `documents` created (public, 50MB)
+- [x] ✅ Seed data inserted (3 admins, 8 budget entries, genesis block, sample document)
+- [x] ✅ `.env.local` configured with Supabase URL, anon key, service role key
+- [x] ✅ Blockchain hash bug fixed — timestamp normalization + JSONB key sorting
+- [x] ✅ Production build verified — 26 routes compiled (0 errors)
+- [x] ✅ All tests passing (`test-supabase.ts` — connection, tables, seed data, blockchain)
+
 ### Task 4.1: Connect Frontend to Backend
 - [ ] Wire all public pages to their respective API endpoints
 - [ ] Wire all admin pages to their respective API endpoints
