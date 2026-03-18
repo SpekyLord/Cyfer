@@ -59,6 +59,7 @@ export default function VerifyPage() {
   function handleReset() {
     setFile(null);
     setResult(null);
+    if (inputRef.current) inputRef.current.value = '';
   }
 
   return (
