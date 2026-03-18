@@ -2,13 +2,15 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Shield, Loader2 } from 'lucide-react';
+import { Shield, Loader2, Lock } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
+import { useToast } from '@/components/ui/Toast';
 
 export default function LoginPage() {
   const router = useRouter();
+  const { toast } = useToast();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -30,12 +32,15 @@ export default function LoginPage() {
       if (json.success) {
         localStorage.setItem('cyfer_token', json.data.session.access_token);
         localStorage.setItem('cyfer_user', JSON.stringify(json.data.user));
+        toast('success', `Welcome back, ${json.data.user.name || 'Admin'}!`);
         router.push('/admin');
       } else {
         setError(json.error ?? 'Invalid email or password');
+        toast('error', 'Invalid credentials. Please try again.');
       }
     } catch {
       setError('Network error. Please try again.');
+      toast('error', 'Network error. Please check your connection.');
     } finally {
       setLoading(false);
     }
@@ -43,7 +48,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-[70vh] flex items-center justify-center px-4">
-      <Card className="w-full max-w-md">
+      <Card className="w-full max-w-md animate-fade-in">
         <div className="text-center mb-6">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-primary rounded-2xl mb-4">
             <Shield className="h-8 w-8 text-accent" />
@@ -53,17 +58,35 @@ export default function LoginPage() {
         </div>
 
         <form onSubmit={handleLogin} className="space-y-4">
-          <Input label="Email" type="email" placeholder="admin@lgu.gov.ph"
-            value={email} onChange={(e) => setEmail(e.target.value)} required />
-          <Input label="Password" type="password" placeholder="Enter your password"
-            value={password} onChange={(e) => setPassword(e.target.value)} required />
+          <Input
+            label="Email"
+            type="email"
+            placeholder="admin@lgu.gov.ph"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+          <Input
+            label="Password"
+            type="password"
+            placeholder="Enter your password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
 
           {error && (
-            <div className="p-3 bg-red-50 border border-error/20 rounded-lg text-sm text-error">{error}</div>
+            <div className="p-3 bg-red-50 border border-error/20 rounded-lg text-sm text-error animate-shake">
+              {error}
+            </div>
           )}
 
           <Button type="submit" disabled={loading} className="w-full">
-            {loading ? <><Loader2 size={16} className="animate-spin" /> Signing in...</> : 'Sign In'}
+            {loading ? (
+              <><Loader2 size={16} className="animate-spin" /> Signing in...</>
+            ) : (
+              <><Lock size={16} /> Sign In</>
+            )}
           </Button>
         </form>
 

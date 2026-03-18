@@ -30,7 +30,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     <div className="flex min-h-screen">
       <AdminSidebar />
       <div className="flex-1 bg-background overflow-auto">
-        <div className="p-6 lg:p-8">
+        <div className="p-4 pt-16 lg:p-6 lg:pt-6 xl:p-8">
           {children}
         </div>
       </div>

@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { LayoutDashboard, Upload, CheckSquare, FileText, DollarSign, Users, LogOut, Shield } from 'lucide-react';
+import { LayoutDashboard, Upload, CheckSquare, FileText, DollarSign, Users, LogOut, Shield, Menu, X } from 'lucide-react';
 import { Badge } from '@/components/ui/Badge';
 import { useEffect, useState } from 'react';
 
@@ -25,6 +25,7 @@ export function AdminSidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const [user, setUser] = useState<UserData | null>(null);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
     const stored = localStorage.getItem('cyfer_user');
@@ -32,6 +33,11 @@ export function AdminSidebar() {
       try { setUser(JSON.parse(stored)); } catch { /* ignore */ }
     }
   }, []);
+
+  // Close mobile sidebar on route change
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
 
   function handleLogout() {
     const token = localStorage.getItem('cyfer_token');
@@ -46,14 +52,20 @@ export function AdminSidebar() {
     router.push('/login');
   }
 
-  return (
-    <aside className="w-64 bg-primary text-white min-h-screen flex flex-col">
+  const sidebarContent = (
+    <>
       {/* Logo */}
-      <div className="px-6 py-5 border-b border-white/10">
+      <div className="px-6 py-5 border-b border-white/10 flex items-center justify-between">
         <Link href="/admin" className="flex items-center gap-2">
           <Shield className="h-7 w-7 text-accent" />
           <span className="text-lg font-bold">CYFER Admin</span>
         </Link>
+        <button
+          className="lg:hidden text-white/70 hover:text-white cursor-pointer"
+          onClick={() => setMobileOpen(false)}
+        >
+          <X size={20} />
+        </button>
       </div>
 
       {/* User Info */}
@@ -75,7 +87,7 @@ export function AdminSidebar() {
             <Link
               key={href}
               href={href}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
                 ${isActive ? 'bg-white/15 text-accent' : 'text-white/70 hover:bg-white/10 hover:text-white'}`}
             >
               <Icon size={18} />
@@ -89,15 +101,48 @@ export function AdminSidebar() {
       <div className="px-3 py-4 border-t border-white/10">
         <button
           onClick={handleLogout}
-          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/70 hover:bg-white/10 hover:text-white w-full cursor-pointer"
+          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/70 hover:bg-white/10 hover:text-white w-full cursor-pointer transition-colors"
         >
           <LogOut size={18} />
           Logout
         </button>
-        <Link href="/" className="block text-xs text-white/40 text-center mt-3 hover:text-white/60">
+        <Link href="/" className="block text-xs text-white/40 text-center mt-3 hover:text-white/60 transition-colors">
           Back to Public Portal
         </Link>
       </div>
-    </aside>
+    </>
+  );
+
+  return (
+    <>
+      {/* Mobile menu button */}
+      <button
+        className="lg:hidden fixed top-4 left-4 z-50 bg-primary text-white p-2 rounded-lg shadow-lg cursor-pointer"
+        onClick={() => setMobileOpen(true)}
+      >
+        <Menu size={20} />
+      </button>
+
+      {/* Mobile overlay */}
+      {mobileOpen && (
+        <div
+          className="lg:hidden fixed inset-0 z-40 bg-black/50"
+          onClick={() => setMobileOpen(false)}
+        />
+      )}
+
+      {/* Sidebar - desktop */}
+      <aside className="hidden lg:flex w-64 bg-primary text-white min-h-screen flex-col flex-shrink-0">
+        {sidebarContent}
+      </aside>
+
+      {/* Sidebar - mobile */}
+      <aside
+        className={`lg:hidden fixed inset-y-0 left-0 z-50 w-64 bg-primary text-white flex flex-col transition-transform duration-300
+          ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}`}
+      >
+        {sidebarContent}
+      </aside>
+    </>
   );
 }
