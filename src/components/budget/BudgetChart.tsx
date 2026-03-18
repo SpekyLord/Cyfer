@@ -8,7 +8,7 @@ interface BudgetCategory {
   percentage: number;
 }
 
-const COLORS = ['#1a2332', '#d4a843', '#3b82f6', '#22c55e', '#ef4444', '#f59e0b', '#8b5cf6', '#ec4899'];
+const COLORS = ['#041d2d', '#176780', '#1f628e', '#22c55e', '#3b82f6', '#f59e0b', '#8b5cf6', '#ec4899'];
 
 function formatPHP(value: number) {
   return new Intl.NumberFormat('en-PH', { style: 'currency', currency: 'PHP', maximumFractionDigits: 0 }).format(value);

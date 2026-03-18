@@ -1,8 +1,9 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
-import { LayoutDashboard, Upload, CheckSquare, FileText, DollarSign, Users, LogOut, Shield, Menu, X } from 'lucide-react';
+import { LayoutDashboard, Upload, CheckSquare, FileText, DollarSign, Users, LogOut, Menu, X } from 'lucide-react';
 import { Badge } from '@/components/ui/Badge';
 import { useEffect, useState } from 'react';
 
@@ -57,7 +58,7 @@ export function AdminSidebar() {
       {/* Logo */}
       <div className="px-6 py-5 border-b border-white/10 flex items-center justify-between">
         <Link href="/admin" className="flex items-center gap-2">
-          <Shield className="h-7 w-7 text-accent" />
+          <Image src="/Cyfer Logo.png" alt="CYFER Logo" width={48} height={48} className="h-12 w-12 object-contain" />
           <span className="text-lg font-bold">CYFER Admin</span>
         </Link>
         <button

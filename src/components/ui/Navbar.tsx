@@ -1,12 +1,13 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { Shield, FileText, CheckCircle, BarChart3, ScrollText, Blocks, Menu, X } from 'lucide-react';
+import { Home, FileText, CheckCircle, BarChart3, ScrollText, Blocks, Menu, X } from 'lucide-react';
 import { useState } from 'react';
 
 const navLinks = [
-  { href: '/', label: 'Home', icon: Shield },
+  { href: '/', label: 'Home', icon: Home },
   { href: '/documents', label: 'Documents', icon: FileText },
   { href: '/verify', label: 'Verify', icon: CheckCircle },
   { href: '/blockchain', label: 'Blockchain', icon: Blocks },
@@ -23,7 +24,7 @@ export function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <Link href="/" className="flex items-center gap-2">
-            <Shield className="h-8 w-8 text-accent" />
+            <Image src="/Cyfer Logo.png" alt="CYFER Logo" width={48} height={48} className="h-12 w-12 object-contain" />
             <span className="text-xl font-bold tracking-tight">CYFER</span>
           </Link>
 
