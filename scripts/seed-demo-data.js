@@ -4,6 +4,12 @@
 const crypto = require("crypto");
 const { createClient } = require("@supabase/supabase-js");
 
+// Usage: node --env-file=.env.local scripts/seed-demo-data.js
+// Requires NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in .env.local
+if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+  console.error("Missing env vars. Run with: node --env-file=.env.local scripts/seed-demo-data.js");
+  process.exit(1);
+}
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE_KEY
