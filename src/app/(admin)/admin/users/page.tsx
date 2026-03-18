@@ -77,7 +77,7 @@ export default function UserManagementPage() {
                   </Badge>
                 </TableCell>
                 <TableCell className="text-sm text-muted">{user.department}</TableCell>
-                <TableCell className="text-sm text-muted">{formatDate(user.created_at)}</TableCell>
+                <TableCell className="text-sm text-muted">{user.created_at ? formatDate(user.created_at) : '—'}</TableCell>
               </TableRow>
             ))}
           </tbody>
