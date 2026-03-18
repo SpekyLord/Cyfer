@@ -132,6 +132,6 @@ a, button, input, select, textarea {
 
 /* Selection color */
 ::selection {
-  background: rgba(23, 103, 128, 0.2);
-  color: var(--foreground);
+  background: rgba(23, 103, 128, 0.35);
+  color: #ffffff;
 }

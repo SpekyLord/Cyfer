@@ -36,7 +36,7 @@ export function Navbar() {
                   key={href}
                   href={href}
                   className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium
-                    ${isActive ? 'bg-white/15 text-accent' : 'text-white/80 hover:bg-white/10 hover:text-white'}`}
+                    ${isActive ? 'bg-accent/20 text-white' : 'text-white/70 hover:bg-white/10 hover:text-white'}`}
                 >
                   <Icon size={16} />
                   {label}
@@ -48,7 +48,7 @@ export function Navbar() {
           <div className="hidden md:flex items-center">
             <Link
               href="/login"
-              className="px-4 py-2 text-sm font-medium text-accent border border-accent/40 rounded-lg hover:bg-accent/10"
+              className="px-4 py-2 text-sm font-medium text-white bg-accent rounded-lg hover:bg-accent-light transition-colors"
             >
               Admin Login
             </Link>
@@ -74,7 +74,7 @@ export function Navbar() {
                   href={href}
                   onClick={() => setMobileOpen(false)}
                   className={`flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium
-                    ${isActive ? 'bg-white/15 text-accent' : 'text-white/80 hover:bg-white/10'}`}
+                    ${isActive ? 'bg-accent/20 text-white' : 'text-white/70 hover:bg-white/10'}`}
                 >
                   <Icon size={16} />
                   {label}
@@ -84,7 +84,7 @@ export function Navbar() {
             <Link
               href="/login"
               onClick={() => setMobileOpen(false)}
-              className="flex items-center gap-2 px-3 py-2.5 text-sm font-medium text-accent"
+              className="flex items-center gap-2 px-3 py-2.5 text-sm font-medium text-white bg-accent rounded-lg"
             >
               Admin Login
             </Link>

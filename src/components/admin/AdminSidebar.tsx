@@ -89,7 +89,7 @@ export function AdminSidebar() {
               key={href}
               href={href}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
-                ${isActive ? 'bg-white/15 text-accent' : 'text-white/70 hover:bg-white/10 hover:text-white'}`}
+                ${isActive ? 'bg-accent/30 text-white' : 'text-white/70 hover:bg-white/10 hover:text-white'}`}
             >
               <Icon size={18} />
               {label}
