@@ -31,6 +31,7 @@ src/
 │   │   ├── page.tsx        # Landing page
 │   │   ├── documents/      # Public document portal
 │   │   ├── verify/         # Document verification tool
+│   │   ├── blockchain/     # Blockchain explorer — visual chain viewer
 │   │   ├── budget/         # Budget transparency dashboard
 │   │   └── audit/          # Public audit trail
 │   ├── (admin)/            # Admin pages — auth required
@@ -89,7 +90,7 @@ src/
 ### User Roles
 - **Super Admin:** Full access, can manage users and all admin functions
 - **Admin:** Can upload documents, approve/reject, manage budget data
-- **Public (no account):** Can browse published documents, verify files, view budget dashboard, use AI summarizer, and view audit trail
+- **Public (no account):** Can browse published documents, verify files, explore the blockchain, view budget dashboard, use AI summarizer, and view audit trail
 
 ### AI Document Summarization
 - Uses Anthropic Claude API (`@anthropic-ai/sdk`) — server-side only
@@ -101,6 +102,7 @@ src/
 - Set `max_tokens: 1024` for summaries
 - Cache summaries: store in a `document_summaries` column (JSONB) on the `documents` table or a separate cache table to avoid repeated API calls for the same document
 - Handle errors gracefully: API timeout, rate limit, document too large → return user-friendly error message
+- **Demo fallback:** When the AI API is unavailable (e.g. no credits), the endpoint automatically returns realistic pre-written summaries matched by document category (ordinance, budget, resolution, contract, permit)
 - Frontend: "AI Summary" button on `/documents/[id]` page → loading spinner → display summary card with collapsible sections
 
 ## Database Tables
@@ -123,6 +125,7 @@ See the PRD (CYFER-PRD.md) for full schema details.
 | POST | /api/documents | Upload new document | Admin |
 | GET | /api/documents/[id] | Get document detail + approvals | Public |
 | POST | /api/verify | Verify a file against blockchain | Public |
+| GET | /api/blockchain | Get blockchain stats + latest block | Public |
 | GET | /api/blockchain/validate | Validate entire chain integrity | Public |
 | GET | /api/consensus/pending | Get pending approvals for admin | Admin |
 | POST | /api/consensus/[id]/approve | Approve a document | Admin |

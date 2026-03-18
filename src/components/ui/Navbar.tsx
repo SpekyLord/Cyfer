@@ -2,13 +2,14 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Shield, FileText, CheckCircle, BarChart3, ScrollText, Menu, X } from 'lucide-react';
+import { Shield, FileText, CheckCircle, BarChart3, ScrollText, Blocks, Menu, X } from 'lucide-react';
 import { useState } from 'react';
 
 const navLinks = [
   { href: '/', label: 'Home', icon: Shield },
   { href: '/documents', label: 'Documents', icon: FileText },
   { href: '/verify', label: 'Verify', icon: CheckCircle },
+  { href: '/blockchain', label: 'Blockchain', icon: Blocks },
   { href: '/budget', label: 'Budget', icon: BarChart3 },
   { href: '/audit', label: 'Audit Trail', icon: ScrollText },
 ];

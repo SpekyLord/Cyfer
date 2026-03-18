@@ -537,11 +537,19 @@ Supabase now issues `sb_secret_*` format secret keys instead of JWT format. This
 **Additional Phase 4 improvements:**
 - [x] ✅ `UploadForm.tsx` component rebuilt as full reusable component (was previously a stub)
 - [x] ✅ AI summarization route (`/api/summarize`) now extracts file content from Supabase Storage (PDF/DOCX/TXT parsing)
+- [x] ✅ AI summarizer demo fallback — when Claude API is unavailable (no credits), returns realistic pre-written summaries matched by document category (ordinance, budget, resolution, contract, permit)
 - [x] ✅ Landing page enhanced with "Verification Flow" section, trust indicators, staggered animations
 - [x] ✅ Upload success page now shows generated SHA-256 hash with checkmark animation
-- [x] ✅ Production build verified — 28 routes compiled, 0 errors (Next.js 16.1.6 Turbopack)
+- [x] ✅ **Blockchain Explorer page** (`/blockchain`) — new public page to visualize the chain:
+  - Visual chain with connected blocks and hash linkage
+  - Stats bar: total blocks, chain integrity status, published docs count, latest hash
+  - Click-to-expand blocks: current hash (green), previous hash (blue), nonce, block data JSON
+  - Color-coded action badges: uploads (amber), approvals (blue), publications (green), genesis (gold)
+  - "How the Blockchain Works" explainer section
+  - Added to navbar between Verify and Budget
+- [x] ✅ Production build verified — 29 routes compiled, 0 errors (Next.js 16.1.6 Turbopack)
 
-**✅ Phase 4 COMPLETE! Build verified (Next.js 16.1.6 Turbopack — all 28 routes compiled successfully)**
+**✅ Phase 4 COMPLETE! Build verified (Next.js 16.1.6 Turbopack — all 29 routes compiled successfully)**
 
 **Estimated Time:** 6-8 hours
 **Assignee:** Full team

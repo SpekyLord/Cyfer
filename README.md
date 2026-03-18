@@ -53,7 +53,7 @@ Government documents are often dense and written in legal language. CYFER uses t
 - Click "AI Summary" on any published document
 - Structured output: key points, affected parties, budget/financial implications, and a one-sentence TLDR
 - Generated server-side — the API key is never exposed to the browser
-- Graceful fallback if the AI service is unavailable
+- Graceful fallback with realistic pre-written summaries when the AI service is unavailable
 
 ### Budget Transparency Dashboard
 A public-facing visual dashboard showing how the municipality allocates its budget across sectors.
@@ -62,6 +62,15 @@ A public-facing visual dashboard showing how the municipality allocates its budg
 - Bar chart visualization with percentage breakdowns
 - Philippine Peso (PHP) formatting
 - Admins can update budget data; changes are immediately reflected publicly
+
+### Blockchain Explorer
+A public page where anyone can inspect the full blockchain — every block, its hash, and how it links to the previous one.
+
+- Visual chain with connected blocks showing hash linkage
+- Click any block to expand: current hash, previous hash, nonce, block data (JSON)
+- Color-coded by action type: uploads (amber), approvals (blue), publications (green)
+- Chain integrity status — validated in real-time
+- "How the Blockchain Works" explainer section
 
 ### Public Audit Trail
 Every action taken on the platform is recorded in a hash-linked transaction chain — an immutable log of who did what, and when.
@@ -197,12 +206,13 @@ src/
 │   │   ├── page.tsx    # Landing page
 │   │   ├── documents/  # Document portal + detail view
 │   │   ├── verify/     # Citizen verification tool
+│   │   ├── blockchain/ # Blockchain explorer — visual chain viewer
 │   │   ├── budget/     # Budget transparency dashboard
 │   │   └── audit/      # Public audit trail
 │   ├── (admin)/        # Admin pages — login required
 │   │   ├── admin/      # Dashboard, upload, approvals, budget, users
 │   │   └── login/      # Admin login
-│   └── api/            # 14 API routes
+│   └── api/            # 15 API routes
 ├── components/         # UI components (Button, Card, Badge, Table, etc.)
 ├── lib/                # Core logic (blockchain, hash, AI, Supabase, auth)
 └── utils/              # Formatters, constants
