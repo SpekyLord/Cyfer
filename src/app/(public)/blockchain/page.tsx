@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react';
 import {
   Blocks, CheckCircle, XCircle, Loader2, Hash, Clock, Database,
-  Shield, ChevronDown, FileText, UserCheck, Send, Lock, ArrowDown
+  Shield, ChevronDown, FileText, UserCheck, Send, Lock, ArrowDown,
+  Network, WifiOff, Wifi
 } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
@@ -32,11 +33,23 @@ function getActionConfig(data: Record<string, unknown>) {
   return ACTION_CONFIG[action] || ACTION_CONFIG.test;
 }
 
+interface NodeStatus {
+  id: number;
+  name: string;
+  url_hint: string;
+  block_count: number;
+  latest_hash: string | null;
+  status: 'synced' | 'out_of_sync' | 'unreachable';
+}
+
 export default function BlockchainPage() {
   const [blocks, setBlocks] = useState<Block[]>([]);
   const [loading, setLoading] = useState(true);
   const [chainValid, setChainValid] = useState<boolean | null>(null);
   const [expandedId, setExpandedId] = useState<number | null>(null);
+  const [nodes, setNodes] = useState<NodeStatus[]>([]);
+  const [nodesLoading, setNodesLoading] = useState(true);
+  const [consensus, setConsensus] = useState<boolean | null>(null);
 
   useEffect(() => {
     async function fetchBlockchain() {
@@ -53,7 +66,24 @@ export default function BlockchainPage() {
         setLoading(false);
       }
     }
+
+    async function fetchNodes() {
+      try {
+        const res = await fetch('/api/blockchain/nodes');
+        const json = await res.json();
+        if (json.success) {
+          setNodes(json.data.nodes ?? []);
+          setConsensus(json.data.consensus);
+        }
+      } catch (err) {
+        console.error('Failed to fetch nodes:', err);
+      } finally {
+        setNodesLoading(false);
+      }
+    }
+
     fetchBlockchain();
+    fetchNodes();
   }, []);
 
   const reversedBlocks = [...blocks].reverse();
@@ -63,15 +93,80 @@ export default function BlockchainPage() {
       {/* Header */}
       <div className="text-center mb-8">
         <div className="inline-flex items-center gap-2 bg-primary/5 rounded-full px-4 py-1.5 text-sm text-primary mb-4">
-          <Lock size={14} />
-          Immutable Ledger
+          <Network size={14} />
+          Decentralized &amp; Immutable
         </div>
         <h1 className="text-3xl font-bold text-foreground">Blockchain Explorer</h1>
         <p className="text-muted mt-2 max-w-xl mx-auto">
-          Every document action is permanently recorded as a block. Each block is cryptographically
-          linked to the previous one, making the chain tamper-proof.
+          Every document action is permanently recorded as a block across <strong>3 independent nodes</strong>.
+          Each block is cryptographically linked to the previous one — any tampering is immediately detectable.
         </p>
       </div>
+
+      {/* Network Nodes Panel */}
+      <Card className="mb-6">
+        <div className="p-5">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-semibold flex items-center gap-2 text-foreground">
+              <Network size={18} className="text-accent" />
+              Distributed Network
+            </h3>
+            <div className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full
+              ${consensus === null ? 'bg-muted/10 text-muted' : consensus ? 'bg-success/10 text-success' : 'bg-error/10 text-error'}`}>
+              {consensus === null ? (
+                <Loader2 size={12} className="animate-spin" />
+              ) : consensus ? (
+                <CheckCircle size={12} />
+              ) : (
+                <XCircle size={12} />
+              )}
+              {consensus === null ? 'Checking consensus...' : consensus ? 'Network Consensus Reached' : 'Consensus Failure Detected'}
+            </div>
+          </div>
+
+          {nodesLoading ? (
+            <div className="flex justify-center py-4">
+              <Loader2 size={20} className="animate-spin text-muted" />
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              {nodes.map((node) => (
+                <div key={node.id} className={`p-3 rounded-xl border flex items-start gap-3
+                  ${node.status === 'synced' ? 'bg-success/5 border-success/20' :
+                    node.status === 'out_of_sync' ? 'bg-error/5 border-error/20' :
+                    'bg-muted/5 border-border'}`}>
+                  <div className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center
+                    ${node.status === 'synced' ? 'bg-success/15' :
+                      node.status === 'out_of_sync' ? 'bg-error/15' : 'bg-muted/15'}`}>
+                    {node.status === 'unreachable' ? (
+                      <WifiOff size={14} className="text-muted" />
+                    ) : (
+                      <Wifi size={14} className={node.status === 'synced' ? 'text-success' : 'text-error'} />
+                    )}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-1.5 mb-0.5">
+                      <span className="text-sm font-semibold text-foreground">{node.name}</span>
+                      <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider
+                        ${node.status === 'synced' ? 'bg-success/15 text-success' :
+                          node.status === 'out_of_sync' ? 'bg-error/15 text-error' : 'bg-muted/15 text-muted'}`}>
+                        {node.status === 'out_of_sync' ? 'Out of Sync' : node.status}
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted font-mono">{node.block_count} blocks</p>
+                    {node.latest_hash && (
+                      <p className="text-[10px] text-muted/60 font-mono truncate">{node.latest_hash.slice(0, 16)}...</p>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+          <p className="text-xs text-muted mt-3 text-center">
+            Each node independently stores the full blockchain. If any node is tampered with, consensus fails immediately.
+          </p>
+        </div>
+      </Card>
 
       {/* Stats Bar */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
@@ -300,7 +395,7 @@ export default function BlockchainPage() {
             <Shield size={20} className="text-accent" />
             How the Blockchain Works
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
             {[
               {
                 step: '1',
@@ -316,8 +411,14 @@ export default function BlockchainPage() {
               },
               {
                 step: '3',
+                title: 'Distribute',
+                desc: 'Every new block is broadcast to 3 independent nodes simultaneously. No single server controls the chain — all nodes must agree.',
+                color: 'bg-warning/10 text-warning border-warning/20',
+              },
+              {
+                step: '4',
                 title: 'Verify',
-                desc: 'Anyone can validate the entire chain by recomputing each hash and checking the linkage — ensuring full transparency.',
+                desc: 'Anyone can validate the entire chain and check cross-node consensus. If any node disagrees, tampering is instantly detected.',
                 color: 'bg-success/10 text-success border-success/20',
               },
             ].map(({ step, title, desc, color }) => (

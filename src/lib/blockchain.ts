@@ -2,6 +2,7 @@
 
 import { hashString } from './hash';
 import { createServerClient } from './supabase';
+import { getNodeClients } from './nodes';
 import type { Block, ChainValidationResult } from './types';
 
 export class Blockchain {
@@ -115,7 +116,36 @@ export class Blockchain {
       throw new Error(`Failed to add block to blockchain: ${error.message}`);
     }
 
+    // Broadcast to secondary nodes — log and continue on failure
+    await this.broadcastBlock(insertedBlock as Block);
+
     return insertedBlock as Block;
+  }
+
+  /**
+   * Broadcast a completed block to all secondary nodes (Node 2, Node 3).
+   * Uses Promise.allSettled so a failing node never breaks the primary write.
+   */
+  static async broadcastBlock(block: Block): Promise<void> {
+    const nodes = getNodeClients();
+    if (nodes.length === 0) return;
+
+    const results = await Promise.allSettled(
+      nodes.map(({ name, client }) =>
+        client
+          .from('blockchain')
+          .upsert(block, { onConflict: 'id' })
+          .then(({ error }) => {
+            if (error) throw new Error(`${name}: ${error.message}`);
+          })
+      )
+    );
+
+    results.forEach((result, i) => {
+      if (result.status === 'rejected') {
+        console.warn(`[Blockchain] Failed to broadcast block ${block.id} to ${nodes[i].name}:`, result.reason);
+      }
+    });
   }
 
   /**

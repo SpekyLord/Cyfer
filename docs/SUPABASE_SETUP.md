@@ -225,6 +225,82 @@ Then manually:
 4. Create Storage bucket named `documents` (public, 50MB limit)
 5. Add storage policies (public read, authenticated upload)
 6. Copy API keys to `.env.local`
+7. *(For decentralization)* Set up Node 2 and Node 3 — see **Step 11** below
+
+---
+
+---
+
+## Step 11: Set Up Decentralized Blockchain Nodes (Node 2 & Node 3)
+
+CYFER uses **3 independent Supabase projects** as blockchain nodes. Node 1 is your existing primary project. You need to create 2 more free Supabase projects as replica nodes.
+
+### 11.1 — Create Node 2
+
+1. Go to [supabase.com](https://supabase.com) → Click **"New Project"**
+2. Fill in:
+   - **Project Name:** `cyfer-node-2`
+   - **Database Password:** any strong password (you won't need it again)
+   - **Region:** same as Node 1 (Singapore recommended)
+   - **Plan:** Free
+3. Click **"Create new project"** and wait for it to finish (~2 min)
+
+4. Go to **SQL Editor** → **New Query** → paste and run:
+```sql
+create table if not exists blockchain (
+  id integer primary key,
+  timestamp timestamptz not null default now(),
+  data jsonb not null,
+  previous_hash text not null,
+  hash text not null,
+  nonce integer not null default 0
+);
+
+alter table blockchain disable row level security;
+```
+5. Click **Run** — you should see "Success. No rows returned."
+
+6. Go to **Settings** → **API** → copy:
+   - **Project URL** (e.g. `https://abcdefgh.supabase.co`)
+   - **anon / public key** (the long `eyJ...` string)
+
+### 11.2 — Create Node 3
+
+Repeat the exact same steps as 11.1 but name it `cyfer-node-3`. Copy its URL and anon key too.
+
+### 11.3 — Add Node Credentials to `.env.local`
+
+Open your `.env.local` file and add these 4 lines (replace with your actual values):
+
+```env
+NODE2_SUPABASE_URL=https://your-node-2-project.supabase.co
+NODE2_SUPABASE_ANON_KEY=eyJ...your-node-2-anon-key...
+NODE3_SUPABASE_URL=https://your-node-3-project.supabase.co
+NODE3_SUPABASE_ANON_KEY=eyJ...your-node-3-anon-key...
+```
+
+### 11.4 — Add to Vercel (for production deployment)
+
+1. Go to your Vercel project → **Settings** → **Environment Variables**
+2. Add all 4 variables above with the same values
+3. Redeploy the project after adding them
+
+### 11.5 — Verify Node Setup
+
+After adding the env vars and restarting the dev server (`npm run dev`):
+
+1. Open your browser and go to `http://localhost:3000/api/blockchain/nodes`
+2. You should see all 3 nodes listed with their status:
+   - Node 1 (Primary) — should show your current block count
+   - Node 2 — should show `synced` (0 blocks initially, will sync on next block write)
+   - Node 3 — should show `synced` (same)
+3. Upload a document through the admin panel → go back to `/api/blockchain/nodes` → all 3 nodes should now have the same block count
+
+**To demo tamper detection across nodes:**
+1. Go to Node 2's Supabase dashboard → **Table Editor** → `blockchain`
+2. Delete any block from the table
+3. Go to `http://localhost:3000/api/blockchain/validate?consensus=true`
+4. Node 2 will show `out_of_sync` — proving the distributed integrity check works
 
 ---
 

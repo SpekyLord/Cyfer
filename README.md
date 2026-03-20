@@ -70,6 +70,8 @@ A public page where anyone can inspect the full blockchain — every block, its 
 - Click any block to expand: current hash, previous hash, nonce, block data (JSON)
 - Color-coded by action type: uploads (amber), approvals (blue), publications (green)
 - Chain integrity status — validated in real-time
+- **Distributed Network panel** — live sync status for all 3 independent nodes (Node 1 Primary, Node 2, Node 3) with green/red/gray status badges
+- **Consensus indicator** — shows whether all 3 nodes agree on the chain state in real-time
 - "How the Blockchain Works" explainer section
 
 ### Public Audit Trail
@@ -115,14 +117,14 @@ The following demo accounts are pre-seeded for testing and judging:
 ## How It Works
 
 ```
-1. UPLOAD          2. CONSENSUS          3. VERIFY
-─────────────────  ────────────────────  ──────────────────────
-Admin uploads   →  All officials must  →  Citizens upload any
-document.          approve (100%).        document copy.
-SHA-256 hash is    Any rejection          Hash is recomputed
-computed and       blocks publication.    and compared.
-stored on the      Reason is logged       VERIFIED ✅ or
-blockchain.        in audit trail.        TAMPERED ❌
+1. UPLOAD          2. CONSENSUS          3. DISTRIBUTE          4. VERIFY
+─────────────────  ────────────────────  ─────────────────────  ──────────────────────
+Admin uploads   →  All officials must  →  Block is broadcast  →  Citizens upload any
+document.          approve (100%).        to 3 independent       document copy.
+SHA-256 hash is    Any rejection          Supabase nodes.        Hash is recomputed
+computed and       blocks publication.    Nodes must agree       and compared.
+stored on the      Reason is logged       on the chain           VERIFIED ✅ or
+blockchain.        in audit trail.        (consensus check).     TAMPERED ❌
 ```
 
 ---
@@ -139,6 +141,7 @@ blockchain.        in audit trail.        TAMPERED ❌
 | **File Storage** | Supabase Storage |
 | **Authentication** | Supabase Auth (admin roles) |
 | **Blockchain** | Custom SHA-256 implementation using Web Crypto API — no external chain |
+| **Decentralization** | 3 independent Supabase nodes — blocks broadcast via `broadcastBlock()` with `Promise.allSettled()` |
 | **AI** | Anthropic Claude API (`claude-sonnet-4-20250514`) — server-side only |
 | **Deployment** | Vercel |
 
@@ -193,6 +196,10 @@ NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 ANTHROPIC_API_KEY=your_anthropic_api_key
+NODE2_SUPABASE_URL=your_node2_supabase_url        # Optional — secondary blockchain node
+NODE2_SUPABASE_ANON_KEY=your_node2_anon_key       # Optional
+NODE3_SUPABASE_URL=your_node3_supabase_url        # Optional — tertiary blockchain node
+NODE3_SUPABASE_ANON_KEY=your_node3_anon_key       # Optional
 ```
 
 ---

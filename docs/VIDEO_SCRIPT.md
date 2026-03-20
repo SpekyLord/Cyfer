@@ -1,145 +1,218 @@
 # CYFER Video Demo Script
 
-## Total Duration: ~4 minutes (Target: 3:30–4:30)
+## Total Duration: ~4:00 (Limit: 3–5 minutes)
 
 ---
 
-## SCENE 1: The Problem (0:00 – 0:20)
+## Scene 1: Intro — The Problem (0:00 – 0:25)
 
-**[Screen: Title card or text overlay on dark background]**
+**Visuals:** Compilation of headlines about corruption. Blurred budget numbers / official government document with numbers — then it shatters (numbers falling away).
 
-> **Voiceover / Text:**
-> "In the Philippines, citizens have no easy way to verify whether a government document is authentic. Ordinances can be altered. Budgets can be revised without accountability. A single official can publish documents unilaterally — with no checks, no trail, and no proof."
-
-**[Optional: Quick montage of headlines about government transparency issues]**
-
----
-
-## SCENE 2: Introducing CYFER (0:20 – 0:40)
-
-**[Screen: Show CYFER landing page — hero section with gold accent text]**
-
-> **Voiceover / Text:**
-> "Meet CYFER — a blockchain-powered governance transparency platform. Every document is hashed with SHA-256 and recorded on an immutable blockchain. No single official can publish alone — our Unanimous Consensus Protocol requires ALL administrators to approve before any document goes live."
-
-**[Action: Slowly scroll down the landing page to show trust indicators (SHA-256, Blockchain, Consensus, AI) and feature cards]**
+> "At the city and municipal level, access to reliable information is critical…"
+> "Yet citizens often face documents that are difficult to understand…"
+> "Difficult to validate…"
+> "And difficult to trust."
+> "This gap weakens public confidence…"
+> "And creates barriers between institutions and the people they serve."
 
 ---
 
-## SCENE 3: Public Document Portal (0:40 – 1:10)
+## Scene 2: The Solution — Hook (0:25 – 0:30)
 
-**[Screen: Navigate to /documents]**
+**Visuals:** Black screen with subtle music building.
 
-> **Voiceover / Text:**
-> "Citizens can browse all published government documents — ordinances, budgets, contracts, and resolutions — right here on the public portal."
-
-**[Action: Show the document grid with category badges, search bar, and filter dropdown. Click into one document to show the detail page.]**
-
-> "Each document shows its full metadata, the SHA-256 hash, and the complete approval chain — every official who signed off."
-
-**[Action: Scroll down the document detail page to show approval chain and hash display]**
+> "But what if transparency was no longer optional?"
+> "What if accountability was built directly into the system?"
 
 ---
 
-## SCENE 4: Document Upload & UCP Approval (1:10 – 2:00)
+## Scene 3: Solution Intro — Logo Reveal (0:30 – 0:35)
 
-**[Screen: Open a second browser tab/window — navigate to /login]**
+**Visuals:** CYFER logo reveal (animated).
 
-> **Voiceover / Text:**
-> "On the admin side, authorized government officials log in to upload documents."
-
-**[Action: Log in as mayor@samplecity.gov.ph. Navigate to /admin/upload]**
-
-> "When an official uploads a document, CYFER generates a SHA-256 hash and records it on the blockchain."
-
-**[Action: Upload a test document. Show the hash displayed on success with the checkmark animation.]**
-
-> "But the document doesn't publish immediately. Our Unanimous Consensus Protocol sends approval requests to ALL other administrators."
-
-**[Action: Show the approvals page with the pending document. Optionally log in as a second admin (treasurer) in another window to show them approving.]**
-
-> "Only when EVERY official approves does the document go live on the public portal. If even one rejects, it's flagged. No single person controls the truth."
+> "Introducing CYFER…"
+> "A secure, blockchain-powered platform designed to bring transparency, accountability, and trust into governance."
+> "Built for local governments…"
+> "And accessible to every citizen."
 
 ---
 
-## SCENE 5: AI Document Summarizer (2:00 – 2:30)
+## Scene 4: Blockchain Explained (0:35 – 1:30)
 
-**[Screen: Navigate back to public portal → click on a published document detail page]**
+**Visuals:** PPT/motion graphics with animations. Blocks connecting visually, hash changing when data changes, chain breaking effect. Then transition into the CYFER UI.
 
-> **Voiceover / Text:**
-> "Government documents can be complex. CYFER uses Anthropic's Claude AI to generate plain-language summaries."
-
-**[Action: Click the "AI Summary" button. Show the loading spinner, then the summary card appearing with TLDR, key points, and affected parties.]**
-
-> "Even non-technical citizens can now understand what an ordinance means for them — who it affects, what it costs, and what changes."
-
----
-
-## SCENE 6: Citizen Verification & Tamper Detection (2:30 – 3:15)
-
-**[Screen: Navigate to /verify]**
-
-> **Voiceover / Text:**
-> "Any citizen can verify any document — no account needed."
-
-**[Action: Upload the ORIGINAL document file. Show the green "Document Verified" result with matching hash.]**
-
-> "The SHA-256 hash matches the blockchain record. This document is authentic."
-
-**[Action: Now upload a MODIFIED version of the same document (even a tiny change).]**
-
-> "But if anyone tampers with the file — even adding a single space — the hash changes completely."
-
-**[Action: Show the red "Verification Failed" result with the tamper warning and shake animation.]**
-
-> "CYFER instantly detects the modification. Tampering is impossible to hide."
-
-**[Screen: Navigate to /audit]**
-
-> "Every action — uploads, approvals, rejections, verifications — is recorded on a public audit trail with cryptographic hashes. Full accountability, fully transparent."
+> "To understand how CYFER protects government data, we first need to understand blockchain."
+> "A blockchain is a type of digital record system…"
+> "But unlike traditional databases, it is designed to be secure, transparent, and resistant to tampering."
+> "Instead of storing data in a single location… it is distributed across many computers called nodes."
+> "Blockchain organizes information into units called blocks."
+> "Each block contains three key elements:"
+> "The data itself…"
+> "A timestamp of when it was created…"
+> "And a cryptographic hash — a unique digital signature generated from the data."
+> "This hash is extremely sensitive… even the smallest change in the data produces a completely different hash."
+> "But what makes blockchain powerful… is how these blocks are connected."
+> "Each block includes the hash of the previous block… forming a continuous chain."
+> "Because of this, if someone tries to alter a document in one block… its hash changes… breaking the chain with the next block."
+> "To successfully tamper with the data, an attacker would need to modify all following blocks… and gain control of the majority of the network… which is extremely difficult."
+> "In CYFER, this technology is used to record government documents and system actions…"
+> "Creating a transparent and tamper-resistant history."
+> "In CYFER specifically, the blockchain is replicated across 3 independent database nodes — so there is no single point of failure or tampering."
+> "This means that once information is recorded… it cannot be secretly changed…"
+> "Ensuring trust through verification — not assumption."
 
 ---
 
-## SCENE 7: Budget Transparency (3:15 – 3:35)
+## Scene 5: Feature Showcase (2:45 – 4:15)
 
-**[Screen: Navigate to /budget]**
+### Feature 1: Unanimous Consensus Protocol (2:45 – 3:10)
 
-> **Voiceover / Text:**
-> "CYFER also provides a budget transparency dashboard, showing citizens exactly how their municipality allocates funds — broken down by sector with clear visualizations."
+**Demo Steps:**
+1. Open browser → go to `/login`
+2. Login as Mayor (`mayor@samplecity.gov.ph` / `DemoPassword123!`)
+3. Click **Upload Document** in admin sidebar
+4. Fill in title, select category **Ordinance**, add description
+5. **Drag & drop** the `.docx` file → click **Upload**
+6. Show the **SHA-256 hash** appear with checkmark animation
+7. **Cut to:** Login as Treasurer in second browser → `/admin/approvals` → click **Approve**
+8. **Cut to:** Login as Clerk in third browser → `/admin/approvals` → click **Approve**
+9. Show **"Document published — unanimous consensus reached"** message
 
-**[Action: Show the summary cards (total budget, fiscal year), bar chart, and category table.]**
-
----
-
-## SCENE 8: Tech Stack & SDG Alignment (3:35 – 3:50)
-
-**[Screen: Text overlay or slide showing the tech stack]**
-
-> **Voiceover / Text:**
-> "Built with Next.js, TypeScript, Tailwind CSS, Supabase for the database and storage, a custom SHA-256 blockchain, and Anthropic's Claude AI for document summarization."
-
-> "CYFER supports SDG 16 — Peace, Justice, and Strong Institutions — by promoting transparency, accountability, and citizen participation in local governance."
-
----
-
-## SCENE 9: Closing (3:50 – 4:00)
-
-**[Screen: CYFER landing page or title card with team name]**
-
-> **Voiceover / Text:**
-> "CYFER — because governance should be transparent, verifiable, and tamper-proof."
-
-> **[Show: Team name and member names]**
+> "Here, an authorized official — the Mayor — logs in and uploads a government document."
+> "The moment it's uploaded, CYFER generates a unique SHA-256 hash — a digital fingerprint — and records it on the blockchain."
+> "But this document doesn't go public yet."
+> "CYFER's Unanimous Consensus Protocol requires every other official to review and approve it first."
+> "The Treasurer approves…"
+> "The Municipal Secretary approves…"
+> "Only when all officials reach full consensus does the document get published."
+> "No single person can control what goes public."
 
 ---
 
-## Demo Login Credentials (for recording)
+### Feature 2: Public Document Verification (3:10 – 3:35)
 
-| Role | Email | Password |
-|------|-------|----------|
-| Mayor (Super Admin) | mayor@samplecity.gov.ph | DemoPassword123! |
-| Treasurer (Admin) | treasurer@samplecity.gov.ph | DemoPassword123! |
-| Clerk (Admin) | clerk@samplecity.gov.ph | DemoPassword123! |
+**Demo Steps:**
+1. Navigate to `/verify`
+2. **Drag & drop the ORIGINAL** `.docx` file
+3. Show the **green "Document Verified"** result — matching hash, document details
+4. Click **"Try Another"**
+5. **Drag & drop the TAMPERED** `.docx` file (same file with one word changed)
+6. Show the **red "Verification Failed"** result — different hash, shake animation
+
+> "Now, any citizen can verify a document — no account needed."
+> "We upload the original file… CYFER computes its hash and checks it against the blockchain."
+> "It matches — this document is verified and authentic."
+> "But watch what happens when we upload a version where just one word has been changed."
+> "The hash is completely different. CYFER immediately flags it as tampered."
+> "Even the smallest modification is impossible to hide."
+
+---
+
+### Feature 3: Budget Transparency Dashboard (3:35 – 3:45)
+
+**Demo Steps:**
+1. Navigate to `/budget`
+2. Show **summary cards** (total budget ₱60M, fiscal year, categories)
+3. Show the **pie chart** and **budget table** with amounts and percentages
+
+> "CYFER also gives citizens a clear view of how public funds are allocated."
+> "Here we can see the full municipal budget — sixty million pesos across eight sectors — with a breakdown showing exactly where every peso goes."
+
+---
+
+### Feature 4: Audit Trail (3:45 – 3:55)
+
+**Demo Steps:**
+1. Navigate to `/audit`
+2. Show **stats cards** (total entries, chain integrity: Valid, latest hash)
+3. Scroll through the **timeline entries** — uploads, approvals, verifications, budget changes
+4. **Click on an entry** to expand — show previous_tx_hash → SHA-256 → current tx_hash linkage
+
+> "Every action taken on the platform is permanently recorded in a hash-linked audit trail."
+> "Each entry is chained to the previous one using SHA-256 — just like the blockchain."
+> "Uploads, approvals, verifications, budget changes — everything is here, and nothing can be erased or altered."
+
+---
+
+### Feature 5: AI Document Summarizer (3:55 – 4:10)
+
+**Demo Steps:**
+1. Navigate to `/documents` → click into a published document
+2. Click the **"AI Summary"** button
+3. Show the **loading spinner** → summary card appears with TLDR, key points, affected parties
+
+> "Government documents can be long and complex."
+> "CYFER uses Anthropic's Claude AI to generate plain-language summaries — breaking down key points, who is affected, and any budget implications."
+> "So that every citizen can understand what a document actually means for them."
+
+---
+
+### Feature 6: Blockchain Explorer — Distributed Network (4:10 – 4:25)
+
+**Demo Steps:**
+1. Navigate to `/blockchain`
+2. Show the **stats bar** — total blocks, chain valid, consensus status
+3. Scroll to the **Distributed Network** panel — show all 3 nodes with green "Synced" badges
+4. Click a block to expand — show hash/previous hash linkage
+
+> "Finally, CYFER's Blockchain Explorer shows the complete chain — and something unique: all 3 independent nodes in real-time consensus."
+> "Every block exists on 3 separate databases simultaneously. If any node is tampered with, the network immediately detects the disagreement."
+> "This is genuine decentralization — not just a blockchain-inspired concept."
+
+---
+
+## Scene 6: SDG Alignment (4:25 – 4:45)
+
+**Visuals:** Text on screen with SDG 16 badge/icon.
+
+> "Aligned with SDG 16"
+> "Peace, Justice, and Strong Institutions"
+> "CYFER empowers communities and strengthens institutions through accountability."
+
+**Text overlay:** Technologies used — Next.js, TypeScript, Tailwind CSS, Supabase, Custom SHA-256 Blockchain, 3-Node Distributed Network, Anthropic Claude AI
+
+---
+
+## Scene 7: Closing (4:45 – 5:00)
+
+**Visuals:** CYFER logo, clean UI shots montage, tagline.
+
+**Final Text:**
+> "CYFER"
+> "Secure Governance Starts Here."
+
+> "Because trust in government… should never be optional."
+
+**[Team credits: Austria, Limpin, Acidre, Sarino, Aristoki]**
+
+---
+
+## Demo Preparation Checklist
+
+### Before Recording:
+- [ ] Dev server running (`npm run dev`) or deployed to Vercel
+- [ ] 3 browser windows/tabs ready (one per admin):
+  | Role | Email | Password |
+  |------|-------|----------|
+  | Mayor | mayor@samplecity.gov.ph | DemoPassword123! |
+  | Treasurer | treasurer@samplecity.gov.ph | DemoPassword123! |
+  | Clerk | clerk@samplecity.gov.ph | DemoPassword123! |
+- [ ] Budget data already entered (8 categories, ₱60M total)
+- [ ] All 3 blockchain nodes verified synced (`/api/blockchain/nodes` → all `status: "synced"`)
+- [ ] Files ready:
+  - `ordinance.docx` — original document for upload + verification
+  - `ordinance-tampered.docx` — same file with one word changed
+
+### Recording Order for Scene 5:
+1. Login as Mayor → upload document → show hash (record this)
+2. Login as Treasurer → approve (record this)
+3. Login as Clerk → approve → published (record this)
+4. Go to `/verify` → upload original → green ✅ (record this)
+5. Upload tampered → red ❌ (record this)
+6. Show `/budget` dashboard (record this)
+7. Show `/audit` trail → expand an entry (record this)
+8. Show `/documents/[id]` → click AI Summary (record this)
+9. Go to `/blockchain` → show stats bar → scroll to Distributed Network panel (all 3 nodes Synced) → expand a block (record this)
 
 ---
 
@@ -147,13 +220,13 @@
 
 | Time | Scene | Duration |
 |------|-------|----------|
-| 0:00 – 0:20 | The Problem | 20s |
-| 0:20 – 0:40 | Introducing CYFER | 20s |
-| 0:40 – 1:10 | Public Document Portal | 30s |
-| 1:10 – 2:00 | Upload & UCP Approval | 50s |
-| 2:00 – 2:30 | AI Summarizer | 30s |
-| 2:30 – 3:15 | Verification & Tamper Detection | 45s |
-| 3:15 – 3:35 | Budget Dashboard | 20s |
-| 3:35 – 3:50 | Tech Stack & SDGs | 15s |
-| 3:50 – 4:00 | Closing | 10s |
-| **TOTAL** | | **~4:00** |
+| 0:00 – 0:25 | The Problem | 25s |
+| 0:25 – 0:30 | The Solution Hook | 5s |
+| 0:30 – 0:35 | Solution Intro / Logo Reveal | 5s |
+| 0:35 – 1:30 | Blockchain Explained (PPT) | 55s |
+| 1:30 – 2:45 | Scenes 4→5 transition (your edit) | 75s |
+| 2:45 – 4:10 | Feature Showcase (5 features) | 85s |
+| 4:10 – 4:25 | Feature 6: Blockchain Explorer (3-node demo) | 15s |
+| 4:25 – 4:45 | SDG Alignment | 20s |
+| 4:45 – 5:00 | Closing | 15s |
+| **TOTAL** | | **~5:00** |
