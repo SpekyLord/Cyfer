@@ -108,16 +108,19 @@
 
 ---
 
-### Feature 3: Budget Transparency + UCP for Budgets (3:35 – 3:45)
+### Feature 3: Budget Transparency + UCP for Budgets (3:35 – 3:50)
 
 **Demo Steps:**
-1. Show **Treasurer** logged in → admin budget page → add a budget entry (e.g., Infrastructure ₱15M)
-2. Show **"Submitted for approval"** message
-3. Quick cut: **Mayor** → approvals page → approve the budget entry
-4. Navigate to `/budget` → entry now visible with pie chart and table
+1. Navigate to `/budget` → show **summary cards**, **pie chart**, and **budget table**
+2. Show **Treasurer** logged in → admin budget page → add a budget entry (e.g., Infrastructure ₱15M)
+3. Show **"Submitted for approval"** message
+4. Quick cut: **Mayor** → approvals page → approve the budget entry
+5. Navigate to `/budget` → entry now visible
 
-> "Even budget data goes through the same consensus protocol."
-> "The Treasurer submits a budget allocation — the Mayor approves — and only then is it visible to the public."
+> "CYFER also gives citizens a clear view of how public funds are allocated."
+> "Here we can see the full municipal budget — across eight sectors — with a breakdown showing exactly where every peso goes."
+> "And just like documents, even budget data goes through the same consensus protocol."
+> "The Treasurer submits an allocation — the Mayor and the Secretary approves — and only then is it visible to the public."
 
 ---
 
