@@ -74,7 +74,8 @@ export interface Block {
 
 export interface Approval {
   id: string;
-  document_id: string;
+  document_id?: string;
+  budget_id?: string;
   admin_id: string;
   status: ApprovalStatus;
   message?: string;
@@ -100,6 +101,7 @@ export interface BudgetData {
   category: string;
   allocated_amount: number;
   description: string;
+  status: string;
   uploaded_by: string;
   created_at: string;
 }

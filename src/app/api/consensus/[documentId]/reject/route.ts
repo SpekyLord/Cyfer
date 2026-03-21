@@ -1,5 +1,5 @@
 // UCP Rejection API
-// POST /api/consensus/[documentId]/reject — Reject a document
+// POST /api/consensus/[documentId]/reject — Reject a document or budget entry
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@/lib/supabase';
@@ -22,7 +22,7 @@ export async function POST(
       );
     }
 
-    const { documentId } = await params;
+    const { documentId: entityId } = await params;
     const supabase = createServerClient();
 
     // Parse rejection reason
@@ -34,36 +34,35 @@ export async function POST(
       // No body is fine
     }
 
-    // Verify the document exists and is pending
-    const { data: document, error: docError } = await supabase
-      .from('documents')
-      .select('*')
-      .eq('id', documentId)
-      .single();
+    // Find the approval record — try document_id first, then budget_id
+    let approval = null;
+    let entityType: 'document' | 'budget' = 'document';
 
-    if (docError || !document) {
-      return NextResponse.json(
-        { success: false, error: 'Document not found' } as ApiResponse,
-        { status: 404 }
-      );
-    }
-
-    if (document.status !== 'pending_approval') {
-      return NextResponse.json(
-        { success: false, error: `Document is already ${document.status}` } as ApiResponse,
-        { status: 400 }
-      );
-    }
-
-    // Find the approval record for this admin
-    const { data: approval, error: approvalError } = await supabase
+    const { data: docApproval } = await supabase
       .from('approvals')
       .select('*')
-      .eq('document_id', documentId)
+      .eq('document_id', entityId)
       .eq('admin_id', admin.id)
-      .single();
+      .maybeSingle();
 
-    if (approvalError || !approval) {
+    if (docApproval) {
+      approval = docApproval;
+      entityType = 'document';
+    } else {
+      const { data: budgetApproval } = await supabase
+        .from('approvals')
+        .select('*')
+        .eq('budget_id', entityId)
+        .eq('admin_id', admin.id)
+        .maybeSingle();
+
+      if (budgetApproval) {
+        approval = budgetApproval;
+        entityType = 'budget';
+      }
+    }
+
+    if (!approval) {
       return NextResponse.json(
         { success: false, error: 'No approval request found for this admin' } as ApiResponse,
         { status: 404 }
@@ -72,7 +71,7 @@ export async function POST(
 
     if (approval.status !== 'pending') {
       return NextResponse.json(
-        { success: false, error: `You have already ${approval.status} this document` } as ApiResponse,
+        { success: false, error: `You have already ${approval.status} this item` } as ApiResponse,
         { status: 400 }
       );
     }
@@ -80,11 +79,7 @@ export async function POST(
     // Update the approval record
     const { error: updateError } = await supabase
       .from('approvals')
-      .update({
-        status: 'rejected',
-        message,
-        responded_at: new Date().toISOString(),
-      })
+      .update({ status: 'rejected', message, responded_at: new Date().toISOString() })
       .eq('id', approval.id);
 
     if (updateError) {
@@ -94,32 +89,79 @@ export async function POST(
       );
     }
 
-    // Reject the document — any single rejection means the document is rejected
-    const { error: rejectError } = await supabase
-      .from('documents')
-      .update({ status: 'rejected' })
-      .eq('id', documentId);
+    // === DOCUMENT REJECTION ===
+    if (entityType === 'document') {
+      const { data: document } = await supabase
+        .from('documents')
+        .select('*')
+        .eq('id', entityId)
+        .single();
 
-    if (rejectError) {
+      if (!document) {
+        return NextResponse.json(
+          { success: false, error: 'Document not found' } as ApiResponse,
+          { status: 404 }
+        );
+      }
+
+      await supabase
+        .from('documents')
+        .update({ status: 'rejected' })
+        .eq('id', entityId);
+
+      await logAuditAction({
+        actionType: ActionType.REJECT,
+        description: `${admin.name} rejected document "${document.title}"${message ? `: ${message}` : ''}`,
+        documentId: entityId,
+        performedBy: admin.id,
+        metadata: { message },
+      });
+
+      await Blockchain.addBlock({
+        action: 'document_rejected',
+        document_id: entityId,
+        rejected_by: admin.id,
+        rejected_by_name: admin.name,
+        reason: message,
+      });
+
+      return NextResponse.json({
+        success: true,
+        data: { rejected: true, message: 'Document has been rejected.' },
+      } as ApiResponse);
+    }
+
+    // === BUDGET REJECTION ===
+    const { data: budget } = await supabase
+      .from('budget_data')
+      .select('*')
+      .eq('id', entityId)
+      .single();
+
+    if (!budget) {
       return NextResponse.json(
-        { success: false, error: `Failed to reject document: ${rejectError.message}` } as ApiResponse,
-        { status: 500 }
+        { success: false, error: 'Budget entry not found' } as ApiResponse,
+        { status: 404 }
       );
     }
 
-    // Log rejection to audit trail
+    await supabase
+      .from('budget_data')
+      .update({ status: 'rejected' })
+      .eq('id', entityId);
+
     await logAuditAction({
       actionType: ActionType.REJECT,
-      description: `${admin.name} rejected document "${document.title}"${message ? `: ${message}` : ''}`,
-      documentId,
+      description: `${admin.name} rejected budget entry "${budget.category}" (FY ${budget.fiscal_year})${message ? `: ${message}` : ''}`,
       performedBy: admin.id,
-      metadata: { message },
+      metadata: { budget_id: entityId, message },
     });
 
-    // Add block to blockchain
     await Blockchain.addBlock({
-      action: 'document_rejected',
-      document_id: documentId,
+      action: 'budget_rejected',
+      budget_id: entityId,
+      category: budget.category,
+      fiscal_year: budget.fiscal_year,
       rejected_by: admin.id,
       rejected_by_name: admin.name,
       reason: message,
@@ -127,10 +169,7 @@ export async function POST(
 
     return NextResponse.json({
       success: true,
-      data: {
-        rejected: true,
-        message: 'Document has been rejected.',
-      },
+      data: { rejected: true, message: 'Budget entry has been rejected.' },
     } as ApiResponse);
   } catch (error) {
     console.error('POST /api/consensus/[documentId]/reject error:', error);

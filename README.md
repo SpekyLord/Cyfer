@@ -39,13 +39,14 @@ Every document gets a unique SHA-256 fingerprint the moment it is uploaded. That
 - Blockchain integrity can be independently validated via `/api/blockchain/validate`
 
 ### Unanimous Consensus Protocol (UCP)
-Inspired by multi-signature authorization, CYFER's UCP ensures no document reaches the public portal without 100% approval from all registered officials.
+Inspired by multi-signature authorization, CYFER's UCP ensures no document or budget entry reaches the public portal without 100% approval from all registered officials.
 
-- Admin uploads a document → approval requests are automatically sent to all other admins
+- Admin uploads a document or submits a budget entry → approval requests are automatically sent to all other admins
 - Each official independently reviews and approves or rejects with an optional comment
-- Document is only published when **every** official approves
+- Item is only published when **every** official approves
 - A single rejection blocks publication and logs the reason
-- All approval actions are recorded on the audit trail
+- Applies to **both documents and budget data** — no public-facing data bypasses consensus
+- All approval actions are recorded on the blockchain and audit trail
 
 ### AI Document Summarizer *(powered by Anthropic Claude)*
 Government documents are often dense and written in legal language. CYFER uses the **Anthropic Claude API** to generate plain-language summaries that any citizen can understand.
@@ -59,9 +60,10 @@ Government documents are often dense and written in legal language. CYFER uses t
 A public-facing visual dashboard showing how the municipality allocates its budget across sectors.
 
 - Breakdown by category: Infrastructure, Health, Education, Social Services, General Administration, and more
-- Bar chart visualization with percentage breakdowns
+- Pie chart visualization with percentage breakdowns
 - Philippine Peso (PHP) formatting
-- Admins can update budget data; changes are immediately reflected publicly
+- Budget entries go through the same **Unanimous Consensus Protocol** — all officials must approve before data goes public
+- Each budget submission is recorded on the blockchain with full audit trail
 
 ### Blockchain Explorer
 A public page where anyone can inspect the full blockchain — every block, its hash, and how it links to the previous one.
@@ -110,7 +112,7 @@ The following demo accounts are pre-seeded for testing and judging:
 | Admin (Treasurer) | `treasurer@samplecity.gov.ph` | `DemoPassword123!` |
 | Admin (Secretary) | `clerk@samplecity.gov.ph` | `DemoPassword123!` |
 
-> To trigger the Unanimous Consensus Protocol, log in as each admin separately and approve the same document.
+> To trigger the Unanimous Consensus Protocol, log in as each admin separately and approve the same document or budget entry.
 
 ---
 

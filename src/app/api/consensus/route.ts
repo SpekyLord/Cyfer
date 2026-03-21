@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
     // Fetch approvals for the current admin with document details
     let query = supabase
       .from('approvals')
-      .select('*, documents(*), users!admin_id(name, department)')
+      .select('*, documents(*), budget_data(*), users!admin_id(name, department)')
       .eq('admin_id', admin.id);
 
     if (status !== 'all') {

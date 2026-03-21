@@ -6,6 +6,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@/lib/supabase';
 import { authenticateAdmin } from '@/lib/auth';
 import { logAuditAction } from '@/lib/audit';
+import { Blockchain } from '@/lib/blockchain';
 import { ActionType } from '@/lib/types';
 import type { ApiResponse } from '@/lib/types';
 
@@ -17,10 +18,19 @@ export async function GET(request: NextRequest) {
     const fiscalYear = searchParams.get('fiscal_year');
     const summary = searchParams.get('summary') === 'true';
 
+    // Check if requester is admin (optional — public sees only published)
+    const authHeader = request.headers.get('authorization');
+    const isAdmin = !!authHeader;
+
     let query = supabase
       .from('budget_data')
       .select('*')
       .order('category', { ascending: true });
+
+    // Public users only see published budget entries
+    if (!isAdmin) {
+      query = query.eq('status', 'published');
+    }
 
     if (fiscalYear) {
       query = query.eq('fiscal_year', parseInt(fiscalYear, 10));
@@ -101,71 +111,67 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if an entry already exists for this fiscal year + category
-    const { data: existing } = await supabase
+    // Create new budget entry with pending_approval status (UCP)
+    const { data: result, error: insertError } = await supabase
       .from('budget_data')
-      .select('id')
-      .eq('fiscal_year', fiscal_year)
-      .eq('category', category)
+      .insert({
+        fiscal_year,
+        category,
+        allocated_amount,
+        description: description ?? '',
+        uploaded_by: admin.id,
+        status: 'pending_approval',
+      })
+      .select()
       .single();
 
-    let result;
+    if (insertError) {
+      return NextResponse.json(
+        { success: false, error: `Failed to create budget entry: ${insertError.message}` } as ApiResponse,
+        { status: 500 }
+      );
+    }
 
-    if (existing) {
-      // Update existing entry
-      const { data, error } = await supabase
-        .from('budget_data')
-        .update({
-          allocated_amount,
-          description: description ?? '',
-          uploaded_by: admin.id,
-        })
-        .eq('id', existing.id)
-        .select()
-        .single();
+    // Add block to blockchain recording the budget upload
+    await Blockchain.addBlock({
+      action: 'budget_upload',
+      budget_id: result.id,
+      category,
+      fiscal_year,
+      allocated_amount,
+      uploaded_by: admin.id,
+      uploaded_by_name: admin.name,
+    });
 
-      if (error) {
-        return NextResponse.json(
-          { success: false, error: `Failed to update budget entry: ${error.message}` } as ApiResponse,
-          { status: 500 }
-        );
-      }
-      result = data;
-    } else {
-      // Create new entry
-      const { data, error } = await supabase
-        .from('budget_data')
-        .insert({
-          fiscal_year,
-          category,
-          allocated_amount,
-          description: description ?? '',
-          uploaded_by: admin.id,
-        })
-        .select()
-        .single();
+    // Create approval requests for ALL other admins (UCP)
+    const { data: otherAdmins, error: adminsError } = await supabase
+      .from('users')
+      .select('id')
+      .in('role', ['admin', 'super_admin'])
+      .neq('id', admin.id);
 
-      if (error) {
-        return NextResponse.json(
-          { success: false, error: `Failed to create budget entry: ${error.message}` } as ApiResponse,
-          { status: 500 }
-        );
-      }
-      result = data;
+    if (!adminsError && otherAdmins && otherAdmins.length > 0) {
+      const approvalRecords = otherAdmins.map((a) => ({
+        budget_id: result.id,
+        admin_id: a.id,
+        status: 'pending',
+      }));
+
+      await supabase.from('approvals').insert(approvalRecords);
     }
 
     // Log to audit trail
     await logAuditAction({
       actionType: ActionType.UPLOAD,
-      description: `Budget entry for ${category} (FY ${fiscal_year}) ${existing ? 'updated' : 'created'} by ${admin.name}`,
+      description: `Budget entry for ${category} (FY ${fiscal_year}) submitted for approval by ${admin.name}`,
       performedBy: admin.id,
-      metadata: { fiscal_year, category, allocated_amount },
+      metadata: { budget_id: result.id, fiscal_year, category, allocated_amount },
     });
 
     return NextResponse.json({
       success: true,
       data: result,
-    } as ApiResponse, { status: existing ? 200 : 201 });
+    } as ApiResponse, { status: 201 });
   } catch (error) {
     console.error('POST /api/budget error:', error);
     return NextResponse.json(

@@ -108,15 +108,16 @@
 
 ---
 
-### Feature 3: Budget Transparency Dashboard (3:35 – 3:45)
+### Feature 3: Budget Transparency + UCP for Budgets (3:35 – 3:45)
 
 **Demo Steps:**
-1. Navigate to `/budget`
-2. Show **summary cards** (total budget ₱60M, fiscal year, categories)
-3. Show the **pie chart** and **budget table** with amounts and percentages
+1. Show **Treasurer** logged in → admin budget page → add a budget entry (e.g., Infrastructure ₱15M)
+2. Show **"Submitted for approval"** message
+3. Quick cut: **Mayor** → approvals page → approve the budget entry
+4. Navigate to `/budget` → entry now visible with pie chart and table
 
-> "CYFER also gives citizens a clear view of how public funds are allocated."
-> "Here we can see the full municipal budget — sixty million pesos across eight sectors — with a breakdown showing exactly where every peso goes."
+> "Even budget data goes through the same consensus protocol."
+> "The Treasurer submits a budget allocation — the Mayor approves — and only then is it visible to the public."
 
 ---
 

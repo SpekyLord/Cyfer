@@ -1,10 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { DollarSign, Plus, Loader2, CheckCircle } from 'lucide-react';
+import { DollarSign, Plus, Loader2, CheckCircle, Clock } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
+import { Badge } from '@/components/ui/Badge';
 import { Table, TableHeader, TableRow, TableHead, TableCell } from '@/components/ui/Table';
 import { formatCurrency } from '@/utils/formatters';
 import { BUDGET_CATEGORIES } from '@/utils/constants';
@@ -15,6 +16,7 @@ interface BudgetEntry {
   category: string;
   allocated_amount: number;
   description: string;
+  status?: string;
 }
 
 export default function ManageBudgetPage() {
@@ -34,7 +36,10 @@ export default function ManageBudgetPage() {
   async function fetchBudget() {
     setLoading(true);
     try {
-      const res = await fetch('/api/budget');
+      const token = localStorage.getItem('cyfer_token');
+      const res = await fetch('/api/budget', {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
       const json = await res.json();
       if (json.success) setEntries(Array.isArray(json.data) ? json.data : []);
     } catch (err) { console.error('Failed to fetch budget:', err); }
@@ -53,7 +58,7 @@ export default function ManageBudgetPage() {
       });
       const json = await res.json();
       if (json.success) {
-        setSuccess(`Budget entry for ${category} saved!`);
+        setSuccess(`Budget entry for ${category} submitted for approval!`);
         setCategory(''); setAmount(''); setDescription('');
         setShowForm(false);
         fetchBudget();
@@ -100,7 +105,7 @@ export default function ManageBudgetPage() {
               value={description} onChange={(e) => setDescription(e.target.value)} />
             <div className="md:col-span-2">
               <Button type="submit" disabled={formLoading}>
-                {formLoading ? <><Loader2 size={16} className="animate-spin" /> Saving...</> : 'Save Entry'}
+                {formLoading ? <><Loader2 size={16} className="animate-spin" /> Submitting...</> : 'Submit for Approval'}
               </Button>
             </div>
           </form>
@@ -118,6 +123,7 @@ export default function ManageBudgetPage() {
               <TableHead>Category</TableHead>
               <TableHead>Fiscal Year</TableHead>
               <TableHead>Amount</TableHead>
+              <TableHead>Status</TableHead>
               <TableHead>Description</TableHead>
             </TableRow>
           </TableHeader>
@@ -127,6 +133,15 @@ export default function ManageBudgetPage() {
                 <TableCell className="font-medium">{entry.category}</TableCell>
                 <TableCell>{entry.fiscal_year}</TableCell>
                 <TableCell className="font-semibold">{formatCurrency(entry.allocated_amount)}</TableCell>
+                <TableCell>
+                  {entry.status === 'published' ? (
+                    <Badge variant="success">Published</Badge>
+                  ) : entry.status === 'rejected' ? (
+                    <Badge variant="error">Rejected</Badge>
+                  ) : (
+                    <Badge variant="warning"><Clock size={12} className="mr-1" />Pending</Badge>
+                  )}
+                </TableCell>
                 <TableCell className="text-sm text-muted">{entry.description}</TableCell>
               </TableRow>
             ))}
