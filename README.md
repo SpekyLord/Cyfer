@@ -264,8 +264,9 @@ In compliance with InterCICSkwela Hackathon rules, we disclose all AI tools used
 | Tool | Purpose | How Used |
 |------|---------|---------|
 | **Anthropic Claude API** (`claude-sonnet-4-20250514`) | AI Document Summarizer | Server-side API call in `/api/summarize` — generates structured plain-language summaries of government documents for citizens |
+| **Claude Code** (Anthropic) | AI-assisted development | Used as a development tool for code generation, debugging, and implementation guidance during the building of the web application |
 
-No AI was used to replace core algorithmic logic. The blockchain, hashing, consensus protocol, and database architecture are entirely custom-built.
+Claude Code was used as a development assistant throughout the project. The blockchain architecture, SHA-256 hashing strategy, Unanimous Consensus Protocol, multi-node decentralization design, and hash-linked audit trail were conceptualized and designed by the team — Claude Code assisted in translating those designs into working code.
 
 ---
 
