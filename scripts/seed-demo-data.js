@@ -1,7 +1,9 @@
 // CYFER: Insert production demo data with correct blockchain hashes
 // Run: node --env-file=.env.local scripts/seed-demo-data.js
 
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const crypto = require("crypto");
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const { createClient } = require("@supabase/supabase-js");
 
 // Usage: node --env-file=.env.local scripts/seed-demo-data.js

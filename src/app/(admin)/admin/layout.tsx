@@ -1,38 +1,37 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 import { AdminSidebar } from '@/components/admin/AdminSidebar';
+import { useHydrated, useLocalStorageValue } from '@/lib/client-storage';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
-  const [authorized, setAuthorized] = useState(false);
+  const hydrated = useHydrated();
+  const token = useLocalStorageValue('cyfer_token');
 
   useEffect(() => {
-    const token = localStorage.getItem('cyfer_token');
-    if (!token) {
-      router.push('/login');
-    } else {
-      setAuthorized(true);
+    if (hydrated && !token) {
+      router.replace('/login');
     }
-  }, [router]);
+  }, [hydrated, token, router]);
 
-  if (!authorized) {
+  if (!hydrated || !token) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-background">
-        <Loader2 size={32} className="animate-spin text-muted" />
+      <div className="flex min-h-screen items-center justify-center bg-[var(--paper)]">
+        <Loader2 size={32} className="animate-spin text-[var(--text-mute)]" />
       </div>
     );
   }
 
   return (
-    <div className="flex min-h-screen">
+    <div className="admin-shell">
       <AdminSidebar />
-      <div className="flex-1 bg-background overflow-auto">
-        <div className="p-4 pt-16 lg:p-6 lg:pt-6 xl:p-8">
+      <div className="min-w-0 bg-[var(--paper)]">
+        <main id="main" className="admin-main">
           {children}
-        </div>
+        </main>
       </div>
     </div>
   );

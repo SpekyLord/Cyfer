@@ -66,7 +66,7 @@ export interface Document {
 export interface Block {
   id: number;
   timestamp: string;
-  data: Record<string, any>;
+  data: Record<string, unknown>;
   previous_hash: string;
   hash: string;
   nonce: number;
@@ -91,7 +91,7 @@ export interface Transaction {
   performed_by: string;
   tx_hash: string;
   previous_tx_hash: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
   created_at: string;
 }
 
@@ -116,7 +116,7 @@ export interface DocumentSummary {
 }
 
 // API Response types
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   success: boolean;
   data?: T;
   error?: string;

@@ -1,12 +1,19 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { CheckSquare, CheckCircle, XCircle, Loader2, FileText, Users, DollarSign } from 'lucide-react';
-import { Card } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
+import { useEffect, useState } from 'react';
+import {
+  CheckCircle2,
+  CheckSquare,
+  FileText,
+  Loader2,
+  Wallet,
+  XCircle,
+} from 'lucide-react';
+import { AdminPageHeader } from '@/components/admin/AdminPageHeader';
 import { Badge } from '@/components/ui/Badge';
-import { formatDate } from '@/utils/formatters';
+import { Button } from '@/components/ui/Button';
 import { useToast } from '@/components/ui/Toast';
+import { formatCurrency, formatDate } from '@/utils/formatters';
 
 interface ApprovalItem {
   id: string;
@@ -36,140 +43,194 @@ export default function ApprovalsPage() {
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
 
-  useEffect(() => { fetchApprovals(); }, []);
+  useEffect(() => {
+    fetchApprovals();
+  }, []);
 
   async function fetchApprovals() {
     setLoading(true);
+
     try {
       const token = localStorage.getItem('cyfer_token');
-      const res = await fetch('/api/consensus?status=pending', { headers: { Authorization: `Bearer ${token}` } });
+      const res = await fetch('/api/consensus?status=pending', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       const json = await res.json();
-      if (json.success) setApprovals(Array.isArray(json.data) ? json.data : []);
-    } catch (err) { console.error('Failed to fetch approvals:', err); }
-    finally { setLoading(false); }
+
+      if (json.success) {
+        setApprovals(Array.isArray(json.data) ? json.data : []);
+      }
+    } catch (error) {
+      console.error('Failed to fetch approvals:', error);
+    } finally {
+      setLoading(false);
+    }
   }
 
   async function handleAction(entityId: string, action: 'approve' | 'reject') {
     const message = action === 'reject' ? prompt('Reason for rejection (optional):') ?? '' : '';
     setActionLoading(entityId);
+
     try {
       const token = localStorage.getItem('cyfer_token');
       const res = await fetch(`/api/consensus/${entityId}/${action}`, {
         method: 'POST',
-        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({ message }),
       });
       const json = await res.json();
+
       if (json.success) {
-        setApprovals(prev => prev.filter(a => {
-          const id = a.documents?.id ?? a.budget_data?.id;
-          return id !== entityId;
-        }));
-        toast(
-          action === 'approve' ? 'success' : 'info',
-          action === 'approve' ? 'Approved successfully!' : 'Rejected.'
+        setApprovals((current) =>
+          current.filter((approval) => {
+            const id = approval.documents?.id ?? approval.budget_data?.id;
+            return id !== entityId;
+          }),
         );
+        toast(action === 'approve' ? 'success' : 'info', action === 'approve' ? 'Approved successfully!' : 'Rejected.');
       } else {
         toast('error', json.error ?? `Failed to ${action}`);
       }
-    } catch (err) {
-      console.error(`Failed to ${action}:`, err);
+    } catch (error) {
+      console.error(`Failed to ${action}:`, error);
       toast('error', `Network error. Failed to ${action}.`);
     } finally {
       setActionLoading(null);
     }
   }
 
-  if (loading) {
-    return <div className="flex items-center justify-center py-20"><Loader2 size={32} className="animate-spin text-muted" /></div>;
-  }
-
   return (
-    <div className="animate-fade-in">
-      <h1 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
-        <CheckSquare className="text-accent" /> Pending Approvals
-      </h1>
-      {approvals.length === 0 ? (
-        <Card className="text-center py-16">
-          <div className="w-16 h-16 bg-success/10 rounded-full flex items-center justify-center mx-auto mb-4">
-            <CheckCircle size={32} className="text-success/60" />
+    <div>
+      <AdminPageHeader
+        eyebrow="Approval workflow"
+        title="Pending approvals"
+        description="Review documents and budget entries assigned to your account. Publishing continues only after the required consensus is complete."
+      />
+
+      {loading ? (
+        <div className="flex items-center justify-center py-24">
+          <Loader2 size={32} className="animate-spin text-[var(--text-mute)]" />
+        </div>
+      ) : approvals.length === 0 ? (
+        <div className="card p-10 text-center">
+          <div className="mx-auto mb-4 grid h-16 w-16 place-items-center rounded-full bg-[var(--ok-soft)] text-[var(--ok)]">
+            <CheckCircle2 size={30} />
           </div>
-          <p className="text-lg font-medium text-foreground mb-1">All caught up!</p>
-          <p className="text-muted text-sm">No pending approvals at this time.</p>
-        </Card>
+          <div className="font-serif text-2xl font-semibold text-[var(--ink-900)]">All caught up</div>
+          <p className="mt-2 text-sm text-[var(--text-soft)]">
+            No pending approvals are waiting for your review right now.
+          </p>
+        </div>
       ) : (
         <>
-          <div className="mb-4 flex items-center gap-2">
+          <div className="row mb-5">
             <Badge variant="warning">{approvals.length}</Badge>
-            <span className="text-sm text-muted">item{approvals.length !== 1 ? 's' : ''} awaiting your approval</span>
+            <span className="text-sm text-[var(--text-soft)]">
+              item{approvals.length === 1 ? '' : 's'} awaiting your decision
+            </span>
           </div>
-          <div className="space-y-4">
-            {approvals.map((approval, index) => {
-              const doc = approval.documents;
+
+          <div className="stack">
+            {approvals.map((approval) => {
+              const document = approval.documents;
               const budget = approval.budget_data;
-              const entityId = doc?.id ?? budget?.id;
-              if (!entityId) return null;
+              const entityId = document?.id ?? budget?.id;
+
+              if (!entityId) {
+                return null;
+              }
+
+              const isBudget = Boolean(budget);
               const isActioning = actionLoading === entityId;
-              const isBudget = !!budget;
 
               return (
-                <Card key={approval.id} className={`animate-fade-in stagger-${Math.min(index + 1, 6)}`}>
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        {isBudget ? (
-                          <Badge variant="info">Budget</Badge>
-                        ) : (
-                          <Badge variant="accent">{doc!.category}</Badge>
-                        )}
+                <div key={approval.id} className="card p-6">
+                  <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+                    <div className="min-w-0 flex-1">
+                      <div className="row">
+                        <Badge variant={isBudget ? 'info' : 'accent'}>
+                          {isBudget ? 'Budget entry' : document?.category ?? 'Document'}
+                        </Badge>
                         <Badge variant="warning">Pending</Badge>
                       </div>
-                      {isBudget ? (
-                        <>
-                          <h3 className="font-semibold text-foreground mb-1 flex items-center gap-2">
-                            <DollarSign size={16} className="text-accent" />
-                            {budget!.category} — FY {budget!.fiscal_year}
-                          </h3>
-                          <p className="text-sm text-muted mb-2">
-                            Amount: <span className="font-semibold text-foreground">₱{Number(budget!.allocated_amount).toLocaleString()}</span>
+
+                      <div className="mt-4 row flex-nowrap items-start gap-4">
+                        <span className="grid h-11 w-11 flex-none place-items-center rounded-[12px] bg-[var(--ink-050)] text-[var(--ink-700)]">
+                          {isBudget ? <Wallet size={20} /> : <FileText size={20} />}
+                        </span>
+                        <div className="min-w-0 flex-1">
+                          <h2 className="font-serif text-2xl font-semibold text-[var(--ink-900)]">
+                            {isBudget
+                              ? `${budget?.category} - FY ${budget?.fiscal_year}`
+                              : document?.title}
+                          </h2>
+                          <p className="mt-2 text-sm leading-6 text-[var(--text-soft)]">
+                            {isBudget
+                              ? budget?.description || 'No description provided.'
+                              : document?.description || 'No description provided.'}
                           </p>
-                          {budget!.description && <p className="text-sm text-muted mb-2">{budget!.description}</p>}
-                          <div className="text-xs text-muted">{formatDate(budget!.created_at)}</div>
-                        </>
-                      ) : (
-                        <>
-                          <h3 className="font-semibold text-foreground mb-1">{doc!.title}</h3>
-                          <p className="text-sm text-muted mb-2">{doc!.description}</p>
-                          <div className="flex items-center gap-4 text-xs text-muted">
-                            <span className="flex items-center gap-1"><FileText size={12} />{doc!.file_name}</span>
-                            <span>{formatDate(doc!.created_at)}</span>
+                          <div className="mt-3 row text-xs text-[var(--text-mute)]" style={{ gap: 10 }}>
+                            {isBudget ? (
+                              <span>{formatCurrency(Number(budget?.allocated_amount ?? 0))}</span>
+                            ) : (
+                              <span>{document?.file_name}</span>
+                            )}
+                            <span>
+                              {formatDate(isBudget ? budget?.created_at ?? '' : document?.created_at ?? '')}
+                            </span>
                           </div>
-                          {doc!.file_url && (
-                            <a href={doc!.file_url} target="_blank" rel="noopener noreferrer"
-                              className="text-xs text-info hover:underline mt-2 inline-block">View File</a>
-                          )}
-                        </>
-                      )}
+                          {!isBudget && document?.file_url ? (
+                            <a
+                              href={document.file_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="mt-3 inline-flex text-sm text-[var(--ink-700)] underline-offset-2 hover:underline"
+                            >
+                              View uploaded file
+                            </a>
+                          ) : null}
+                        </div>
+                      </div>
                     </div>
-                    <div className="flex gap-2 flex-shrink-0">
-                      <Button variant="primary" size="sm" disabled={isActioning} onClick={() => handleAction(entityId, 'approve')}>
-                        {isActioning ? <Loader2 size={14} className="animate-spin" /> : <CheckCircle size={14} />} Approve
+
+                    <div className="row">
+                      <Button
+                        size="sm"
+                        onClick={() => handleAction(entityId, 'approve')}
+                        disabled={isActioning}
+                      >
+                        {isActioning ? <Loader2 size={14} className="animate-spin" /> : <CheckCircle2 size={14} />}
+                        Approve
                       </Button>
-                      <Button variant="danger" size="sm" disabled={isActioning} onClick={() => handleAction(entityId, 'reject')}>
-                        <XCircle size={14} /> Reject
+                      <Button
+                        variant="danger"
+                        size="sm"
+                        onClick={() => handleAction(entityId, 'reject')}
+                        disabled={isActioning}
+                      >
+                        <XCircle size={14} />
+                        Reject
                       </Button>
                     </div>
                   </div>
-                </Card>
+                </div>
               );
             })}
           </div>
-          <Card className="mt-6 bg-accent/5 border-accent/20">
-            <div className="flex items-center gap-2 text-sm text-muted">
-              <Users size={16} className="text-accent" />
-              <span>All officials must approve for documents and budget entries to be published (Unanimous Consensus Protocol).</span>
+
+          <div className="card mt-6 p-5" style={{ background: 'var(--warn-soft)', borderColor: 'var(--warn-line)' }}>
+            <div className="row flex-nowrap items-start gap-3">
+              <CheckSquare size={18} className="mt-0.5 text-[var(--warn)]" />
+              <p className="m-0 text-sm leading-6 text-[var(--text-soft)]">
+                Documents and budget entries stay in the workflow until the required
+                officials approve them. A single rejection interrupts publication and
+                preserves the audit trail.
+              </p>
             </div>
-          </Card>
+          </div>
         </>
       )}
     </div>

@@ -4,24 +4,44 @@ interface CardProps {
   hover?: boolean;
 }
 
-export function Card({ children, className = '', hover = false }: CardProps) {
+export function Card({ children, className = "", hover = false }: CardProps) {
   return (
-    <div className={`bg-card rounded-xl border border-border p-6 shadow-sm
-      ${hover ? 'hover:shadow-md hover:border-accent/30 cursor-pointer' : ''} ${className}`}
-    >
+    <div className={`card p-6 ${hover ? "card-hover" : ""} ${className}`.trim()}>
       {children}
     </div>
   );
 }
 
-export function CardHeader({ children, className = '' }: { children: React.ReactNode; className?: string }) {
+export function CardHeader({
+  children,
+  className = "",
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
   return <div className={`mb-4 ${className}`}>{children}</div>;
 }
 
-export function CardTitle({ children, className = '' }: { children: React.ReactNode; className?: string }) {
-  return <h3 className={`text-lg font-semibold text-foreground ${className}`}>{children}</h3>;
+export function CardTitle({
+  children,
+  className = "",
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <h3 className={`font-serif text-xl font-semibold text-[var(--ink-900)] ${className}`.trim()}>
+      {children}
+    </h3>
+  );
 }
 
-export function CardDescription({ children, className = '' }: { children: React.ReactNode; className?: string }) {
-  return <p className={`text-sm text-muted mt-1 ${className}`}>{children}</p>;
+export function CardDescription({
+  children,
+  className = "",
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return <p className={`mt-1 text-sm text-[var(--text-soft)] ${className}`}>{children}</p>;
 }

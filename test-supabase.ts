@@ -199,6 +199,7 @@ Section 4: Violation of this ordinance shall result in a fine of ₱1,000 for th
     if (summary.affectedParties) {
       console.log(`   Affected Parties: ${summary.affectedParties}`);
     }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.error('❌ AI test failed:', error.message);
   }

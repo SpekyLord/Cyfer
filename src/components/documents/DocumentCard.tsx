@@ -1,9 +1,6 @@
 import Link from 'next/link';
-import { FileText, Calendar, User, CheckCircle } from 'lucide-react';
-import { Badge } from '@/components/ui/Badge';
-import { Card } from '@/components/ui/Card';
+import { ArrowRight, CalendarDays, CheckCircle2, FileText, User } from 'lucide-react';
 import { formatDate, formatHash } from '@/utils/formatters';
-import { DOCUMENT_CATEGORIES } from '@/utils/constants';
 
 interface DocumentCardProps {
   document: {
@@ -18,46 +15,59 @@ interface DocumentCardProps {
   };
 }
 
-const categoryBadgeVariant: Record<string, 'info' | 'accent' | 'warning' | 'success' | 'default'> = {
-  ordinance: 'info',
-  budget: 'accent',
-  resolution: 'warning',
-  contract: 'success',
-  permit: 'default',
-  other: 'default',
+const categoryLabels: Record<string, string> = {
+  ordinance: 'New city rule',
+  budget: 'Money and spending',
+  resolution: 'Official decision',
+  contract: 'City agreement',
+  permit: 'Permit or license',
+  other: 'Official record',
 };
 
 export function DocumentCard({ document }: DocumentCardProps) {
-  const categoryLabel = DOCUMENT_CATEGORIES.find(c => c.value === document.category)?.label ?? document.category;
+  const categoryLabel = categoryLabels[document.category] ?? document.category;
 
   return (
-    <Link href={`/documents/${document.id}`}>
-      <Card hover className="h-full">
-        <div className="flex items-start justify-between mb-3">
-          <Badge variant={categoryBadgeVariant[document.category] ?? 'default'}>
-            {categoryLabel}
-          </Badge>
-          <CheckCircle size={16} className="text-success" />
-        </div>
-        <h3 className="font-semibold text-foreground mb-2 line-clamp-2">{document.title}</h3>
-        <p className="text-sm text-muted mb-4 line-clamp-2">{document.description}</p>
-        <div className="space-y-1.5 text-xs text-muted">
-          <div className="flex items-center gap-1.5">
-            <Calendar size={12} />
-            {formatDate(document.created_at)}
-          </div>
-          {document.users && (
-            <div className="flex items-center gap-1.5">
+    <Link href={`/documents/${document.id}`} className="card card-hover flex h-full flex-col p-6 no-underline">
+      <div className="row">
+        <span className="tag">{categoryLabel}</span>
+        <span className="tag tag-ok">
+          <CheckCircle2 size={12} />
+          Officially approved
+        </span>
+      </div>
+
+      <h3 className="mt-4 font-serif text-xl font-semibold leading-7 text-[var(--ink-900)]">
+        {document.title}
+      </h3>
+      <p className="mt-3 flex-1 text-sm leading-6 text-[var(--text-soft)]">
+        {document.description}
+      </p>
+
+      <div className="mt-5 border-t border-[var(--line)] pt-4 text-xs text-[var(--text-mute)]">
+        <div className="row" style={{ gap: 10 }}>
+          <span className="row" style={{ gap: 5 }}>
+            <CalendarDays size={12} />
+            Published {formatDate(document.created_at)}
+          </span>
+          {document.users ? (
+            <span className="row" style={{ gap: 5 }}>
               <User size={12} />
-              {document.users.name} — {document.users.department}
-            </div>
-          )}
-          <div className="flex items-center gap-1.5 font-mono">
-            <FileText size={12} />
-            {formatHash(document.file_hash)}
-          </div>
+              {document.users.name}
+            </span>
+          ) : null}
         </div>
-      </Card>
+        <div className="mt-2 row-between gap-3">
+          <span className="row min-w-0 flex-nowrap" style={{ gap: 5 }}>
+            <FileText size={12} />
+            <span className="mono truncate">{formatHash(document.file_hash)}</span>
+          </span>
+          <span className="row flex-nowrap font-medium text-[var(--ink-700)]" style={{ gap: 4 }}>
+            Read
+            <ArrowRight size={12} />
+          </span>
+        </div>
+      </div>
     </Link>
   );
 }

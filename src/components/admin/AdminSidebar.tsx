@@ -1,18 +1,30 @@
 'use client';
 
-import Link from 'next/link';
 import Image from 'next/image';
+import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { LayoutDashboard, Upload, CheckSquare, FileText, DollarSign, Users, LogOut, Menu, X } from 'lucide-react';
+import {
+  CheckSquare,
+  DollarSign,
+  FileText,
+  LayoutDashboard,
+  LogOut,
+  Menu,
+  Upload,
+  Users,
+  X,
+} from 'lucide-react';
+import { useState } from 'react';
 import { Badge } from '@/components/ui/Badge';
-import { useEffect, useState } from 'react';
+import { Button } from '@/components/ui/Button';
+import { useLocalStorageJson, useLocalStorageValue } from '@/lib/client-storage';
 
 const sidebarLinks = [
   { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/admin/upload', label: 'Upload Document', icon: Upload },
-  { href: '/admin/approvals', label: 'Approvals', icon: CheckSquare },
+  { href: '/admin/upload', label: 'Upload document', icon: Upload },
+  { href: '/admin/approvals', label: 'Pending approvals', icon: CheckSquare },
   { href: '/admin/documents', label: 'Documents', icon: FileText },
-  { href: '/admin/budget', label: 'Budget', icon: DollarSign },
+  { href: '/admin/budget', label: 'Budget entries', icon: DollarSign },
   { href: '/admin/users', label: 'Users', icon: Users },
 ];
 
@@ -25,125 +37,126 @@ interface UserData {
 export function AdminSidebar() {
   const pathname = usePathname();
   const router = useRouter();
-  const [user, setUser] = useState<UserData | null>(null);
+  const token = useLocalStorageValue('cyfer_token');
+  const user = useLocalStorageJson<UserData>('cyfer_user');
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  useEffect(() => {
-    const stored = localStorage.getItem('cyfer_user');
-    if (stored) {
-      try { setUser(JSON.parse(stored)); } catch { /* ignore */ }
-    }
-  }, []);
-
-  // Close mobile sidebar on route change
-  useEffect(() => {
+  function closeMenu() {
     setMobileOpen(false);
-  }, [pathname]);
+  }
 
-  function handleLogout() {
-    const token = localStorage.getItem('cyfer_token');
+  async function handleLogout() {
     if (token) {
-      fetch('/api/auth/logout', {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      try {
+        await fetch('/api/auth/logout', {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${token}` },
+        });
+      } catch (error) {
+        console.error('Failed to logout cleanly:', error);
+      }
     }
+
     localStorage.removeItem('cyfer_token');
     localStorage.removeItem('cyfer_user');
+    closeMenu();
     router.push('/login');
   }
 
   const sidebarContent = (
-    <>
-      {/* Logo */}
-      <div className="px-6 py-5 border-b border-white/10 flex items-center justify-between">
-        <Link href="/admin" className="flex items-center gap-2">
-          <Image src="/Cyfer Logo.png" alt="CYFER Logo" width={48} height={48} className="h-12 w-12 object-contain" />
-          <span className="text-lg font-bold">CYFER Admin</span>
-        </Link>
-        <button
-          className="lg:hidden text-white/70 hover:text-white cursor-pointer"
-          onClick={() => setMobileOpen(false)}
-        >
-          <X size={20} />
-        </button>
+    <div className="flex h-full flex-col">
+      <Link
+        href="/"
+        className="row mb-4 text-sm text-white/70 no-underline hover:text-white"
+        onClick={closeMenu}
+      >
+        Back to public site
+      </Link>
+
+      <div className="row mb-6 flex-nowrap" style={{ gap: 10 }}>
+        <Image src="/Cyfer Logo.png" alt="CYFER" width={28} height={28} />
+        <div>
+          <div className="brand-name text-[26px]">CYFER</div>
+          <div className="brand-sub">Official workspace</div>
+        </div>
       </div>
 
-      {/* User Info */}
-      {user && (
-        <div className="px-6 py-4 border-b border-white/10">
-          <p className="text-sm font-medium truncate">{user.name}</p>
-          <p className="text-xs text-white/50">{user.department}</p>
-          <Badge variant={user.role === 'super_admin' ? 'accent' : 'info'} className="mt-1.5">
+      {user ? (
+        <div className="mb-6 rounded-[var(--r-lg)] border border-white/10 bg-white/5 p-4">
+          <div className="text-sm font-medium text-white">{user.name}</div>
+          <div className="mt-1 text-xs text-white/60">{user.department}</div>
+          <Badge variant={user.role === 'super_admin' ? 'accent' : 'info'} className="mt-3">
             {user.role === 'super_admin' ? 'Super Admin' : 'Admin'}
           </Badge>
         </div>
-      )}
+      ) : null}
 
-      {/* Navigation */}
-      <nav className="flex-1 px-3 py-4 space-y-1">
+      <nav className="stack-2" aria-label="Admin">
         {sidebarLinks.map(({ href, label, icon: Icon }) => {
-          const isActive = href === '/admin' ? pathname === '/admin' : pathname.startsWith(href);
+          const isActive = href === '/admin' ? pathname === href : pathname.startsWith(href);
+
           return (
             <Link
               key={href}
               href={href}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors
-                ${isActive ? 'bg-accent/30 text-white' : 'text-white/70 hover:bg-white/10 hover:text-white'}`}
+              className="nav-link"
+              aria-current={isActive ? 'page' : undefined}
+              onClick={closeMenu}
             >
-              <Icon size={18} />
+              <Icon size={15} />
               {label}
             </Link>
           );
         })}
       </nav>
 
-      {/* Logout */}
-      <div className="px-3 py-4 border-t border-white/10">
-        <button
-          onClick={handleLogout}
-          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/70 hover:bg-white/10 hover:text-white w-full cursor-pointer transition-colors"
-        >
-          <LogOut size={18} />
+      <div className="mt-auto pt-6">
+        <Button variant="outline" size="sm" className="w-full border-white/20 bg-transparent text-white hover:bg-white/10" onClick={handleLogout}>
+          <LogOut size={14} />
           Logout
-        </button>
-        <Link href="/" className="block text-xs text-white/40 text-center mt-3 hover:text-white/60 transition-colors">
-          Back to Public Portal
-        </Link>
+        </Button>
       </div>
-    </>
+    </div>
   );
 
   return (
     <>
-      {/* Mobile menu button */}
+      <aside className="admin-side hidden lg:block">{sidebarContent}</aside>
+
       <button
-        className="lg:hidden fixed top-4 left-4 z-50 bg-primary text-white p-2 rounded-lg shadow-lg cursor-pointer"
+        type="button"
         onClick={() => setMobileOpen(true)}
+        className="fixed left-4 top-4 z-50 lg:hidden"
+        aria-label="Open admin navigation"
       >
-        <Menu size={20} />
+        <span className="grid h-11 w-11 place-items-center rounded-[var(--r-md)] bg-[var(--ink-900)] text-white shadow-[var(--shadow-2)]">
+          <Menu size={18} />
+        </span>
       </button>
 
-      {/* Mobile overlay */}
-      {mobileOpen && (
-        <div
-          className="lg:hidden fixed inset-0 z-40 bg-black/50"
-          onClick={() => setMobileOpen(false)}
-        />
-      )}
-
-      {/* Sidebar - desktop */}
-      <aside className="hidden lg:flex w-64 bg-primary text-white min-h-screen flex-col flex-shrink-0">
-        {sidebarContent}
-      </aside>
-
-      {/* Sidebar - mobile */}
-      <aside
-        className={`lg:hidden fixed inset-y-0 left-0 z-50 w-64 bg-primary text-white flex flex-col transition-transform duration-300
-          ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}`}
-      >
-        {sidebarContent}
-      </aside>
+      {mobileOpen ? (
+        <>
+          <button
+            type="button"
+            className="fixed inset-0 z-40 bg-black/40 lg:hidden"
+            onClick={closeMenu}
+            aria-label="Close admin navigation"
+          />
+          <aside className="fixed inset-y-0 left-0 z-50 w-72 bg-[var(--ink-900)] p-5 text-white shadow-[var(--shadow-3)] lg:hidden">
+            <div className="mb-4 flex justify-end">
+              <button
+                type="button"
+                onClick={closeMenu}
+                className="grid h-9 w-9 place-items-center rounded-[var(--r-md)] bg-white/10 text-white"
+                aria-label="Close admin navigation"
+              >
+                <X size={16} />
+              </button>
+            </div>
+            {sidebarContent}
+          </aside>
+        </>
+      ) : null}
     </>
   );
 }

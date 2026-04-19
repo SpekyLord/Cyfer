@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, createContext, useContext } from 'react';
-import { CheckCircle, XCircle, AlertTriangle, Info, X } from 'lucide-react';
+import { AlertTriangle, CheckCircle, Info, X, XCircle } from 'lucide-react';
 
 type ToastType = 'success' | 'error' | 'warning' | 'info';
 
@@ -22,17 +22,17 @@ export function useToast() {
 }
 
 const icons: Record<ToastType, React.ReactNode> = {
-  success: <CheckCircle size={18} className="text-success" />,
-  error: <XCircle size={18} className="text-error" />,
-  warning: <AlertTriangle size={18} className="text-warning" />,
-  info: <Info size={18} className="text-info" />,
+  success: <CheckCircle size={18} className="text-[var(--ok)]" />,
+  error: <XCircle size={18} className="text-[var(--bad)]" />,
+  warning: <AlertTriangle size={18} className="text-[var(--warn)]" />,
+  info: <Info size={18} className="text-[var(--info)]" />,
 };
 
-const bgColors: Record<ToastType, string> = {
-  success: 'bg-green-50 border-success/30',
-  error: 'bg-red-50 border-error/30',
-  warning: 'bg-amber-50 border-warning/30',
-  info: 'bg-blue-50 border-info/30',
+const colorClasses: Record<ToastType, string> = {
+  success: 'border-[var(--ok-line)] bg-[var(--ok-soft)]',
+  error: 'border-[var(--bad-line)] bg-[var(--bad-soft)]',
+  warning: 'border-[var(--warn-line)] bg-[var(--warn-soft)]',
+  info: 'border-[var(--info-line)] bg-[var(--info-soft)]',
 };
 
 export function ToastProvider({ children }: { children: React.ReactNode }) {
@@ -40,26 +40,32 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
 
   const toast = useCallback((type: ToastType, message: string) => {
     const id = Math.random().toString(36).slice(2);
-    setToasts((prev) => [...prev, { id, type, message }]);
+    setToasts((current) => [...current, { id, type, message }]);
   }, []);
 
   const dismiss = useCallback((id: string) => {
-    setToasts((prev) => prev.filter((t) => t.id !== id));
+    setToasts((current) => current.filter((toastItem) => toastItem.id !== id));
   }, []);
 
   return (
     <ToastContext.Provider value={{ toast }}>
       {children}
-      <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2 max-w-sm">
-        {toasts.map((t) => (
-          <ToastItem key={t.id} item={t} onDismiss={dismiss} />
+      <div className="fixed bottom-4 right-4 z-50 flex max-w-sm flex-col gap-2">
+        {toasts.map((toastItem) => (
+          <ToastItem key={toastItem.id} item={toastItem} onDismiss={dismiss} />
         ))}
       </div>
     </ToastContext.Provider>
   );
 }
 
-function ToastItem({ item, onDismiss }: { item: ToastItem; onDismiss: (id: string) => void }) {
+function ToastItem({
+  item,
+  onDismiss,
+}: {
+  item: ToastItem;
+  onDismiss: (id: string) => void;
+}) {
   useEffect(() => {
     const timer = setTimeout(() => onDismiss(item.id), 4000);
     return () => clearTimeout(timer);
@@ -67,13 +73,15 @@ function ToastItem({ item, onDismiss }: { item: ToastItem; onDismiss: (id: strin
 
   return (
     <div
-      className={`flex items-center gap-3 px-4 py-3 rounded-lg border shadow-lg animate-fade-in ${bgColors[item.type]}`}
+      className={`animate-fade-in flex items-center gap-3 rounded-[var(--r-lg)] border px-4 py-3 shadow-[var(--shadow-3)] ${colorClasses[item.type]}`}
     >
       {icons[item.type]}
-      <p className="text-sm text-foreground flex-1">{item.message}</p>
+      <p className="flex-1 text-sm text-[var(--text)]">{item.message}</p>
       <button
+        type="button"
         onClick={() => onDismiss(item.id)}
-        className="text-muted hover:text-foreground cursor-pointer"
+        className="text-[var(--text-mute)] hover:text-[var(--text)]"
+        aria-label="Dismiss notification"
       >
         <X size={14} />
       </button>

@@ -1,12 +1,22 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import {
-  Blocks, CheckCircle, XCircle, Loader2, Hash, Clock, Database,
-  Shield, ChevronDown, FileText, UserCheck, Send, Lock, ArrowDown,
-  Network, WifiOff, Wifi
+  Blocks,
+  CheckCircle2,
+  ChevronDown,
+  Database,
+  FileText,
+  Hash,
+  Loader2,
+  Lock,
+  Network,
+  Send,
+  Shield,
+  UserCheck,
+  Wifi,
+  WifiOff,
 } from 'lucide-react';
-import { Card } from '@/components/ui/Card';
 import { Badge } from '@/components/ui/Badge';
 import { formatDate } from '@/utils/formatters';
 
@@ -19,20 +29,6 @@ interface Block {
   nonce: number;
 }
 
-const ACTION_CONFIG: Record<string, { label: string; icon: typeof Blocks; variant: 'default' | 'success' | 'info' | 'warning' | 'accent'; color: string }> = {
-  genesis: { label: 'Genesis Block', icon: Shield, variant: 'accent', color: 'text-accent' },
-  document_upload: { label: 'Document Upload', icon: FileText, variant: 'warning', color: 'text-warning' },
-  document_approved: { label: 'Approval', icon: UserCheck, variant: 'info', color: 'text-info' },
-  document_published: { label: 'Published', icon: Send, variant: 'success', color: 'text-success' },
-  test: { label: 'Test Block', icon: Blocks, variant: 'default', color: 'text-muted' },
-};
-
-function getActionConfig(data: Record<string, unknown>) {
-  const action = data.action as string;
-  if (!action) return ACTION_CONFIG.genesis;
-  return ACTION_CONFIG[action] || ACTION_CONFIG.test;
-}
-
 interface NodeStatus {
   id: number;
   name: string;
@@ -40,6 +36,46 @@ interface NodeStatus {
   block_count: number;
   latest_hash: string | null;
   status: 'synced' | 'out_of_sync' | 'unreachable';
+}
+
+const ACTION_CONFIG: Record<
+  string,
+  {
+    label: string;
+    icon: typeof Blocks;
+    variant: 'default' | 'success' | 'info' | 'warning' | 'accent';
+    accentClass: string;
+  }
+> = {
+  genesis: { label: 'Genesis block', icon: Shield, variant: 'accent', accentClass: 'text-[var(--ink-700)]' },
+  document_upload: {
+    label: 'Document upload',
+    icon: FileText,
+    variant: 'warning',
+    accentClass: 'text-[var(--warn)]',
+  },
+  document_approved: {
+    label: 'Approval',
+    icon: UserCheck,
+    variant: 'info',
+    accentClass: 'text-[var(--info)]',
+  },
+  document_published: {
+    label: 'Published',
+    icon: Send,
+    variant: 'success',
+    accentClass: 'text-[var(--ok)]',
+  },
+  test: { label: 'Test block', icon: Blocks, variant: 'default', accentClass: 'text-[var(--text-mute)]' },
+};
+
+function getActionConfig(data: Record<string, unknown>) {
+  const action = data.action as string | undefined;
+  if (!action) {
+    return ACTION_CONFIG.genesis;
+  }
+
+  return ACTION_CONFIG[action] ?? ACTION_CONFIG.test;
 }
 
 export default function BlockchainPage() {
@@ -56,12 +92,13 @@ export default function BlockchainPage() {
       try {
         const res = await fetch('/api/blockchain/validate');
         const json = await res.json();
+
         if (json.success) {
           setBlocks(json.data.blocks ?? []);
           setChainValid(json.data.valid);
         }
-      } catch (err) {
-        console.error('Failed to fetch blockchain:', err);
+      } catch (error) {
+        console.error('Failed to fetch blockchain:', error);
       } finally {
         setLoading(false);
       }
@@ -71,12 +108,13 @@ export default function BlockchainPage() {
       try {
         const res = await fetch('/api/blockchain/nodes');
         const json = await res.json();
+
         if (json.success) {
           setNodes(json.data.nodes ?? []);
           setConsensus(json.data.consensus);
         }
-      } catch (err) {
-        console.error('Failed to fetch nodes:', err);
+      } catch (error) {
+        console.error('Failed to fetch nodes:', error);
       } finally {
         setNodesLoading(false);
       }
@@ -89,350 +127,276 @@ export default function BlockchainPage() {
   const reversedBlocks = [...blocks].reverse();
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Header */}
-      <div className="text-center mb-8">
-        <div className="inline-flex items-center gap-2 bg-primary/5 rounded-full px-4 py-1.5 text-sm text-primary mb-4">
-          <Network size={14} />
-          Decentralized &amp; Immutable
+    <main id="main" className="container-page pb-[var(--s-11)]">
+      <div className="page-head">
+        <div className="eyebrow">
+          <span className="eyebrow-dot" />
+          How we keep records honest
         </div>
-        <h1 className="text-3xl font-bold text-foreground">Blockchain Explorer</h1>
-        <p className="text-muted mt-2 max-w-xl mx-auto">
-          Every document action is permanently recorded as a block across <strong>3 independent nodes</strong>.
-          Each block is cryptographically linked to the previous one — any tampering is immediately detectable.
+        <h1>Why no one can quietly change a city record</h1>
+        <p className="lead">
+          Every approval and publication becomes part of a linked block history
+          stored across multiple nodes. Change one block and the rest of the chain
+          exposes the mismatch.
         </p>
       </div>
 
-      {/* Network Nodes Panel */}
-      <Card className="mb-6">
-        <div className="p-5">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold flex items-center gap-2 text-foreground">
-              <Network size={18} className="text-accent" />
-              Distributed Network
-            </h3>
-            <div className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1 rounded-full
-              ${consensus === null ? 'bg-muted/10 text-muted' : consensus ? 'bg-success/10 text-success' : 'bg-error/10 text-error'}`}>
-              {consensus === null ? (
-                <Loader2 size={12} className="animate-spin" />
-              ) : consensus ? (
-                <CheckCircle size={12} />
-              ) : (
-                <XCircle size={12} />
-              )}
-              {consensus === null ? 'Checking consensus...' : consensus ? 'Network Consensus Reached' : 'Consensus Failure Detected'}
+      <section className="section-tight">
+        <div className="card p-6">
+          <div className="row-between">
+            <div>
+              <div className="eyebrow">
+                <Network size={12} />
+                Network consensus
+              </div>
+              <h2 className="mt-2 font-serif text-2xl font-semibold text-[var(--ink-900)]">
+                Distributed node status
+              </h2>
             </div>
+            <Badge variant={consensus ? 'success' : consensus === false ? 'error' : 'info'}>
+              {consensus === null ? 'Checking consensus' : consensus ? 'Consensus reached' : 'Consensus failed'}
+            </Badge>
           </div>
 
           {nodesLoading ? (
-            <div className="flex justify-center py-4">
-              <Loader2 size={20} className="animate-spin text-muted" />
+            <div className="flex justify-center py-10">
+              <Loader2 size={24} className="animate-spin text-[var(--text-mute)]" />
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              {nodes.map((node) => (
-                <div key={node.id} className={`p-3 rounded-xl border flex items-start gap-3
-                  ${node.status === 'synced' ? 'bg-success/5 border-success/20' :
-                    node.status === 'out_of_sync' ? 'bg-error/5 border-error/20' :
-                    'bg-muted/5 border-border'}`}>
-                  <div className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center
-                    ${node.status === 'synced' ? 'bg-success/15' :
-                      node.status === 'out_of_sync' ? 'bg-error/15' : 'bg-muted/15'}`}>
-                    {node.status === 'unreachable' ? (
-                      <WifiOff size={14} className="text-muted" />
-                    ) : (
-                      <Wifi size={14} className={node.status === 'synced' ? 'text-success' : 'text-error'} />
-                    )}
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-1.5 mb-0.5">
-                      <span className="text-sm font-semibold text-foreground">{node.name}</span>
-                      <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider
-                        ${node.status === 'synced' ? 'bg-success/15 text-success' :
-                          node.status === 'out_of_sync' ? 'bg-error/15 text-error' : 'bg-muted/15 text-muted'}`}>
-                        {node.status === 'out_of_sync' ? 'Out of Sync' : node.status}
-                      </span>
+            <div className="grid grid-3 mt-6">
+              {nodes.map((node) => {
+                const synced = node.status === 'synced';
+                const unreachable = node.status === 'unreachable';
+
+                return (
+                  <div
+                    key={node.id}
+                    className={`card card-flat p-4 ${
+                      synced
+                        ? 'border-[var(--ok-line)] bg-[var(--ok-soft)]'
+                        : unreachable
+                          ? 'border-[var(--line)] bg-[var(--ink-025)]'
+                          : 'border-[var(--bad-line)] bg-[var(--bad-soft)]'
+                    }`}
+                  >
+                    <div className="row-between">
+                      <div className="row">
+                        <span
+                          className={`grid h-10 w-10 place-items-center rounded-[var(--r-md)] ${
+                            synced
+                              ? 'bg-white text-[var(--ok)]'
+                              : unreachable
+                                ? 'bg-white text-[var(--text-mute)]'
+                                : 'bg-white text-[var(--bad)]'
+                          }`}
+                        >
+                          {unreachable ? <WifiOff size={18} /> : <Wifi size={18} />}
+                        </span>
+                        <div>
+                          <div className="strong text-sm">{node.name}</div>
+                          <div className="text-xs text-[var(--text-soft)]">{node.block_count} blocks</div>
+                        </div>
+                      </div>
+                      <Badge variant={synced ? 'success' : unreachable ? 'default' : 'error'}>
+                        {node.status === 'out_of_sync' ? 'Out of sync' : node.status}
+                      </Badge>
                     </div>
-                    <p className="text-xs text-muted font-mono">{node.block_count} blocks</p>
-                    {node.latest_hash && (
-                      <p className="text-[10px] text-muted/60 font-mono truncate">{node.latest_hash.slice(0, 16)}...</p>
-                    )}
+                    {node.latest_hash ? (
+                      <div className="mt-3 text-xs text-[var(--text-mute)]">
+                        Latest hash: <span className="mono">{node.latest_hash.slice(0, 16)}...</span>
+                      </div>
+                    ) : null}
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
-          <p className="text-xs text-muted mt-3 text-center">
-            Each node independently stores the full blockchain. If any node is tampered with, consensus fails immediately.
-          </p>
         </div>
-      </Card>
+      </section>
 
-      {/* Stats Bar */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
-        <Card>
-          <div className="p-4 text-center">
-            <Database size={20} className="mx-auto text-accent mb-1.5" />
-            <div className="text-2xl font-bold text-foreground">{blocks.length}</div>
-            <div className="text-xs text-muted">Total Blocks</div>
+      <section className="section-tight">
+        <div className="grid grid-4">
+          <div className="stat">
+            <span className="stat-label">Total blocks</span>
+            <span className="stat-value">{blocks.length}</span>
           </div>
-        </Card>
-        <Card>
-          <div className="p-4 text-center">
-            {chainValid === null ? (
-              <Loader2 size={20} className="mx-auto text-muted mb-1.5 animate-spin" />
-            ) : chainValid ? (
-              <CheckCircle size={20} className="mx-auto text-success mb-1.5" />
-            ) : (
-              <XCircle size={20} className="mx-auto text-error mb-1.5" />
-            )}
-            <div className={`text-2xl font-bold ${chainValid ? 'text-success' : chainValid === false ? 'text-error' : 'text-muted'}`}>
+          <div className="stat">
+            <span className="stat-label">Chain integrity</span>
+            <span className="stat-value" style={{ color: chainValid ? 'var(--ok)' : 'var(--bad)' }}>
               {chainValid === null ? '...' : chainValid ? 'Valid' : 'Broken'}
-            </div>
-            <div className="text-xs text-muted">Chain Integrity</div>
+            </span>
           </div>
-        </Card>
-        <Card>
-          <div className="p-4 text-center">
-            <FileText size={20} className="mx-auto text-info mb-1.5" />
-            <div className="text-2xl font-bold text-foreground">
-              {blocks.filter(b => (b.data.action as string) === 'document_published').length}
-            </div>
-            <div className="text-xs text-muted">Published Docs</div>
+          <div className="stat">
+            <span className="stat-label">Published docs</span>
+            <span className="stat-value">
+              {blocks.filter((block) => (block.data.action as string) === 'document_published').length}
+            </span>
           </div>
-        </Card>
-        <Card>
-          <div className="p-4 text-center">
-            <Hash size={20} className="mx-auto text-primary mb-1.5" />
-            <div className="text-sm font-mono font-bold text-foreground truncate">
-              {blocks.length > 0 ? blocks[blocks.length - 1].hash.slice(0, 10) + '...' : '---'}
-            </div>
-            <div className="text-xs text-muted">Latest Hash</div>
+          <div className="stat">
+            <span className="stat-label">Latest hash</span>
+            <span className="stat-value mono text-sm">
+              {blocks.length > 0 ? `${blocks[blocks.length - 1].hash.slice(0, 10)}...` : '---'}
+            </span>
           </div>
-        </Card>
-      </div>
-
-      {loading ? (
-        <div className="flex flex-col items-center justify-center py-20">
-          <Loader2 className="h-10 w-10 animate-spin text-accent mb-3" />
-          <span className="text-muted">Loading blockchain...</span>
         </div>
-      ) : blocks.length === 0 ? (
-        <div className="text-center py-20 text-muted">No blocks found.</div>
-      ) : (
-        <div className="relative">
-          {/* Central chain line */}
-          <div className="absolute left-6 md:left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-accent via-accent/40 to-accent/10" />
+      </section>
 
-          {reversedBlocks.map((block, idx) => {
-            const isGenesis = block.id === 0;
-            const isLatest = idx === 0;
-            const isExpanded = expandedId === block.id;
-            const config = getActionConfig(block.data);
-            const ActionIcon = config.icon;
-            const prevBlock = idx < reversedBlocks.length - 1 ? reversedBlocks[idx + 1] : null;
+      <section className="section">
+        <div className="section-head">
+          <h2>Recent blocks</h2>
+          <p>Expand a block to inspect its hashes, metadata, and linkage to the previous block.</p>
+        </div>
 
-            return (
-              <div key={block.id} className={`relative pl-14 md:pl-18 pb-2 animate-fade-in-up stagger-${Math.min(idx + 1, 6)}`}>
-                {/* Node dot on the chain line */}
-                <div className={`absolute left-4 md:left-6 top-5 w-4 h-4 rounded-full border-2 border-card z-10
-                  ${isGenesis ? 'bg-accent animate-pulse-glow' : isLatest ? 'bg-success' : 'bg-primary/60'}`}
-                />
+        {loading ? (
+          <div className="flex items-center justify-center py-16">
+            <Loader2 size={32} className="animate-spin text-[var(--text-mute)]" />
+          </div>
+        ) : reversedBlocks.length === 0 ? (
+          <div className="card p-10 text-center">
+            <div className="font-serif text-2xl font-semibold text-[var(--ink-900)]">No blocks found</div>
+            <p className="mt-2 text-sm text-[var(--text-soft)]">
+              The blockchain explorer will populate when ledger data becomes available.
+            </p>
+          </div>
+        ) : (
+          <div className="chain pl-11">
+            {reversedBlocks.map((block, index) => {
+              const isExpanded = expandedId === block.id;
+              const isLatest = index === 0;
+              const config = getActionConfig(block.data);
+              const ActionIcon = config.icon;
 
-                {/* Hash connector showing linkage */}
-                {prevBlock && (
-                  <div className="absolute left-[1.85rem] md:left-[2.35rem] -top-3 flex flex-col items-center">
-                    <ArrowDown size={12} className="text-accent/50" />
-                  </div>
-                )}
-
-                {/* Block Card */}
-                <button
-                  onClick={() => setExpandedId(isExpanded ? null : block.id)}
-                  className="w-full text-left group"
-                >
-                  <Card className={`transition-all duration-200 group-hover:border-accent/30 group-hover:shadow-md
-                    ${isExpanded ? 'ring-2 ring-accent/40 shadow-lg' : ''}
-                    ${isGenesis ? 'border-accent/20 bg-gradient-to-r from-accent/5 to-transparent' : ''}
-                    ${isLatest && !isGenesis ? 'border-success/20 bg-gradient-to-r from-success/5 to-transparent' : ''}`}
+              return (
+                <div key={block.id} className="chain-node" data-kind={isLatest ? 'ok' : undefined}>
+                  <button
+                    type="button"
+                    className="btn-row"
+                    aria-expanded={isExpanded}
+                    onClick={() => setExpandedId((current) => (current === block.id ? null : block.id))}
                   >
-                    <div className="p-4">
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="flex items-start gap-3 min-w-0 flex-1">
-                          {/* Action icon */}
-                          <div className={`flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center
-                            ${isGenesis ? 'bg-accent/15' : 'bg-primary/5'}`}>
-                            <ActionIcon size={18} className={config.color} />
-                          </div>
+                    <div className="row flex-1 flex-nowrap items-start gap-4">
+                      <span className="grid h-11 w-11 flex-none place-items-center rounded-[var(--r-md)] bg-[var(--ink-025)]">
+                        <ActionIcon size={18} className={config.accentClass} />
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <div className="row mb-1" style={{ gap: 8 }}>
+                          <span className="mono text-xs text-[var(--text-mute)]">#{block.id}</span>
+                          <Badge variant={config.variant}>{config.label}</Badge>
+                          {isLatest ? <Badge variant="success">Latest</Badge> : null}
+                        </div>
+                        <div className="truncate text-sm font-medium text-[var(--ink-900)]">
+                          {(block.data.title as string) ||
+                            (block.data.uploaded_by_name as string) ||
+                            (block.data.approved_by_name as string) ||
+                            `Block #${block.id}`}
+                        </div>
+                        <div className="mt-1 row text-xs text-[var(--text-mute)]" style={{ gap: 10 }}>
+                          <span>{formatDate(block.timestamp)}</span>
+                          <span className="mono">{block.hash.slice(0, 12)}...</span>
+                        </div>
+                      </div>
+                    </div>
+                    <ChevronDown
+                      size={16}
+                      className={`text-[var(--text-mute)] transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                    />
+                  </button>
 
-                          <div className="min-w-0 flex-1">
-                            {/* Badges row */}
-                            <div className="flex items-center gap-1.5 flex-wrap mb-1">
-                              <span className="text-xs font-mono font-bold text-primary/50">#{block.id}</span>
-                              <Badge variant={config.variant}>{config.label}</Badge>
-                              {isGenesis && <Badge variant="accent">Origin</Badge>}
-                              {isLatest && !isGenesis && <Badge variant="success">Latest</Badge>}
-                            </div>
-
-                            {/* Title */}
-                            <p className="text-sm font-medium text-foreground truncate">
-                              {(block.data.title as string) ||
-                               (block.data.uploaded_by_name as string ? `By ${block.data.uploaded_by_name}` : '') ||
-                               (block.data.approved_by_name as string ? `By ${block.data.approved_by_name}` : '') ||
-                               (block.data.message as string) ||
-                               `Block #${block.id}`}
-                            </p>
-
-                            {/* Timestamp + hash preview */}
-                            <div className="flex items-center gap-3 mt-1.5 flex-wrap">
-                              <span className="flex items-center gap-1 text-xs text-muted">
-                                <Clock size={11} />
-                                {formatDate(block.timestamp)}
-                              </span>
-                              <span className="hidden sm:flex items-center gap-1 text-xs text-muted font-mono">
-                                <Hash size={11} />
-                                {block.hash.slice(0, 12)}...
-                              </span>
-                            </div>
+                  {isExpanded ? (
+                    <div className="card card-flat mt-3 p-4" style={{ background: 'var(--ink-025)' }}>
+                      <div className="grid gap-4 md:grid-cols-2">
+                        <div>
+                          <div className="eyebrow mb-2">Previous hash</div>
+                          <div className="hash-block">
+                            {block.previous_hash === '0'
+                              ? '0000000000000000000000000000000000000000000000000000000000000000'
+                              : block.previous_hash}
                           </div>
                         </div>
-
-                        {/* Expand chevron */}
-                        <ChevronDown
-                          size={18}
-                          className={`flex-shrink-0 text-muted transition-transform duration-200 mt-2
-                            ${isExpanded ? 'rotate-180' : ''}`}
-                        />
+                        <div>
+                          <div className="eyebrow mb-2">This block hash</div>
+                          <div className="hash-block hash-ok">{block.hash}</div>
+                        </div>
                       </div>
 
-                      {/* Expanded Details */}
-                      {isExpanded && (
-                        <div className="mt-4 pt-4 border-t border-border animate-fade-in-up" onClick={(e) => e.stopPropagation()}>
-                          {/* Hash visualization */}
-                          <div className="space-y-3 mb-4">
-                            {/* Previous Hash */}
-                            <div>
-                              <div className="flex items-center gap-1.5 mb-1.5">
-                                <div className="w-2 h-2 rounded-full bg-info/60" />
-                                <span className="text-xs font-semibold text-muted uppercase tracking-wider">Previous Block Hash</span>
-                              </div>
-                              <div className="px-3 py-2.5 bg-info/5 border border-info/15 rounded-lg">
-                                <code className="text-xs font-mono text-info break-all select-all">
-                                  {block.previous_hash === '0' ? '0000000000000000000000000000000000000000000000000000000000000000' : block.previous_hash}
-                                </code>
-                              </div>
-                              {isGenesis && (
-                                <p className="text-[11px] text-muted mt-1 italic">Genesis block — no previous block exists</p>
-                              )}
-                            </div>
-
-                            {/* Arrow showing the link */}
-                            <div className="flex items-center justify-center gap-2 py-1">
-                              <div className="h-px flex-1 bg-gradient-to-r from-transparent via-accent/30 to-transparent" />
-                              <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-accent/10 text-accent text-[11px] font-semibold">
-                                <Lock size={10} />
-                                SHA-256
-                              </div>
-                              <div className="h-px flex-1 bg-gradient-to-r from-transparent via-accent/30 to-transparent" />
-                            </div>
-
-                            {/* Current Hash */}
-                            <div>
-                              <div className="flex items-center gap-1.5 mb-1.5">
-                                <div className="w-2 h-2 rounded-full bg-success" />
-                                <span className="text-xs font-semibold text-muted uppercase tracking-wider">This Block&apos;s Hash</span>
-                              </div>
-                              <div className="px-3 py-2.5 bg-success/5 border border-success/15 rounded-lg">
-                                <code className="text-xs font-mono text-success break-all select-all">{block.hash}</code>
-                              </div>
-                              {!isGenesis && prevBlock && (
-                                <p className="text-[11px] text-success/80 mt-1 flex items-center gap-1">
-                                  <CheckCircle size={10} />
-                                  Links to Block #{block.id - 1}&apos;s hash — chain intact
-                                </p>
-                              )}
-                            </div>
-                          </div>
-
-                          {/* Metadata grid */}
-                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4">
-                            <div className="p-2.5 bg-card-hover rounded-lg">
-                              <span className="text-[10px] font-semibold text-muted uppercase tracking-wider">Block ID</span>
-                              <p className="text-sm font-mono font-bold text-foreground mt-0.5">{block.id}</p>
-                            </div>
-                            <div className="p-2.5 bg-card-hover rounded-lg">
-                              <span className="text-[10px] font-semibold text-muted uppercase tracking-wider">Nonce</span>
-                              <p className="text-sm font-mono font-bold text-foreground mt-0.5">{block.nonce.toLocaleString()}</p>
-                            </div>
-                            <div className="p-2.5 bg-card-hover rounded-lg col-span-2 sm:col-span-1">
-                              <span className="text-[10px] font-semibold text-muted uppercase tracking-wider">Timestamp</span>
-                              <p className="text-sm font-mono text-foreground mt-0.5">{new Date(block.timestamp).toLocaleString()}</p>
-                            </div>
-                          </div>
-
-                          {/* Block data */}
-                          <div>
-                            <span className="text-[10px] font-semibold text-muted uppercase tracking-wider">Block Data</span>
-                            <pre className="mt-1.5 px-3 py-2.5 bg-primary/[0.03] border border-border rounded-lg text-xs font-mono text-foreground overflow-x-auto max-h-40 whitespace-pre-wrap break-all">
-{JSON.stringify(block.data, null, 2)}
-                            </pre>
+                      <div className="grid gap-3 pt-4 md:grid-cols-3">
+                        <div className="card card-flat p-3">
+                          <div className="eyebrow">Nonce</div>
+                          <div className="mt-1 mono text-sm text-[var(--ink-900)]">{block.nonce}</div>
+                        </div>
+                        <div className="card card-flat p-3">
+                          <div className="eyebrow">Timestamp</div>
+                          <div className="mt-1 text-sm text-[var(--ink-900)]">
+                            {new Date(block.timestamp).toLocaleString()}
                           </div>
                         </div>
-                      )}
-                    </div>
-                  </Card>
-                </button>
-              </div>
-            );
-          })}
-        </div>
-      )}
+                        <div className="card card-flat p-3">
+                          <div className="eyebrow">Link status</div>
+                          <div className="mt-1 row text-sm text-[var(--ok)]" style={{ gap: 6 }}>
+                            <CheckCircle2 size={14} />
+                            Hash-linked
+                          </div>
+                        </div>
+                      </div>
 
-      {/* How it works */}
-      <Card className="mt-10">
-        <div className="p-6">
-          <h3 className="font-semibold text-lg mb-5 flex items-center gap-2">
-            <Shield size={20} className="text-accent" />
-            How the Blockchain Works
-          </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                      <div className="mt-4">
+                        <div className="eyebrow mb-2">
+                          <Database size={12} />
+                          Block data
+                        </div>
+                        <pre className="overflow-x-auto rounded-[var(--r-lg)] border border-[var(--line)] bg-[var(--card)] p-4 text-xs leading-6 text-[var(--ink-900)]">
+{JSON.stringify(block.data, null, 2)}
+                        </pre>
+                      </div>
+                    </div>
+                  ) : null}
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </section>
+
+      <section className="section-tight">
+        <div className="card p-6">
+          <div className="section-head mb-0">
+            <h2>How the blockchain works here</h2>
+            <p>A simplified explanation of the protections behind the public record.</p>
+          </div>
+          <div className="grid grid-4 mt-6">
             {[
               {
-                step: '1',
+                icon: Hash,
                 title: 'Hash',
-                desc: "Each block's content is hashed using SHA-256, creating a unique 64-character fingerprint that changes if any data is modified.",
-                color: 'bg-accent/10 text-accent border-accent/20',
+                description: 'Each block gets a unique cryptographic fingerprint.',
               },
               {
-                step: '2',
-                title: 'Chain',
-                desc: "Every block stores the previous block's hash, creating an unbreakable chain. Altering one block invalidates all blocks after it.",
-                color: 'bg-info/10 text-info border-info/20',
+                icon: Lock,
+                title: 'Link',
+                description: 'Every block stores the previous hash, chaining records together.',
               },
               {
-                step: '3',
+                icon: Network,
                 title: 'Distribute',
-                desc: 'Every new block is broadcast to 3 independent nodes simultaneously. No single server controls the chain — all nodes must agree.',
-                color: 'bg-warning/10 text-warning border-warning/20',
+                description: 'The same chain is stored across multiple nodes rather than one server.',
               },
               {
-                step: '4',
+                icon: Shield,
                 title: 'Verify',
-                desc: 'Anyone can validate the entire chain and check cross-node consensus. If any node disagrees, tampering is instantly detected.',
-                color: 'bg-success/10 text-success border-success/20',
+                description: 'If a block changes unexpectedly, the hashes stop matching and the issue becomes visible.',
               },
-            ].map(({ step, title, desc, color }) => (
-              <div key={step} className={`p-4 rounded-xl border ${color}`}>
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="w-6 h-6 rounded-full bg-current/10 flex items-center justify-center text-xs font-bold">{step}</span>
-                  <span className="font-bold text-lg">{title}</span>
-                </div>
-                <p className="text-sm text-muted">{desc}</p>
+            ].map(({ icon: Icon, title, description }) => (
+              <div key={title} className="card card-flat p-4">
+                <span className="mb-3 grid h-10 w-10 place-items-center rounded-[var(--r-md)] bg-[var(--ink-050)] text-[var(--ink-700)]">
+                  <Icon size={18} />
+                </span>
+                <div className="font-serif text-lg font-semibold text-[var(--ink-900)]">{title}</div>
+                <p className="mt-2 text-sm leading-6 text-[var(--text-soft)]">{description}</p>
               </div>
             ))}
           </div>
         </div>
-      </Card>
-    </div>
+      </section>
+    </main>
   );
 }

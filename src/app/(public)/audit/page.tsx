@@ -1,9 +1,8 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import { ScrollText, Filter, Loader2, Lock, CheckCircle, XCircle, Database } from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
+import { Loader2, Lock, ScrollText, Shield } from 'lucide-react';
 import { AuditTimeline } from '@/components/audit/AuditTimeline';
-import { Card } from '@/components/ui/Card';
 import { ACTION_TYPES } from '@/utils/constants';
 
 interface Transaction {
@@ -29,35 +28,45 @@ export default function AuditPage() {
 
   const fetchAudit = useCallback(async () => {
     setLoading(true);
+
     try {
       const params = new URLSearchParams({ page: String(page), limit: String(limit) });
-      if (actionType) params.set('action_type', actionType);
+
+      if (actionType) {
+        params.set('action_type', actionType);
+      }
 
       const res = await fetch(`/api/audit?${params}`);
       const json = await res.json();
-      if (json.success) {
-        const txns = json.data.transactions ?? json.data;
-        setTransactions(txns);
-        setTotal(json.data.total ?? txns.length ?? 0);
 
-        // Validate the hash chain on current page
-        if (txns.length > 1) {
-          // Transactions are newest-first, so reverse for chain validation
-          const sorted = [...txns].reverse();
+      if (json.success) {
+        const entries = json.data.transactions ?? json.data;
+        const nextTransactions = Array.isArray(entries) ? entries : [];
+
+        setTransactions(nextTransactions);
+        setTotal(json.data.total ?? nextTransactions.length ?? 0);
+
+        if (nextTransactions.length > 1) {
+          const sorted = [...nextTransactions].reverse();
           let valid = true;
-          for (let i = 1; i < sorted.length; i++) {
-            if (sorted[i].previous_tx_hash && sorted[i].previous_tx_hash !== sorted[i - 1].tx_hash) {
+
+          for (let index = 1; index < sorted.length; index += 1) {
+            if (
+              sorted[index].previous_tx_hash &&
+              sorted[index].previous_tx_hash !== sorted[index - 1].tx_hash
+            ) {
               valid = false;
               break;
             }
           }
+
           setChainValid(valid);
         } else {
-          setChainValid(txns.length > 0 ? true : null);
+          setChainValid(nextTransactions.length > 0 ? true : null);
         }
       }
-    } catch (err) {
-      console.error('Failed to fetch audit trail:', err);
+    } catch (error) {
+      console.error('Failed to fetch audit trail:', error);
     } finally {
       setLoading(false);
     }
@@ -67,126 +76,154 @@ export default function AuditPage() {
     fetchAudit();
   }, [fetchAudit]);
 
-  const totalPages = Math.ceil(total / limit);
+  const totalPages = Math.max(1, Math.ceil(total / limit));
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Header */}
-      <div className="text-center mb-8">
-        <div className="inline-flex items-center gap-2 bg-primary/5 rounded-full px-4 py-1.5 text-sm text-primary mb-4">
-          <Lock size={14} />
-          Hash-Linked Transaction Chain
+    <main id="main" className="container-page pb-[var(--s-11)]">
+      <div className="page-head">
+        <div className="eyebrow">
+          <span className="eyebrow-dot" />
+          Activity log · public accountability
         </div>
-        <h1 className="text-3xl font-bold text-foreground">Audit Trail</h1>
-        <p className="text-muted mt-2 max-w-xl mx-auto">
-          Every platform action is permanently recorded with a cryptographic hash linked to the previous entry —
-          creating a tamper-proof chain of accountability.
+        <h1>Everything that happens in city hall, in the open</h1>
+        <p className="lead">
+          Every upload, approval, rejection, publication, and verification action is
+          logged here with a hash that links it to the previous record.
         </p>
       </div>
 
-      {/* Stats Bar */}
-      <div className="grid grid-cols-3 gap-3 mb-6">
-        <Card>
-          <div className="p-4 text-center">
-            <Database size={20} className="mx-auto text-accent mb-1.5" />
-            <div className="text-2xl font-bold text-foreground">{total}</div>
-            <div className="text-xs text-muted">Total Entries</div>
+      <section className="section-tight">
+        <div className="grid grid-3">
+          <div className="stat">
+            <span className="stat-label">Total entries</span>
+            <span className="stat-value">{total}</span>
           </div>
-        </Card>
-        <Card>
-          <div className="p-4 text-center">
-            {chainValid === null ? (
-              <Loader2 size={20} className="mx-auto text-muted mb-1.5 animate-spin" />
-            ) : chainValid ? (
-              <CheckCircle size={20} className="mx-auto text-success mb-1.5" />
-            ) : (
-              <XCircle size={20} className="mx-auto text-error mb-1.5" />
-            )}
-            <div className={`text-2xl font-bold ${chainValid ? 'text-success' : chainValid === false ? 'text-error' : 'text-muted'}`}>
+          <div className="stat">
+            <span className="stat-label">Chain integrity</span>
+            <span className="stat-value" style={{ color: chainValid ? 'var(--ok)' : 'var(--bad)' }}>
               {chainValid === null ? '...' : chainValid ? 'Valid' : 'Broken'}
-            </div>
-            <div className="text-xs text-muted">Chain Integrity</div>
+            </span>
           </div>
-        </Card>
-        <Card>
-          <div className="p-4 text-center">
-            <ScrollText size={20} className="mx-auto text-info mb-1.5" />
-            <div className="text-sm font-mono font-bold text-foreground truncate">
-              {transactions.length > 0 ? transactions[0].tx_hash.slice(0, 10) + '...' : '---'}
-            </div>
-            <div className="text-xs text-muted">Latest Hash</div>
+          <div className="stat">
+            <span className="stat-label">Latest hash</span>
+            <span className="stat-value mono text-sm">
+              {transactions.length > 0 ? `${transactions[0].tx_hash.slice(0, 10)}...` : '---'}
+            </span>
           </div>
-        </Card>
-      </div>
+        </div>
+      </section>
 
-      {/* Filter */}
-      <div className="flex items-center gap-3 mb-6">
-        <Filter size={16} className="text-muted" />
-        <select
-          value={actionType}
-          onChange={(e) => { setActionType(e.target.value); setPage(1); }}
-          className="px-3 py-2 rounded-lg border border-border bg-white text-sm focus:outline-none focus:ring-2 focus:ring-accent/40 cursor-pointer"
-        >
-          <option value="">All Actions</option>
-          {ACTION_TYPES.map((at) => (
-            <option key={at.value} value={at.value}>{at.label}</option>
+      <section className="section-tight">
+        <div className="card p-6">
+          <div className="row-between gap-4">
+            <div>
+              <div className="eyebrow">
+                <ScrollText size={12} />
+                Audit filter
+              </div>
+              <h2 className="mt-2 font-serif text-2xl font-semibold text-[var(--ink-900)]">
+                Browse transaction history
+              </h2>
+            </div>
+            <div className="row">
+              <label className="field-label mb-0">Action type</label>
+              <select
+                value={actionType}
+                onChange={(event) => {
+                  setActionType(event.target.value);
+                  setPage(1);
+                }}
+                className="select min-w-52"
+              >
+                <option value="">All actions</option>
+                {ACTION_TYPES.map((type) => (
+                  <option key={type.value} value={type.value}>
+                    {type.label.trim()}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="section-tight">
+        {loading ? (
+          <div className="flex items-center justify-center py-20">
+            <Loader2 size={32} className="animate-spin text-[var(--text-mute)]" />
+          </div>
+        ) : transactions.length === 0 ? (
+          <div className="card p-10 text-center">
+            <div className="font-serif text-2xl font-semibold text-[var(--ink-900)]">
+              No audit entries found
+            </div>
+            <p className="mt-2 text-sm text-[var(--text-soft)]">
+              Try another filter or check back once more activity is recorded.
+            </p>
+          </div>
+        ) : (
+          <>
+            <AuditTimeline transactions={transactions} />
+
+            {totalPages > 1 ? (
+              <div className="row mt-8 justify-center">
+                <button
+                  type="button"
+                  onClick={() => setPage((current) => Math.max(1, current - 1))}
+                  disabled={page === 1}
+                  className="btn btn-outline btn-sm"
+                >
+                  Previous
+                </button>
+                <span className="px-3 text-sm text-[var(--text-mute)]">
+                  Page {page} of {totalPages}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setPage((current) => Math.min(totalPages, current + 1))}
+                  disabled={page === totalPages}
+                  className="btn btn-outline btn-sm"
+                >
+                  Next
+                </button>
+              </div>
+            ) : null}
+          </>
+        )}
+      </section>
+
+      <section className="section-tight">
+        <div className="grid grid-3">
+          {[
+            {
+              icon: ScrollText,
+              title: 'Every action is recorded',
+              description:
+                'Uploads, approvals, rejections, verifications, and publications are all stored as audit entries.',
+            },
+            {
+              icon: Lock,
+              title: 'Entries are hash-linked',
+              description:
+                'Each transaction stores the previous hash so the order of events becomes tamper-evident.',
+            },
+            {
+              icon: Shield,
+              title: 'Anyone can inspect the trail',
+              description:
+                'The public view makes accountability visible without requiring citizens to trust a hidden internal log.',
+            },
+          ].map(({ icon: Icon, title, description }) => (
+            <div key={title} className="card p-6">
+              <span className="mb-4 grid h-11 w-11 place-items-center rounded-[12px] bg-[var(--ink-050)] text-[var(--ink-700)]">
+                <Icon size={20} />
+              </span>
+              <h3 className="font-serif text-xl font-semibold text-[var(--ink-900)]">{title}</h3>
+              <p className="mt-2 text-sm leading-6 text-[var(--text-soft)]">{description}</p>
+            </div>
           ))}
-        </select>
-        <span className="text-sm text-muted">{total} entries</span>
-      </div>
-
-      {loading ? (
-        <div className="flex items-center justify-center py-20">
-          <Loader2 size={32} className="animate-spin text-muted" />
         </div>
-      ) : transactions.length === 0 ? (
-        <div className="text-center py-16">
-          <ScrollText size={48} className="mx-auto mb-3 text-muted/40" />
-          <p className="text-muted text-lg">No audit entries found.</p>
-        </div>
-      ) : (
-        <>
-          <AuditTimeline transactions={transactions} />
-
-          {totalPages > 1 && (
-            <div className="flex justify-center gap-2 mt-8">
-              <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}
-                className="px-3 py-1.5 text-sm rounded-lg border border-border hover:bg-card-hover disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed">
-                Previous
-              </button>
-              <span className="px-3 py-1.5 text-sm text-muted">Page {page} of {totalPages}</span>
-              <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}
-                className="px-3 py-1.5 text-sm rounded-lg border border-border hover:bg-card-hover disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed">
-                Next
-              </button>
-            </div>
-          )}
-        </>
-      )}
-
-      {/* How the Audit Chain Works */}
-      <Card className="mt-10">
-        <div className="p-6">
-          <h3 className="font-semibold text-lg mb-4 flex items-center gap-2">
-            <Lock size={18} className="text-accent" />
-            How the Audit Chain Works
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="p-4 rounded-xl border bg-accent/5 border-accent/20">
-              <div className="text-accent font-bold text-lg mb-1">1. Record</div>
-              <p className="text-sm text-muted">Every action — upload, approval, rejection, verification, budget change — is logged as a transaction entry.</p>
-            </div>
-            <div className="p-4 rounded-xl border bg-info/5 border-info/20">
-              <div className="text-info font-bold text-lg mb-1">2. Hash</div>
-              <p className="text-sm text-muted">Each entry is hashed using SHA-256. The hash includes the previous entry&apos;s hash, creating a cryptographic chain.</p>
-            </div>
-            <div className="p-4 rounded-xl border bg-success/5 border-success/20">
-              <div className="text-success font-bold text-lg mb-1">3. Immutable</div>
-              <p className="text-sm text-muted">Altering any past entry breaks the hash chain — making unauthorized changes instantly detectable by anyone.</p>
-            </div>
-          </div>
-        </div>
-      </Card>
-    </div>
+      </section>
+    </main>
   );
 }

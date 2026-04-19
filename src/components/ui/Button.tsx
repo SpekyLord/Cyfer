@@ -1,29 +1,35 @@
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'danger';
-  size?: 'sm' | 'md' | 'lg';
+  variant?: "primary" | "secondary" | "outline" | "ghost" | "danger";
+  size?: "sm" | "md" | "lg";
 }
 
-const variantClasses: Record<string, string> = {
-  primary: 'bg-primary text-white hover:bg-primary-light active:scale-[0.98]',
-  secondary: 'bg-accent text-white hover:bg-accent-light active:scale-[0.98]',
-  outline: 'border border-border text-foreground hover:bg-card-hover hover:border-accent/30 active:scale-[0.98]',
-  ghost: 'text-muted hover:text-foreground hover:bg-card-hover',
-  danger: 'bg-error text-white hover:bg-red-600 active:scale-[0.98]',
+const variantClasses: Record<NonNullable<ButtonProps["variant"]>, string> = {
+  primary: "btn-primary",
+  secondary: "btn-accent",
+  outline: "btn-outline",
+  ghost: "btn-ghost",
+  danger: "btn-danger",
 };
 
-const sizeClasses: Record<string, string> = {
-  sm: 'px-3 py-1.5 text-sm',
-  md: 'px-4 py-2 text-sm',
-  lg: 'px-6 py-3 text-base',
+const sizeClasses: Record<NonNullable<ButtonProps["size"]>, string> = {
+  sm: "btn-sm",
+  md: "",
+  lg: "btn-lg",
 };
 
-export function Button({ variant = 'primary', size = 'md', className = '', children, disabled, ...props }: ButtonProps) {
+export function Button({
+  variant = "primary",
+  size = "md",
+  className = "",
+  children,
+  disabled,
+  type = "button",
+  ...props
+}: ButtonProps) {
   return (
     <button
-      className={`inline-flex items-center justify-center gap-2 rounded-lg font-medium cursor-pointer
-        transition-all duration-150
-        ${variantClasses[variant]} ${sizeClasses[size]}
-        disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100 ${className}`}
+      type={type}
+      className={`btn ${variantClasses[variant]} ${sizeClasses[size]} ${className}`.trim()}
       disabled={disabled}
       {...props}
     >

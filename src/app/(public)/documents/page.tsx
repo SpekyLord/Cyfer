@@ -1,10 +1,8 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import { Search, Filter } from 'lucide-react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Search } from 'lucide-react';
 import { DocumentCard } from '@/components/documents/DocumentCard';
-import { Input } from '@/components/ui/Input';
-import { DOCUMENT_CATEGORIES } from '@/utils/constants';
 
 interface DocumentData {
   id: string;
@@ -17,6 +15,15 @@ interface DocumentData {
   users?: { name: string; department: string } | null;
 }
 
+const categoryFilters = [
+  { value: '', label: 'Everything' },
+  { value: 'ordinance', label: 'New city rules' },
+  { value: 'budget', label: 'Money and spending' },
+  { value: 'resolution', label: 'Official decisions' },
+  { value: 'contract', label: 'City agreements' },
+  { value: 'permit', label: 'Permits and licenses' },
+];
+
 export default function DocumentsPage() {
   const [documents, setDocuments] = useState<DocumentData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -28,85 +35,153 @@ export default function DocumentsPage() {
 
   const fetchDocuments = useCallback(async () => {
     setLoading(true);
+
     try {
       const params = new URLSearchParams({ page: String(page), limit: String(limit) });
-      if (search) params.set('search', search);
-      if (category) params.set('category', category);
+
+      if (search) {
+        params.set('search', search);
+      }
+
+      if (category) {
+        params.set('category', category);
+      }
+
       const res = await fetch(`/api/documents?${params}`);
       const json = await res.json();
+
       if (json.success) {
         setDocuments(json.data.documents);
         setTotal(json.data.total);
       }
-    } catch (err) {
-      console.error('Failed to fetch documents:', err);
+    } catch (error) {
+      console.error('Failed to fetch documents:', error);
     } finally {
       setLoading(false);
     }
   }, [search, category, page]);
 
-  useEffect(() => { fetchDocuments(); }, [fetchDocuments]);
+  useEffect(() => {
+    fetchDocuments();
+  }, [fetchDocuments]);
 
-  const totalPages = Math.ceil(total / limit);
+  const totalPages = Math.max(1, Math.ceil(total / limit));
+  const resultLabel = useMemo(
+    () => `${total} document${total === 1 ? '' : 's'} available`,
+    [total],
+  );
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-foreground">Public Document Portal</h1>
-        <p className="text-muted mt-1">Browse all published government documents verified on the blockchain.</p>
+    <main id="main" className="container-page pb-[var(--s-11)]">
+      <div className="page-head">
+        <div className="eyebrow">
+          <span className="eyebrow-dot" />
+          City records · free to read
+        </div>
+        <h1>What your city has decided</h1>
+        <p className="lead">
+          Browse ordinances, resolutions, contracts, permits, and budget reports
+          published through CYFER. Every file here is tied to the platform’s
+          approval and verification flow.
+        </p>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-3 mb-6">
-        <div className="flex-1 relative">
-          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
-          <Input placeholder="Search documents..." value={search}
-            onChange={(e) => { setSearch(e.target.value); setPage(1); }} className="pl-9" />
-        </div>
-        <div className="relative">
-          <Filter size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
-          <select value={category} onChange={(e) => { setCategory(e.target.value); setPage(1); }}
-            className="pl-9 pr-4 py-2 rounded-lg border border-border bg-white text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-accent/40 appearance-none cursor-pointer">
-            <option value="">All Categories</option>
-            {DOCUMENT_CATEGORIES.map((cat) => (
-              <option key={cat.value} value={cat.value}>{cat.label}</option>
-            ))}
-          </select>
-        </div>
-      </div>
-
-      {loading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="bg-card rounded-xl border border-border p-6 animate-pulse">
-              <div className="h-4 bg-gray-200 rounded w-20 mb-3" />
-              <div className="h-5 bg-gray-200 rounded w-3/4 mb-2" />
-              <div className="h-4 bg-gray-200 rounded w-full mb-4" />
-              <div className="h-3 bg-gray-100 rounded w-1/2" />
-            </div>
-          ))}
-        </div>
-      ) : documents.length === 0 ? (
-        <div className="text-center py-16">
-          <p className="text-muted text-lg">No documents found.</p>
-          <p className="text-sm text-muted/60 mt-1">Try adjusting your search or filter criteria.</p>
-        </div>
-      ) : (
-        <>
-          <p className="text-sm text-muted mb-4">{total} document{total !== 1 ? 's' : ''} found</p>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {documents.map((doc) => (<DocumentCard key={doc.id} document={doc} />))}
+      <section className="section-tight">
+        <div className="grid gap-3 lg:grid-cols-[1fr_auto] lg:items-center">
+          <div className="relative">
+            <Search
+              size={18}
+              className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-mute)]"
+            />
+            <input
+              className="input h-12 pl-11 text-[15px]"
+              placeholder="What are you looking for? Try a title or keyword."
+              value={search}
+              onChange={(event) => {
+                setSearch(event.target.value);
+                setPage(1);
+              }}
+            />
           </div>
-          {totalPages > 1 && (
-            <div className="flex justify-center gap-2 mt-8">
-              <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1}
-                className="px-3 py-1.5 text-sm rounded-lg border border-border hover:bg-card-hover disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed">Previous</button>
-              <span className="px-3 py-1.5 text-sm text-muted">Page {page} of {totalPages}</span>
-              <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages}
-                className="px-3 py-1.5 text-sm rounded-lg border border-border hover:bg-card-hover disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed">Next</button>
+          <span className="text-sm text-[var(--text-mute)]">{resultLabel}</span>
+        </div>
+
+        <div className="row mt-5" style={{ gap: 8 }}>
+          {categoryFilters.map((filter) => {
+            const active = category === filter.value;
+
+            return (
+              <button
+                key={filter.label}
+                type="button"
+                className={`chip ${active ? 'chip-on' : ''}`}
+                onClick={() => {
+                  setCategory(filter.value);
+                  setPage(1);
+                }}
+              >
+                {filter.label}
+              </button>
+            );
+          })}
+        </div>
+
+        {loading ? (
+          <div className="grid grid-3 mt-6">
+            {Array.from({ length: 6 }).map((_, index) => (
+              <div key={index} className="card p-6">
+                <div className="h-6 w-28 rounded-full bg-[var(--ink-050)]" />
+                <div className="mt-4 h-6 w-4/5 rounded bg-[var(--ink-050)]" />
+                <div className="mt-3 h-4 w-full rounded bg-[var(--ink-025)]" />
+                <div className="mt-2 h-4 w-11/12 rounded bg-[var(--ink-025)]" />
+                <div className="mt-6 h-10 rounded bg-[var(--ink-025)]" />
+              </div>
+            ))}
+          </div>
+        ) : documents.length === 0 ? (
+          <div className="card mt-6 p-10 text-center">
+            <div className="font-serif text-2xl font-semibold text-[var(--ink-900)]">
+              We could not find anything
             </div>
-          )}
-        </>
-      )}
-    </div>
+            <p className="mt-2 text-sm text-[var(--text-soft)]">
+              Try different keywords, or reset the filters to browse every published
+              record.
+            </p>
+          </div>
+        ) : (
+          <>
+            <div className="grid grid-3 mt-6">
+              {documents.map((document) => (
+                <DocumentCard key={document.id} document={document} />
+              ))}
+            </div>
+
+            {totalPages > 1 ? (
+              <div className="row mt-8 justify-center">
+                <button
+                  type="button"
+                  onClick={() => setPage((current) => Math.max(1, current - 1))}
+                  disabled={page === 1}
+                  className="btn btn-outline btn-sm"
+                >
+                  Previous
+                </button>
+                <span className="px-3 text-sm text-[var(--text-mute)]">
+                  Page {page} of {totalPages}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setPage((current) => Math.min(totalPages, current + 1))}
+                  disabled={page === totalPages}
+                  className="btn btn-outline btn-sm"
+                >
+                  Next
+                </button>
+              </div>
+            ) : null}
+          </>
+        )}
+      </section>
+    </main>
   );
 }

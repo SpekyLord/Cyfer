@@ -77,7 +77,7 @@ export class Blockchain {
    * @param data - Block data (document hash, action, etc.)
    * @returns The newly created block
    */
-  static async addBlock(data: Record<string, any>): Promise<Block> {
+  static async addBlock(data: Record<string, unknown>): Promise<Block> {
     const supabase = createServerClient();
 
     // Get the latest block to link to it

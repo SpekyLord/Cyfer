@@ -1,11 +1,21 @@
 'use client';
 
-import { useState, useRef } from 'react';
-import { Upload, CheckCircle, XCircle, FileText, Shield, Loader2, AlertTriangle, Lock } from 'lucide-react';
-import { Card } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
+import { useRef, useState } from 'react';
+import Link from 'next/link';
+import {
+  AlertTriangle,
+  CheckCircle2,
+  ChevronDown,
+  ChevronRight,
+  FileText,
+  Loader2,
+  Shield,
+  Upload,
+  XCircle,
+} from 'lucide-react';
 import { Badge } from '@/components/ui/Badge';
-import { formatHash, formatDate } from '@/utils/formatters';
+import { Button } from '@/components/ui/Button';
+import { formatDate } from '@/utils/formatters';
 
 interface VerificationData {
   verified: boolean;
@@ -21,217 +31,394 @@ interface VerificationData {
   message: string;
 }
 
+const faqItems = [
+  {
+    question: 'What happens when I upload a file?',
+    answer:
+      'CYFER securely computes a document fingerprint and compares it with the official records stored in the system. The result tells you whether the file matches a published record.',
+  },
+  {
+    question: "What if the document doesn't match?",
+    answer:
+      'Do not rely on that copy as official. It may be altered, outdated, or never published through CYFER. You can browse the official records here to look for the correct version.',
+  },
+  {
+    question: 'What kinds of files can I check?',
+    answer:
+      'PDF, Word, spreadsheet, text, and common image files are supported. Use the exact copy you received whenever possible for the most accurate result.',
+  },
+  {
+    question: 'Why does a tiny change matter?',
+    answer:
+      'A file fingerprint changes completely if the document content changes, even by a single character. That is what makes tampering detectable.',
+  },
+];
+
 export default function VerifyPage() {
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<VerificationData | null>(null);
   const [dragActive, setDragActive] = useState(false);
+  const [showTechnical, setShowTechnical] = useState(false);
+  const [announce, setAnnounce] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
 
   async function handleVerify() {
-    if (!file) return;
+    if (!file) {
+      return;
+    }
+
     setLoading(true);
     setResult(null);
+    setShowTechnical(false);
+    setAnnounce(`Checking ${file.name}`);
+
     try {
       const formData = new FormData();
       formData.append('file', file);
+
       const res = await fetch('/api/verify', { method: 'POST', body: formData });
       const json = await res.json();
+
       if (json.success) {
         setResult(json.data);
+        setAnnounce(
+          json.data.verified
+            ? 'Verification complete. This document matches the official record.'
+            : 'Verification complete. This document does not match the official record.',
+        );
       } else {
-        setResult({ verified: false, fileHash: '', message: json.error ?? 'Verification failed' });
+        setResult({
+          verified: false,
+          fileHash: '',
+          message: json.error ?? 'Verification failed',
+        });
+        setAnnounce('Verification failed.');
       }
     } catch {
-      setResult({ verified: false, fileHash: '', message: 'Network error. Please try again.' });
+      setResult({
+        verified: false,
+        fileHash: '',
+        message: 'Network error. Please try again.',
+      });
+      setAnnounce('Verification failed because of a network error.');
     } finally {
       setLoading(false);
     }
   }
 
-  function handleDrop(e: React.DragEvent) {
-    e.preventDefault();
+  function handleDrop(event: React.DragEvent) {
+    event.preventDefault();
     setDragActive(false);
-    const droppedFile = e.dataTransfer.files[0];
-    if (droppedFile) { setFile(droppedFile); setResult(null); }
+    const droppedFile = event.dataTransfer.files[0];
+
+    if (droppedFile) {
+      setFile(droppedFile);
+      setResult(null);
+      setShowTechnical(false);
+    }
   }
 
   function handleReset() {
     setFile(null);
     setResult(null);
-    if (inputRef.current) inputRef.current.value = '';
+    setShowTechnical(false);
+    setAnnounce('');
+
+    if (inputRef.current) {
+      inputRef.current.value = '';
+    }
   }
 
   return (
-    <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="text-center mb-8">
-        <div className="inline-flex items-center gap-2 bg-primary/5 rounded-full px-4 py-1.5 text-sm text-primary mb-4">
-          <Lock size={14} />
-          SHA-256 Blockchain Verification
+    <main id="main" className="container-read pb-[var(--s-11)]">
+      <div className="page-head">
+        <div className="eyebrow">
+          <span className="eyebrow-dot" />
+          Free · No account required · Public verification
         </div>
-        <h1 className="text-3xl font-bold text-foreground">Document Verification</h1>
-        <p className="text-muted mt-2 max-w-xl mx-auto">
-          Upload any government document to verify its authenticity against the blockchain.
-          Even a single byte change will produce a completely different hash.
+        <h1>Is this document real?</h1>
+        <p className="lead">
+          Upload the copy you received and CYFER will compare it against the
+          official city record. If it matches, you can trust it. If it does not,
+          we will tell you clearly.
         </p>
       </div>
 
-      {/* Upload Area */}
-      <Card className="mb-6">
+      <section className="section" aria-labelledby="verification-upload">
         <div
-          className={`border-2 border-dashed rounded-xl p-10 text-center cursor-pointer transition-all duration-200
-            ${dragActive ? 'border-accent bg-accent/5 scale-[1.01]' : 'border-border hover:border-accent/50 hover:bg-gray-50'}`}
-          onDragOver={(e) => { e.preventDefault(); setDragActive(true); }}
+          className="dropzone"
+          role="button"
+          tabIndex={0}
+          aria-labelledby="verification-upload"
+          aria-describedby="verification-hint"
+          data-drag={dragActive ? 'true' : 'false'}
+          data-has-file={file ? 'true' : 'false'}
+          onClick={() => inputRef.current?.click()}
+          onKeyDown={(event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+              event.preventDefault();
+              inputRef.current?.click();
+            }
+          }}
+          onDragOver={(event) => {
+            event.preventDefault();
+            setDragActive(true);
+          }}
           onDragLeave={() => setDragActive(false)}
           onDrop={handleDrop}
-          onClick={() => inputRef.current?.click()}
         >
-          <Upload size={40} className={`mx-auto mb-3 transition-colors ${dragActive ? 'text-accent' : 'text-muted'}`} />
-          <p className="text-sm font-medium text-foreground">
-            {file ? file.name : 'Drop a file here or click to browse'}
-          </p>
-          <p className="text-xs text-muted mt-1">PDF, DOC, DOCX, XLS, XLSX, TXT, JPG, PNG — Max 50MB</p>
-          <input ref={inputRef} type="file" className="hidden"
-            onChange={(e) => { const f = e.target.files?.[0]; if (f) { setFile(f); setResult(null); } }} />
-        </div>
-        {file && (
-          <div className="mt-4 flex items-center justify-between">
-            <div className="flex items-center gap-2 text-sm">
-              <FileText size={16} className="text-muted" />
-              <span className="font-medium">{file.name}</span>
-              <span className="text-muted">({(file.size / 1024).toFixed(1)} KB)</span>
+          <div className="dropzone-visual">
+            <Upload size={28} />
+          </div>
+          <div className="dropzone-body">
+            <div id="verification-upload" className="dropzone-title">
+              {file ? file.name : 'Drop your document here'}
             </div>
-            <div className="flex gap-2">
-              {result && (
-                <Button variant="ghost" size="sm" onClick={handleReset}>
-                  Try Another
-                </Button>
-              )}
-              <Button onClick={handleVerify} disabled={loading}>
-                {loading ? <><Loader2 size={16} className="animate-spin" /> Verifying...</> : <><Shield size={16} /> Verify</>}
-              </Button>
+            <div id="verification-hint" className="dropzone-hint">
+              {file
+                ? `${(file.size / 1024).toFixed(1)} KB · Ready to verify`
+                : 'Click to choose a file or drag one in. PDF, Word, spreadsheet, text, JPG, and PNG are all supported.'}
             </div>
           </div>
-        )}
-      </Card>
+          {file ? (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={(event) => {
+                event.stopPropagation();
+                handleReset();
+              }}
+            >
+              Pick another file
+            </Button>
+          ) : null}
+          <input
+            ref={inputRef}
+            type="file"
+            className="sr-only"
+            accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.jpg,.jpeg,.png"
+            onChange={(event) => {
+              const nextFile = event.target.files?.[0];
 
-      {/* Verification Result */}
-      {result && (
-        <div className={`animate-fade-in ${result.verified ? '' : 'animate-shake'}`}>
-          <Card className={`border-2 ${result.verified ? 'border-success bg-green-50' : 'border-error bg-red-50'}`}>
-            <div className="flex items-center gap-3 mb-4">
-              {result.verified ? (
-                <div className="w-14 h-14 bg-success/20 rounded-full flex items-center justify-center">
-                  <CheckCircle size={32} className="text-success" />
+              if (nextFile) {
+                setFile(nextFile);
+                setResult(null);
+                setShowTechnical(false);
+              }
+            }}
+          />
+        </div>
+
+        <div className="row mt-4">
+          <Button onClick={handleVerify} disabled={!file || loading}>
+            {loading ? (
+              <>
+                <Loader2 size={16} className="animate-spin" />
+                Checking...
+              </>
+            ) : (
+              <>
+                <Shield size={16} />
+                Verify this document
+              </>
+            )}
+          </Button>
+          {file ? (
+            <Button variant="outline" onClick={handleReset} disabled={loading}>
+              Reset
+            </Button>
+          ) : null}
+        </div>
+
+        {result ? (
+          <section
+            className={`verdict mt-6 ${result.verified ? 'verdict-ok' : 'verdict-bad'}`}
+            aria-live="polite"
+          >
+            <div className="verdict-head">
+              <div className="verdict-icon">
+                {result.verified ? <CheckCircle2 size={36} /> : <XCircle size={36} />}
+              </div>
+              <div className="verdict-meta">
+                <div className="eyebrow" style={{ marginBottom: 8 }}>
+                  <span
+                    className="eyebrow-dot"
+                    style={{
+                      background: result.verified ? 'var(--ok)' : 'var(--bad)',
+                    }}
+                  />
+                  {result.verified ? 'Match found' : 'No match found'}
                 </div>
-              ) : (
-                <div className="w-14 h-14 bg-error/20 rounded-full flex items-center justify-center">
-                  <XCircle size={32} className="text-error" />
-                </div>
-              )}
-              <div>
-                <h2 className="text-xl font-bold">
-                  {result.verified ? 'Document Verified' : 'Verification Failed'}
+                <h2 className="verdict-display">
+                  {result.verified ? "It's real." : "Something's off."}
                 </h2>
-                <p className="text-sm text-muted">{result.message}</p>
+                <p className="verdict-sub">{result.message}</p>
               </div>
             </div>
 
-            {/* Hash Display */}
-            {result.fileHash && (
-              <div className="p-3 bg-white/80 rounded-lg mb-3">
-                <p className="text-xs text-muted mb-1 font-medium">Uploaded File SHA-256 Hash</p>
-                <p className="text-xs font-mono break-all select-all">{result.fileHash}</p>
-              </div>
-            )}
-
-            {/* Verified: Show matching document */}
-            {result.verified && result.document && (
-              <div className="p-3 bg-white/80 rounded-lg space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-muted">Document</span>
-                  <span className="font-medium">{result.document.title}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted">Category</span>
-                  <Badge variant="accent">{result.document.category}</Badge>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-muted">Published</span>
-                  <span>{formatDate(result.document.created_at)}</span>
-                </div>
-                <div className="flex justify-between items-start">
-                  <span className="text-muted">Stored Hash</span>
-                  <span className="font-mono text-xs text-right">{formatHash(result.document.file_hash)}</span>
-                </div>
-                <div className="mt-2 p-2 bg-success/10 rounded-lg flex items-center gap-2 text-success text-xs font-medium">
-                  <CheckCircle size={14} />
-                  Hashes match — this document is authentic and unmodified.
-                </div>
-              </div>
-            )}
-
-            {/* Tampered: Show warning */}
-            {!result.verified && result.fileHash && (
-              <div className="p-3 bg-white/80 rounded-lg">
-                <div className="flex items-start gap-2 text-error text-sm">
-                  <AlertTriangle size={16} className="flex-shrink-0 mt-0.5" />
-                  <div>
-                    <p className="font-medium">This document does not match any record on the blockchain.</p>
-                    <p className="text-muted text-xs mt-1">
-                      This could mean the document has been modified, is not an official government document,
-                      or has not yet been published through CYFER.
-                    </p>
+            <div className="verdict-body">
+              {result.verified && result.document ? (
+                <div className="card card-flat p-5">
+                  <div className="stack-3">
+                    <div className="row-between">
+                      <span className="soft">What this is</span>
+                      <strong>{result.document.title}</strong>
+                    </div>
+                    <div className="row-between">
+                      <span className="soft">Type</span>
+                      <Badge variant="accent">{result.document.category}</Badge>
+                    </div>
+                    <div className="row-between">
+                      <span className="soft">Published</span>
+                      <span>{formatDate(result.document.created_at)}</span>
+                    </div>
+                    <div className="row-between">
+                      <span className="soft">Status</span>
+                      <Badge variant="success">{result.document.status}</Badge>
+                    </div>
                   </div>
                 </div>
+              ) : (
+                <div className="card card-flat border-[var(--bad-line)] p-5">
+                  <div className="flex items-start gap-3">
+                    <AlertTriangle size={22} className="mt-0.5 text-[var(--bad)]" />
+                    <div>
+                      <div className="strong">What could be going on</div>
+                      <ul className="mt-2 space-y-2 pl-5 text-sm leading-6 text-[var(--text-soft)]">
+                        <li>The file may have been edited after it was published.</li>
+                        <li>It may be an unofficial or outdated copy.</li>
+                        <li>It could belong to a different office or city.</li>
+                      </ul>
+                      <p className="mt-3 text-sm text-[var(--text-soft)]">
+                        Browse the official records to look for the correct version before
+                        relying on the document.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {result.fileHash ? (
+                <div className="border-t border-[var(--line)] pt-4">
+                  <button
+                    type="button"
+                    className="btn btn-ghost btn-sm"
+                    onClick={() => setShowTechnical((value) => !value)}
+                  >
+                    {showTechnical ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+                    {showTechnical ? 'Hide technical details' : 'Show technical details'}
+                  </button>
+
+                  {showTechnical ? (
+                    <div className="stack-3 mt-3">
+                      <p className="m-0 text-sm leading-6 text-[var(--text-soft)]">
+                        These are the document fingerprints used for matching. Any change to
+                        the underlying file changes its fingerprint completely.
+                      </p>
+                      <div className={`hash-block ${result.verified ? 'hash-ok' : 'hash-bad'}`}>
+                        <span className="mb-1 block text-[11px] uppercase tracking-[0.12em] text-[var(--text-mute)]">
+                          Uploaded file
+                        </span>
+                        {result.fileHash}
+                      </div>
+                      {result.verified && result.document ? (
+                        <div className="hash-block">
+                          <span className="mb-1 block text-[11px] uppercase tracking-[0.12em] text-[var(--text-mute)]">
+                            Official record
+                          </span>
+                          {result.document.file_hash}
+                        </div>
+                      ) : null}
+                    </div>
+                  ) : null}
+                </div>
+              ) : null}
+
+              <div className="row">
+                {result.verified && result.document ? (
+                  <Link href={`/documents/${result.document.id}`}>
+                    <Button>
+                      <FileText size={15} />
+                      View the full record
+                    </Button>
+                  </Link>
+                ) : (
+                  <Link href="/documents">
+                    <Button variant="outline">
+                      <FileText size={15} />
+                      Browse official records
+                    </Button>
+                  </Link>
+                )}
+                <Button variant="outline" onClick={handleReset}>
+                  Check another file
+                </Button>
               </div>
-            )}
-          </Card>
-        </div>
-      )}
+            </div>
+          </section>
+        ) : null}
+      </section>
 
-      {/* How It Works */}
-      <Card className="mt-8">
-        <h3 className="font-semibold mb-4 flex items-center gap-2">
-          <Shield size={18} className="text-accent" /> How Verification Works
-        </h3>
-        <div className="space-y-4 text-sm text-muted">
-          <div className="flex gap-3">
-            <span className="flex-shrink-0 w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center text-xs font-bold">1</span>
-            <div>
-              <p className="font-medium text-foreground">Upload Your Document</p>
-              <p>Select any government document file you want to verify.</p>
-            </div>
-          </div>
-          <div className="flex gap-3">
-            <span className="flex-shrink-0 w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center text-xs font-bold">2</span>
-            <div>
-              <p className="font-medium text-foreground">SHA-256 Hash Computed</p>
-              <p>A unique cryptographic fingerprint is generated from your file. Even changing a single character produces a completely different hash.</p>
-            </div>
-          </div>
-          <div className="flex gap-3">
-            <span className="flex-shrink-0 w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center text-xs font-bold">3</span>
-            <div>
-              <p className="font-medium text-foreground">Blockchain Comparison</p>
-              <p>The hash is compared against all document hashes recorded on the CYFER blockchain. A match confirms authenticity.</p>
-            </div>
-          </div>
+      <section className="section" aria-labelledby="verify-steps">
+        <div className="section-head">
+          <h2 id="verify-steps">What happens when you verify a file</h2>
+          <p>A straightforward process built to give citizens a clear answer quickly.</p>
         </div>
-      </Card>
+        <div className="grid grid-3">
+          {[
+            {
+              step: '01',
+              title: 'Upload your copy',
+              description:
+                'Choose the file you received from a messenger app, email, office, or printed scan.',
+            },
+            {
+              step: '02',
+              title: 'CYFER computes a fingerprint',
+              description:
+                'The system creates a SHA-256 fingerprint for the uploaded file and compares it against official records.',
+            },
+            {
+              step: '03',
+              title: 'You get a clear result',
+              description:
+                'A match confirms that your copy aligns with the published record. No match means you should verify further before relying on it.',
+            },
+          ].map((item) => (
+            <div key={item.step} className="card p-6">
+              <div className="eyebrow">Step {item.step}</div>
+              <h3 className="mt-2 font-serif text-xl font-semibold text-[var(--ink-900)]">
+                {item.title}
+              </h3>
+              <p className="mt-2 text-sm leading-6 text-[var(--text-soft)]">
+                {item.description}
+              </p>
+            </div>
+          ))}
+        </div>
+      </section>
 
-      {/* Tamper Detection Explainer */}
-      <Card className="mt-6 border-accent/20 bg-accent/5">
-        <h3 className="font-semibold mb-2 flex items-center gap-2">
-          <AlertTriangle size={18} className="text-accent" /> Why Tamper Detection Matters
-        </h3>
-        <p className="text-sm text-muted">
-          Government documents like ordinances, budgets, and contracts must remain authentic.
-          SHA-256 hashing ensures that any modification — even adding a single space — produces a completely
-          different hash, making tampering immediately detectable. Combined with blockchain immutability,
-          CYFER provides citizens with a trustworthy verification tool.
-        </p>
-      </Card>
-    </div>
+      <section className="section">
+        <div className="section-head">
+          <h2>Common questions</h2>
+        </div>
+        <div className="stack-3">
+          {faqItems.map((item) => (
+            <details key={item.question} className="faq">
+              <summary>
+                <span>{item.question}</span>
+                <ChevronDown size={16} />
+              </summary>
+              <p>{item.answer}</p>
+            </details>
+          ))}
+        </div>
+      </section>
+
+      <div className="sr-only" aria-live="polite">
+        {announce}
+      </div>
+    </main>
   );
 }

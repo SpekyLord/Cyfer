@@ -1,14 +1,14 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { DollarSign, Plus, Loader2, CheckCircle, Clock } from 'lucide-react';
-import { Card } from '@/components/ui/Card';
-import { Input } from '@/components/ui/Input';
-import { Button } from '@/components/ui/Button';
+import { useEffect, useState } from 'react';
+import { CheckCircle2, Loader2, Plus } from 'lucide-react';
+import { AdminPageHeader } from '@/components/admin/AdminPageHeader';
 import { Badge } from '@/components/ui/Badge';
-import { Table, TableHeader, TableRow, TableHead, TableCell } from '@/components/ui/Table';
-import { formatCurrency } from '@/utils/formatters';
+import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
+import { Table, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/Table';
 import { BUDGET_CATEGORIES } from '@/utils/constants';
+import { formatCurrency } from '@/utils/formatters';
 
 interface BudgetEntry {
   id: string;
@@ -31,97 +31,164 @@ export default function ManageBudgetPage() {
   const [amount, setAmount] = useState('');
   const [description, setDescription] = useState('');
 
-  useEffect(() => { fetchBudget(); }, []);
+  useEffect(() => {
+    fetchBudget();
+  }, []);
 
   async function fetchBudget() {
     setLoading(true);
+
     try {
       const token = localStorage.getItem('cyfer_token');
       const res = await fetch('/api/budget', {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
       const json = await res.json();
-      if (json.success) setEntries(Array.isArray(json.data) ? json.data : []);
-    } catch (err) { console.error('Failed to fetch budget:', err); }
-    finally { setLoading(false); }
+
+      if (json.success) {
+        setEntries(Array.isArray(json.data) ? json.data : []);
+      }
+    } catch (error) {
+      console.error('Failed to fetch budget:', error);
+    } finally {
+      setLoading(false);
+    }
   }
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
+  async function handleSubmit(event: React.FormEvent) {
+    event.preventDefault();
     setFormLoading(true);
+
     try {
       const token = localStorage.getItem('cyfer_token');
       const res = await fetch('/api/budget', {
         method: 'POST',
-        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ fiscal_year: fiscalYear, category, allocated_amount: parseFloat(amount), description }),
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          fiscal_year: fiscalYear,
+          category,
+          allocated_amount: parseFloat(amount),
+          description,
+        }),
       });
       const json = await res.json();
+
       if (json.success) {
-        setSuccess(`Budget entry for ${category} submitted for approval!`);
-        setCategory(''); setAmount(''); setDescription('');
+        setSuccess(`Budget entry for ${category} submitted for approval.`);
+        setCategory('');
+        setAmount('');
+        setDescription('');
         setShowForm(false);
         fetchBudget();
         setTimeout(() => setSuccess(''), 3000);
       }
-    } catch (err) { console.error('Failed to save budget:', err); }
-    finally { setFormLoading(false); }
+    } catch (error) {
+      console.error('Failed to save budget:', error);
+    } finally {
+      setFormLoading(false);
+    }
   }
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
-          <DollarSign className="text-accent" /> Manage Budget
-        </h1>
-        <Button onClick={() => setShowForm(!showForm)}>
-          <Plus size={16} /> {showForm ? 'Cancel' : 'Add Entry'}
-        </Button>
-      </div>
+      <AdminPageHeader
+        eyebrow="Budget workspace"
+        title="Manage budget entries"
+        description="Add new budget allocations, review their workflow status, and keep the public dashboard current."
+        actions={
+          <Button onClick={() => setShowForm((current) => !current)}>
+            <Plus size={16} />
+            {showForm ? 'Cancel' : 'Add entry'}
+          </Button>
+        }
+      />
 
-      {success && (
-        <div className="mb-4 p-3 bg-green-50 border border-success/20 rounded-lg text-sm text-success flex items-center gap-2">
-          <CheckCircle size={16} /> {success}
+      {success ? (
+        <div className="card mb-6 p-4" style={{ background: 'var(--ok-soft)', borderColor: 'var(--ok-line)' }}>
+          <div className="row text-sm text-[var(--ok)]">
+            <CheckCircle2 size={16} />
+            {success}
+          </div>
         </div>
-      )}
+      ) : null}
 
-      {showForm && (
-        <Card className="mb-6">
-          <h2 className="font-semibold mb-4">Add Budget Entry</h2>
-          <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Input label="Fiscal Year" type="number" value={String(fiscalYear)}
-              onChange={(e) => setFiscalYear(parseInt(e.target.value))} required />
+      {showForm ? (
+        <div className="card mb-6 p-6">
+          <h2 className="font-serif text-2xl font-semibold text-[var(--ink-900)]">Add budget entry</h2>
+          <form onSubmit={handleSubmit} className="mt-5 grid gap-4 md:grid-cols-2">
+            <Input
+              label="Fiscal year"
+              type="number"
+              value={String(fiscalYear)}
+              onChange={(event) => setFiscalYear(parseInt(event.target.value, 10))}
+              required
+            />
             <div>
-              <label className="block text-sm font-medium text-foreground mb-1.5">Category *</label>
-              <select value={category} onChange={(e) => setCategory(e.target.value)} required
-                className="w-full px-3 py-2 rounded-lg border border-border bg-white text-sm focus:outline-none focus:ring-2 focus:ring-accent/40 cursor-pointer">
+              <label className="field-label">Category</label>
+              <select
+                value={category}
+                onChange={(event) => setCategory(event.target.value)}
+                required
+                className="select"
+              >
                 <option value="">Select category...</option>
-                {BUDGET_CATEGORIES.map((cat) => (<option key={cat} value={cat}>{cat}</option>))}
+                {BUDGET_CATEGORIES.map((item) => (
+                  <option key={item} value={item}>
+                    {item}
+                  </option>
+                ))}
               </select>
             </div>
-            <Input label="Allocated Amount (PHP) *" type="number" step="0.01" placeholder="e.g. 5000000"
-              value={amount} onChange={(e) => setAmount(e.target.value)} required />
-            <Input label="Description" placeholder="Brief description..."
-              value={description} onChange={(e) => setDescription(e.target.value)} />
+            <Input
+              label="Allocated amount (PHP)"
+              type="number"
+              step="0.01"
+              value={amount}
+              onChange={(event) => setAmount(event.target.value)}
+              required
+            />
+            <Input
+              label="Description"
+              value={description}
+              onChange={(event) => setDescription(event.target.value)}
+              placeholder="Brief description..."
+            />
             <div className="md:col-span-2">
               <Button type="submit" disabled={formLoading}>
-                {formLoading ? <><Loader2 size={16} className="animate-spin" /> Submitting...</> : 'Submit for Approval'}
+                {formLoading ? (
+                  <>
+                    <Loader2 size={16} className="animate-spin" />
+                    Submitting...
+                  </>
+                ) : (
+                  'Submit for approval'
+                )}
               </Button>
             </div>
           </form>
-        </Card>
-      )}
+        </div>
+      ) : null}
 
       {loading ? (
-        <div className="flex items-center justify-center py-20"><Loader2 size={32} className="animate-spin text-muted" /></div>
+        <div className="flex items-center justify-center py-24">
+          <Loader2 size={32} className="animate-spin text-[var(--text-mute)]" />
+        </div>
       ) : entries.length === 0 ? (
-        <Card className="text-center py-12"><p className="text-muted">No budget entries yet. Click &quot;Add Entry&quot; to get started.</p></Card>
+        <div className="card p-10 text-center">
+          <div className="font-serif text-2xl font-semibold text-[var(--ink-900)]">No budget entries yet</div>
+          <p className="mt-2 text-sm text-[var(--text-soft)]">
+            Add the first budget entry to begin tracking allocations through CYFER.
+          </p>
+        </div>
       ) : (
         <Table>
           <TableHeader>
             <TableRow>
               <TableHead>Category</TableHead>
-              <TableHead>Fiscal Year</TableHead>
+              <TableHead>Fiscal year</TableHead>
               <TableHead>Amount</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Description</TableHead>
@@ -132,17 +199,21 @@ export default function ManageBudgetPage() {
               <TableRow key={entry.id}>
                 <TableCell className="font-medium">{entry.category}</TableCell>
                 <TableCell>{entry.fiscal_year}</TableCell>
-                <TableCell className="font-semibold">{formatCurrency(entry.allocated_amount)}</TableCell>
+                <TableCell>{formatCurrency(entry.allocated_amount)}</TableCell>
                 <TableCell>
-                  {entry.status === 'published' ? (
-                    <Badge variant="success">Published</Badge>
-                  ) : entry.status === 'rejected' ? (
-                    <Badge variant="error">Rejected</Badge>
-                  ) : (
-                    <Badge variant="warning"><Clock size={12} className="mr-1" />Pending</Badge>
-                  )}
+                  <Badge
+                    variant={
+                      entry.status === 'published'
+                        ? 'success'
+                        : entry.status === 'rejected'
+                          ? 'error'
+                          : 'warning'
+                    }
+                  >
+                    {entry.status ?? 'pending'}
+                  </Badge>
                 </TableCell>
-                <TableCell className="text-sm text-muted">{entry.description}</TableCell>
+                <TableCell>{entry.description}</TableCell>
               </TableRow>
             ))}
           </tbody>

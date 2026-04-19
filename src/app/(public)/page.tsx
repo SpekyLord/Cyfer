@@ -1,158 +1,263 @@
 import Link from 'next/link';
-import { Shield, FileText, CheckCircle, Users, BarChart3, ScrollText, Sparkles, ArrowRight, Lock } from 'lucide-react';
-import { Card } from '@/components/ui/Card';
+import {
+  ArrowRight,
+  BarChart3,
+  CheckCircle2,
+  Eye,
+  FileText,
+  Lock,
+  Shield,
+  Sparkles,
+  Users,
+} from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 
-const features = [
-  {
-    icon: FileText,
-    title: 'Tamper-Proof Documents',
-    description: 'Every government document is hashed with SHA-256 and recorded on the blockchain for permanent integrity.',
-    color: 'bg-info/10 text-info',
-  },
+const promises = [
   {
     icon: Users,
-    title: 'Unanimous Consensus',
-    description: 'Documents require approval from all designated officials before publication — no single point of corruption.',
-    color: 'bg-warning/10 text-warning',
+    title: 'No single person decides',
+    description:
+      "Every city document requires sign-off from all key officials — the Mayor, the Treasurer and the Secretary. If even one refuses, it doesn't get published. No one can sneak anything through.",
   },
   {
-    icon: CheckCircle,
-    title: 'Citizen Verification',
-    description: 'Anyone can upload a document to instantly verify its authenticity against the blockchain record.',
-    color: 'bg-success/10 text-success',
+    icon: Shield,
+    title: "Records can't be edited after the fact",
+    description:
+      "Once a document is published, it's locked into a public record that copies itself across separate computers. Changing it anywhere would break every copy — and everyone would see.",
   },
   {
-    icon: Sparkles,
-    title: 'AI Document Summarizer',
-    description: 'Complex government documents made accessible with AI-powered plain-language summaries.',
-    color: 'bg-accent/10 text-accent',
+    icon: Eye,
+    title: "You don't need our permission to check",
+    description:
+      "No account, no email, no tracking. You can check any document right now, anonymously. Your city is paying for this so you can trust what you get.",
   },
 ];
 
-const stats = [
-  { label: 'SHA-256 Hashing', icon: Lock },
-  { label: 'Blockchain Verified', icon: Shield },
-  { label: '100% Consensus Required', icon: Users },
-  { label: 'AI-Powered Summaries', icon: Sparkles },
+const quickActions = [
+  {
+    href: '/verify',
+    title: 'Check a document',
+    description: 'Upload the file you received and compare it against the official city record.',
+    icon: CheckCircle2,
+  },
+  {
+    href: '/documents',
+    title: 'Browse official records',
+    description: 'Read ordinances, resolutions, contracts, budgets, and permits published by the LGU.',
+    icon: FileText,
+  },
+  {
+    href: '/budget',
+    title: 'See where taxes went',
+    description: 'Explore budget allocations in a plain-language breakdown built for public accountability.',
+    icon: BarChart3,
+  },
+];
+
+const trustPoints = [
+  { icon: Lock, label: 'Free, no sign-up' },
+  { icon: Shield, label: 'Your file stays private' },
+  { icon: CheckCircle2, label: 'Approved by all officials' },
+  { icon: Sparkles, label: 'Takes 5 seconds' },
 ];
 
 export default function LandingPage() {
   return (
-    <div>
-      {/* Hero */}
-      <section className="bg-primary text-white py-24 px-4 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-primary to-primary-light opacity-50" />
-        <div className="max-w-5xl mx-auto text-center relative">
-          <div className="inline-flex items-center gap-2 bg-white/10 rounded-full px-4 py-1.5 text-sm text-accent mb-6 animate-fade-in">
-            <Shield size={16} />
-            SDG 16 — Peace, Justice &amp; Strong Institutions
-          </div>
-          <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight animate-fade-in-up">
-            Transparent Governance,<br />
-            <span className="text-accent">Verified by Blockchain</span>
-          </h1>
-          <p className="text-lg md:text-xl text-white/70 max-w-2xl mx-auto mb-10 animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
-            CYFER enables local government units to publish tamper-proof documents
-            and empowers citizens to verify their integrity — building trust through technology.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-            <Link href="/verify">
-              <Button variant="secondary" size="lg" className="animate-pulse-glow">
-                <CheckCircle size={18} />
-                Verify a Document
-              </Button>
-            </Link>
-            <Link href="/documents">
-              <Button variant="outline" size="lg" className="border-white/30 text-white hover:bg-white/10">
-                <FileText size={18} />
-                Browse Documents
-              </Button>
-            </Link>
+    <main id="main">
+      <section className="hero">
+        <div className="container-page hero-inner">
+          <div>
+            <span className="hero-badge">
+              <Shield size={13} />
+              Your city · Open records for everyone
+            </span>
+            <h1>Is this document from city hall actually real?</h1>
+            <p className="lede">
+              Someone hands you an ordinance. A neighbor forwards you a receipt. You get a
+              permit in the mail. Before you rely on it — check it here in 5 seconds.
+              It&apos;s free, you don&apos;t need to sign up, and your file stays on your
+              own device.
+            </p>
+            <div className="hero-cta">
+              <Link href="/verify">
+                <Button size="lg">
+                  <CheckCircle2 size={17} />
+                  Check a document now
+                </Button>
+              </Link>
+              <Link href="/documents">
+                <Button variant="outline" size="lg">
+                  <FileText size={16} />
+                  Browse city records
+                </Button>
+              </Link>
+            </div>
+            <div className="trust-band">
+              {trustPoints.map(({ icon: Icon, label }) => (
+                <span key={label} className="trust-item">
+                  <Icon size={13} />
+                  {label}
+                </span>
+              ))}
+            </div>
           </div>
 
-          {/* Trust Indicators */}
-          <div className="flex flex-wrap justify-center gap-6 mt-16 animate-fade-in" style={{ animationDelay: '0.3s' }}>
-            {stats.map((stat) => (
-              <div key={stat.label} className="flex items-center gap-2 text-sm text-white/50">
-                <stat.icon size={14} className="text-accent" />
-                {stat.label}
+          <div className="hero-card">
+            <div className="eyebrow" style={{ color: '#cfe0e8', marginBottom: 12 }}>
+              Three things you can do here
+            </div>
+            <div className="stack-3">
+              {quickActions.map(({ href, title, description, icon: Icon }) => (
+                <Link
+                  key={href}
+                  href={href}
+                  className="rounded-[var(--r-lg)] border border-white/15 bg-white/5 p-4 text-white transition-colors hover:bg-white/10"
+                >
+                  <div className="flex items-center gap-4">
+                    <span className="grid h-10 w-10 place-items-center rounded-[var(--r-md)] bg-white/10">
+                      <Icon size={20} />
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block font-serif text-lg font-semibold">{title}</span>
+                      <span className="mt-1 block text-sm text-[var(--text-inv-soft)]">
+                        {description}
+                      </span>
+                    </span>
+                    <ArrowRight size={16} />
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="section">
+        <div className="container-page">
+          <div className="grid gap-[var(--s-8)] lg:grid-cols-[1.1fr_1fr] lg:items-center">
+            <div>
+              <div className="eyebrow">
+                <span className="eyebrow-dot" />
+                Why this matters for you
+              </div>
+              <h2 className="mt-3 font-serif text-[clamp(28px,4vw,40px)] font-semibold leading-tight tracking-[-0.02em] text-[var(--ink-900)]">
+                A PDF on your phone isn&apos;t proof of anything — until you can check it.
+              </h2>
+              <p className="mt-4 text-[17px] leading-7 text-[var(--text-soft)]">
+                Every week, someone in your city pays a fine from a fake notice, or follows
+                a forwarded ordinance that was quietly edited, or gets turned away with a
+                permit that looks real but isn&apos;t. Most people have no way to tell the
+                difference.
+              </p>
+              <p className="mt-4 text-[17px] leading-7 text-[var(--text-soft)]">
+                CYFER fixes that. Your city officials record every official document in a
+                public, tamper-proof system. You can instantly check any copy you have
+                against it — here, for free, without signing up.
+              </p>
+              <div className="row mt-5">
+                <Link href="/verify">
+                  <Button variant="secondary">
+                    <CheckCircle2 size={16} />
+                    Check a document
+                  </Button>
+                </Link>
+                <Link href="/blockchain">
+                  <Button variant="ghost">
+                    How it works
+                    <ArrowRight size={14} />
+                  </Button>
+                </Link>
+              </div>
+            </div>
+
+            <div className="card p-6" style={{ background: 'var(--card-alt)' }}>
+              <div className="eyebrow">A quick example</div>
+              <div className="stack-3 mt-4">
+                <div className="flex items-start gap-3">
+                  <span className="grid h-8 w-8 flex-none place-items-center rounded-full bg-[var(--ink-100)] font-serif font-semibold text-[var(--ink-900)]">
+                    1
+                  </span>
+                  <p className="m-0 text-sm text-[var(--text-soft)]">
+                    <strong className="text-[var(--ink-900)]">You receive a PDF</strong>{' '}
+                    — a friend forwards you the new tricycle fare ordinance on Messenger.
+                  </p>
+                </div>
+                <div className="flex items-start gap-3">
+                  <span className="grid h-8 w-8 flex-none place-items-center rounded-full bg-[var(--ink-100)] font-serif font-semibold text-[var(--ink-900)]">
+                    2
+                  </span>
+                  <p className="m-0 text-sm text-[var(--text-soft)]">
+                    <strong className="text-[var(--ink-900)]">You drop it in here</strong>{' '}
+                    — one click, the file never leaves your phone.
+                  </p>
+                </div>
+                <div className="flex items-start gap-3">
+                  <span className="grid h-8 w-8 flex-none place-items-center rounded-full bg-[var(--ok)] text-white">
+                    <CheckCircle2 size={16} />
+                  </span>
+                  <p className="m-0 text-sm text-[var(--text-soft)]">
+                    <strong className="text-[var(--ok)]">You get your answer</strong>{' '}
+                    — &quot;It&apos;s real.&quot; Or &quot;Something&apos;s off&quot; — with the real copy one click away.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section
+        className="section"
+        style={{
+          background: 'var(--ink-025)',
+          borderTop: '1px solid var(--line)',
+          borderBottom: '1px solid var(--line)',
+        }}
+      >
+        <div className="container-page">
+          <div className="section-head mx-auto max-w-[620px] text-center">
+            <div className="eyebrow justify-center">
+              <span className="eyebrow-dot" />
+              Three promises to you
+            </div>
+            <h2>Why you can trust what this site tells you</h2>
+          </div>
+          <div className="grid grid-3">
+            {promises.map(({ icon: Icon, title, description }) => (
+              <div key={title} className="card p-6">
+                <span className="mb-4 grid h-12 w-12 place-items-center rounded-[12px] bg-[var(--ink-900)] text-white">
+                  <Icon size={22} />
+                </span>
+                <h3 className="m-0 font-serif text-xl font-semibold text-[var(--ink-900)]">
+                  {title}
+                </h3>
+                <p className="mt-2 text-sm leading-6 text-[var(--text-soft)]">
+                  {description}
+                </p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Features */}
-      <section className="py-20 px-4">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-2">How CYFER Works</h2>
-            <p className="text-muted">Four pillars of governance transparency</p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {features.map((feature) => (
-              <Card key={feature.title} hover className="flex gap-4 group">
-                <div className={`flex-shrink-0 w-12 h-12 ${feature.color} rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform`}>
-                  <feature.icon size={24} />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-foreground mb-1">{feature.title}</h3>
-                  <p className="text-sm text-muted">{feature.description}</p>
-                </div>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* How it works flow */}
-      <section className="py-16 px-4 bg-gray-50">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-2xl font-bold text-center mb-10">The Verification Flow</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <div className="w-14 h-14 bg-primary text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">1</div>
-              <h3 className="font-semibold mb-2">Upload &amp; Hash</h3>
-              <p className="text-sm text-muted">Officials upload documents. SHA-256 generates a unique cryptographic fingerprint.</p>
+      <section className="section">
+        <div className="container-page">
+          <div className="card card-lead p-6 sm:p-8" style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 24, alignItems: 'center' }}>
+            <div>
+              <div className="strong font-serif text-[22px]">Have a document in hand?</div>
+              <div className="soft mt-1 text-sm">Takes 5 seconds. No sign-up. Your file stays on your device.</div>
             </div>
-            <div className="text-center">
-              <div className="w-14 h-14 bg-primary text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">2</div>
-              <h3 className="font-semibold mb-2">Consensus Approval</h3>
-              <p className="text-sm text-muted">All designated officials must unanimously approve before publication.</p>
-            </div>
-            <div className="text-center">
-              <div className="w-14 h-14 bg-primary text-white rounded-full flex items-center justify-center text-xl font-bold mx-auto mb-4">3</div>
-              <h3 className="font-semibold mb-2">Citizen Verification</h3>
-              <p className="text-sm text-muted">Anyone can verify any document against the blockchain — no account needed.</p>
+            <div className="row">
+              <Link href="/verify">
+                <Button size="lg">
+                  <CheckCircle2 size={17} />
+                  Check it now
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
       </section>
-
-      {/* CTA */}
-      <section className="py-20 px-4">
-        <div className="max-w-3xl mx-auto text-center">
-          <h2 className="text-2xl font-bold mb-3">Explore Government Transparency</h2>
-          <p className="text-muted mb-8">Browse published documents, view budget allocations, or check the audit trail.</p>
-          <div className="flex flex-wrap gap-3 justify-center">
-            <Link href="/budget">
-              <Button variant="outline" size="md">
-                <BarChart3 size={16} />
-                Budget Dashboard
-                <ArrowRight size={14} />
-              </Button>
-            </Link>
-            <Link href="/audit">
-              <Button variant="outline" size="md">
-                <ScrollText size={16} />
-                Audit Trail
-                <ArrowRight size={14} />
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </section>
-    </div>
+    </main>
   );
 }

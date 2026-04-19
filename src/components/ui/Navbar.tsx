@@ -1,96 +1,127 @@
 'use client';
 
-import Link from 'next/link';
 import Image from 'next/image';
+import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, FileText, CheckCircle, BarChart3, ScrollText, Blocks, Menu, X } from 'lucide-react';
+import {
+  BarChart3,
+  Blocks,
+  CheckCircle2,
+  FileText,
+  Home,
+  Menu,
+  Shield,
+  X,
+} from 'lucide-react';
 import { useState } from 'react';
+import { Button } from '@/components/ui/Button';
 
 const navLinks = [
   { href: '/', label: 'Home', icon: Home },
-  { href: '/documents', label: 'Documents', icon: FileText },
-  { href: '/verify', label: 'Verify', icon: CheckCircle },
-  { href: '/blockchain', label: 'Blockchain', icon: Blocks },
-  { href: '/budget', label: 'Budget', icon: BarChart3 },
-  { href: '/audit', label: 'Audit Trail', icon: ScrollText },
+  { href: '/verify', label: 'Check a document', icon: CheckCircle2 },
+  { href: '/documents', label: 'Official records', icon: FileText },
+  { href: '/budget', label: 'Where taxes went', icon: BarChart3 },
+  { href: '/blockchain', label: 'How it works', icon: Blocks },
 ];
 
 export function Navbar() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
 
+  const closeMenu = () => setMobileOpen(false);
+
   return (
-    <nav className="sticky top-0 z-40 bg-primary text-white shadow-lg">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          <Link href="/" className="flex items-center gap-2">
-            <Image src="/Cyfer Logo.png" alt="CYFER Logo" width={48} height={48} className="h-12 w-12 object-contain" />
-            <span className="text-xl font-bold tracking-tight">CYFER</span>
+    <header className="topbar">
+      <div className="container-page">
+        <div className="topbar-row">
+          <Link href="/" className="brand" onClick={closeMenu}>
+            <span className="brand-mark">
+              <Image
+                src="/Cyfer Logo.png"
+                alt="CYFER"
+                width={56}
+                height={56}
+                priority
+              />
+            </span>
+            <span>
+              <span className="brand-name">CYFER</span>
+              <span className="brand-sub">Verified Civic Records</span>
+            </span>
           </Link>
 
-          <div className="hidden md:flex items-center gap-1">
+          <nav className="nav-primary" aria-label="Primary">
             {navLinks.map(({ href, label, icon: Icon }) => {
-              const isActive = href === '/' ? pathname === '/' : pathname.startsWith(href);
+              const isActive = href === '/' ? pathname === href : pathname.startsWith(href);
+
               return (
                 <Link
                   key={href}
                   href={href}
-                  className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium
-                    ${isActive ? 'bg-accent/20 text-white' : 'text-white/70 hover:bg-white/10 hover:text-white'}`}
+                  className="nav-link"
+                  aria-current={isActive ? 'page' : undefined}
                 >
-                  <Icon size={16} />
+                  <Icon size={15} />
                   {label}
                 </Link>
               );
             })}
-          </div>
+          </nav>
 
-          <div className="hidden md:flex items-center">
-            <Link
-              href="/login"
-              className="px-4 py-2 text-sm font-medium text-white bg-accent rounded-lg hover:bg-accent-light transition-colors"
+          <div className="topbar-actions">
+            <span className="topbar-signin">
+              <Link href="/login">
+                <Button variant="outline" size="sm">
+                  <Shield size={14} />
+                  Official sign-in
+                </Button>
+              </Link>
+            </span>
+            <button
+              type="button"
+              className="btn btn-outline btn-sm topbar-hamburger"
+              aria-label={mobileOpen ? 'Close navigation menu' : 'Open navigation menu'}
+              aria-expanded={mobileOpen}
+              onClick={() => setMobileOpen((value) => !value)}
             >
-              Admin Login
-            </Link>
+              {mobileOpen ? <X size={16} /> : <Menu size={16} />}
+            </button>
           </div>
-
-          <button
-            className="md:hidden text-white cursor-pointer"
-            onClick={() => setMobileOpen(!mobileOpen)}
-          >
-            {mobileOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
         </div>
       </div>
 
-      {mobileOpen && (
-        <div className="md:hidden border-t border-white/10 bg-primary-light">
-          <div className="px-4 py-3 space-y-1">
-            {navLinks.map(({ href, label, icon: Icon }) => {
-              const isActive = href === '/' ? pathname === '/' : pathname.startsWith(href);
-              return (
-                <Link
-                  key={href}
-                  href={href}
-                  onClick={() => setMobileOpen(false)}
-                  className={`flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium
-                    ${isActive ? 'bg-accent/20 text-white' : 'text-white/70 hover:bg-white/10'}`}
-                >
-                  <Icon size={16} />
-                  {label}
-                </Link>
-              );
-            })}
-            <Link
-              href="/login"
-              onClick={() => setMobileOpen(false)}
-              className="flex items-center gap-2 px-3 py-2.5 text-sm font-medium text-white bg-accent rounded-lg"
-            >
-              Admin Login
-            </Link>
+      {mobileOpen ? (
+        <div className="border-t border-[var(--line)] bg-[rgba(247,245,240,0.96)]">
+          <div className="container-page py-3">
+            <nav className="stack-2" aria-label="Mobile">
+              {navLinks.map(({ href, label, icon: Icon }) => {
+                const isActive = href === '/' ? pathname === href : pathname.startsWith(href);
+
+                return (
+                  <Link
+                    key={href}
+                    href={href}
+                    className="nav-link justify-between"
+                    aria-current={isActive ? 'page' : undefined}
+                    onClick={closeMenu}
+                  >
+                    <span className="row">
+                      <Icon size={15} />
+                      {label}
+                    </span>
+                  </Link>
+                );
+              })}
+              <Link href="/login" onClick={closeMenu}>
+                <Button variant="secondary" size="sm" className="w-full">
+                  <Shield size={14} />
+                  Official sign-in
+                </Button>
+              </Link>
+            </nav>
           </div>
         </div>
-      )}
-    </nav>
+      ) : null}
+    </header>
   );
 }

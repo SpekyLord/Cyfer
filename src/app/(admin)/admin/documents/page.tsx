@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { FileText, Loader2 } from 'lucide-react';
-import { Card } from '@/components/ui/Card';
+import { AdminPageHeader } from '@/components/admin/AdminPageHeader';
 import { Badge } from '@/components/ui/Badge';
-import { Table, TableHeader, TableRow, TableHead, TableCell } from '@/components/ui/Table';
+import { Table, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/Table';
 import { formatDate, formatHash } from '@/utils/formatters';
 
 interface DocumentData {
@@ -30,37 +30,77 @@ export default function ManageDocumentsPage() {
 
   const fetchDocuments = useCallback(async () => {
     setLoading(true);
+
     try {
       const token = localStorage.getItem('cyfer_token');
       const params = new URLSearchParams({ limit: '50' });
-      if (statusFilter) params.set('status', statusFilter);
-      const res = await fetch(`/api/documents?${params}`, { headers: { Authorization: `Bearer ${token}` } });
+
+      if (statusFilter) {
+        params.set('status', statusFilter);
+      }
+
+      const res = await fetch(`/api/documents?${params}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       const json = await res.json();
-      if (json.success) setDocuments(json.data.documents ?? []);
-    } catch (err) { console.error('Failed to fetch documents:', err); }
-    finally { setLoading(false); }
+
+      if (json.success) {
+        setDocuments(json.data.documents ?? []);
+      }
+    } catch (error) {
+      console.error('Failed to fetch documents:', error);
+    } finally {
+      setLoading(false);
+    }
   }, [statusFilter]);
 
-  useEffect(() => { fetchDocuments(); }, [fetchDocuments]);
+  useEffect(() => {
+    fetchDocuments();
+  }, [fetchDocuments]);
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
-        <FileText className="text-accent" /> Manage Documents
-      </h1>
-      <div className="mb-4">
-        <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}
-          className="px-3 py-2 rounded-lg border border-border bg-white text-sm focus:outline-none focus:ring-2 focus:ring-accent/40 cursor-pointer">
-          <option value="">All Statuses</option>
-          <option value="pending_approval">Pending Approval</option>
-          <option value="published">Published</option>
-          <option value="rejected">Rejected</option>
-        </select>
+      <AdminPageHeader
+        eyebrow="Document library"
+        title="Manage documents"
+        description="Review the records currently stored in CYFER, including their publication status and stored fingerprints."
+      />
+
+      <div className="card mb-6 p-6">
+        <div className="row-between gap-4">
+          <div>
+            <div className="eyebrow">
+              <FileText size={12} />
+              Filter records
+            </div>
+            <p className="mt-2 text-sm text-[var(--text-soft)]">
+              Narrow the table by publication status to find drafts, published records, or rejections.
+            </p>
+          </div>
+          <select
+            value={statusFilter}
+            onChange={(event) => setStatusFilter(event.target.value)}
+            className="select min-w-52"
+          >
+            <option value="">All statuses</option>
+            <option value="pending_approval">Pending approval</option>
+            <option value="published">Published</option>
+            <option value="rejected">Rejected</option>
+          </select>
+        </div>
       </div>
+
       {loading ? (
-        <div className="flex items-center justify-center py-20"><Loader2 size={32} className="animate-spin text-muted" /></div>
+        <div className="flex items-center justify-center py-24">
+          <Loader2 size={32} className="animate-spin text-[var(--text-mute)]" />
+        </div>
       ) : documents.length === 0 ? (
-        <Card className="text-center py-12"><p className="text-muted">No documents found.</p></Card>
+        <div className="card p-10 text-center">
+          <div className="font-serif text-2xl font-semibold text-[var(--ink-900)]">No documents found</div>
+          <p className="mt-2 text-sm text-[var(--text-soft)]">
+            Try a different status filter or upload a new document to begin.
+          </p>
+        </div>
       ) : (
         <Table>
           <TableHeader>
@@ -73,13 +113,25 @@ export default function ManageDocumentsPage() {
             </TableRow>
           </TableHeader>
           <tbody>
-            {documents.map((doc) => (
-              <TableRow key={doc.id}>
-                <TableCell><Link href={`/documents/${doc.id}`} className="font-medium text-info hover:underline">{doc.title}</Link></TableCell>
-                <TableCell><Badge variant="accent">{doc.category}</Badge></TableCell>
-                <TableCell><Badge variant={statusVariant[doc.status] ?? 'default'}>{doc.status.replace('_', ' ')}</Badge></TableCell>
-                <TableCell><span className="font-mono text-xs">{formatHash(doc.file_hash)}</span></TableCell>
-                <TableCell className="text-sm text-muted">{formatDate(doc.created_at)}</TableCell>
+            {documents.map((document) => (
+              <TableRow key={document.id}>
+                <TableCell>
+                  <Link href={`/documents/${document.id}`} className="font-medium text-[var(--ink-700)] hover:underline">
+                    {document.title}
+                  </Link>
+                </TableCell>
+                <TableCell>
+                  <Badge variant="accent">{document.category}</Badge>
+                </TableCell>
+                <TableCell>
+                  <Badge variant={statusVariant[document.status] ?? 'default'}>
+                    {document.status.replace('_', ' ')}
+                  </Badge>
+                </TableCell>
+                <TableCell>
+                  <span className="mono text-xs">{formatHash(document.file_hash)}</span>
+                </TableCell>
+                <TableCell>{formatDate(document.created_at)}</TableCell>
               </TableRow>
             ))}
           </tbody>

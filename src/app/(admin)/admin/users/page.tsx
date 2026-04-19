@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Users, Loader2, Shield } from 'lucide-react';
-import { Card } from '@/components/ui/Card';
+import { useEffect, useState } from 'react';
+import { Loader2, Shield } from 'lucide-react';
+import { AdminPageHeader } from '@/components/admin/AdminPageHeader';
 import { Badge } from '@/components/ui/Badge';
-import { Table, TableHeader, TableRow, TableHead, TableCell } from '@/components/ui/Table';
+import { Table, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/Table';
 import { formatDate } from '@/utils/formatters';
 
 interface UserData {
@@ -28,33 +28,49 @@ export default function UserManagementPage() {
           headers: { Authorization: `Bearer ${token}` },
         });
         const json = await res.json();
+
         if (json.success && json.data) {
-          // For now show current user; full user list requires a dedicated endpoint
           setUsers([json.data]);
         }
-      } catch (err) { console.error('Failed to fetch users:', err); }
-      finally { setLoading(false); }
+      } catch (error) {
+        console.error('Failed to fetch users:', error);
+      } finally {
+        setLoading(false);
+      }
     }
+
     fetchUsers();
   }, []);
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-2">
-        <Users className="text-accent" /> User Management
-      </h1>
+      <AdminPageHeader
+        eyebrow="Access control"
+        title="User management"
+        description="View the currently authenticated account details and the role information available through the existing admin API."
+      />
 
-      <Card className="mb-6 bg-amber-50 border-amber-200">
-        <div className="flex items-center gap-2 text-sm text-amber-800">
-          <Shield size={16} />
-          <span>Only Super Admins can manage users. Contact your system administrator to add or modify user accounts.</span>
+      <div className="card mb-6 p-5" style={{ background: 'var(--warn-soft)', borderColor: 'var(--warn-line)' }}>
+        <div className="row flex-nowrap items-start gap-3">
+          <Shield size={18} className="mt-0.5 text-[var(--warn)]" />
+          <p className="m-0 text-sm leading-6 text-[var(--text-soft)]">
+            Full user management is still limited by the current backend endpoints.
+            This screen reflects the data available today without changing the API surface.
+          </p>
         </div>
-      </Card>
+      </div>
 
       {loading ? (
-        <div className="flex items-center justify-center py-20"><Loader2 size={32} className="animate-spin text-muted" /></div>
+        <div className="flex items-center justify-center py-24">
+          <Loader2 size={32} className="animate-spin text-[var(--text-mute)]" />
+        </div>
       ) : users.length === 0 ? (
-        <Card className="text-center py-12"><p className="text-muted">No users found.</p></Card>
+        <div className="card p-10 text-center">
+          <div className="font-serif text-2xl font-semibold text-[var(--ink-900)]">No users found</div>
+          <p className="mt-2 text-sm text-[var(--text-soft)]">
+            The authenticated user endpoint did not return any user records.
+          </p>
+        </div>
       ) : (
         <Table>
           <TableHeader>
@@ -70,14 +86,14 @@ export default function UserManagementPage() {
             {users.map((user) => (
               <TableRow key={user.id}>
                 <TableCell className="font-medium">{user.name}</TableCell>
-                <TableCell className="text-sm">{user.email}</TableCell>
+                <TableCell>{user.email}</TableCell>
                 <TableCell>
                   <Badge variant={user.role === 'super_admin' ? 'accent' : 'info'}>
                     {user.role === 'super_admin' ? 'Super Admin' : 'Admin'}
                   </Badge>
                 </TableCell>
-                <TableCell className="text-sm text-muted">{user.department}</TableCell>
-                <TableCell className="text-sm text-muted">{user.created_at ? formatDate(user.created_at) : '—'}</TableCell>
+                <TableCell>{user.department}</TableCell>
+                <TableCell>{user.created_at ? formatDate(user.created_at) : '-'}</TableCell>
               </TableRow>
             ))}
           </tbody>

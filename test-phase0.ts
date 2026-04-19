@@ -1,7 +1,7 @@
 // Test script for Phase 0 utilities
 // Run with: npx tsx test-phase0.ts
 
-import { hashString, hashFile, hashBuffer } from './src/lib/hash';
+import { hashString, hashBuffer } from './src/lib/hash';
 import { formatDate, formatCurrency, formatFileSize, formatRelativeTime, formatHash } from './src/utils/formatters';
 import { DOCUMENT_CATEGORIES, MAX_FILE_SIZE, APP_NAME, TEAM_MEMBERS } from './src/utils/constants';
 
@@ -91,10 +91,10 @@ function testConstants() {
 console.log('\n🔧 Test 4: TypeScript Types');
 console.log('-'.repeat(60));
 
-function testTypes() {
+async function testTypes() {
   try {
     // Import types to verify they compile
-    const { DocumentCategory, DocumentStatus, UserRole } = require('./src/lib/types');
+    const { DocumentCategory, DocumentStatus, UserRole } = await import('./src/lib/types');
 
     console.log(`✅ DocumentCategory enum exists`);
     console.log(`   Values: ${Object.keys(DocumentCategory).join(', ')}`);
@@ -114,7 +114,7 @@ async function runTests() {
   await testHashing();
   testFormatters();
   testConstants();
-  testTypes();
+  await testTypes();
 
   console.log('\n' + '='.repeat(60));
   console.log('✅ Phase 0 Core Utilities Test Complete!');
