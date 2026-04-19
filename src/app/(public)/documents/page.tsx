@@ -94,7 +94,8 @@ export default function DocumentsPage() {
               className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-mute)]"
             />
             <input
-              className="input h-12 pl-11 text-[15px]"
+              className="input"
+              style={{ height: 48, paddingLeft: 42, fontSize: 15 }}
               placeholder="What are you looking for? Try a title or keyword."
               value={search}
               onChange={(event) => {

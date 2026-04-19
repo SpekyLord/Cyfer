@@ -105,7 +105,7 @@ export default function BudgetPage() {
           </section>
 
           <section className="section-tight">
-            <div className="grid gap-[var(--s-6)] lg:grid-cols-[1fr_1.2fr]">
+            <div className="grid-asymmetric">
               <div className="card p-6">
                 <div className="row-between">
                   <div>

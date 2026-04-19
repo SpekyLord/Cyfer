@@ -54,15 +54,15 @@ function CustomLegend({ payload }: any) {
 
 export function BudgetChart({ categories }: { categories: BudgetCategory[] }) {
   return (
-    <div className="h-[360px] w-full">
+    <div style={{ height: 420, width: '100%', minWidth: 0 }}>
       <ResponsiveContainer width="100%" height="100%">
         <PieChart>
           <Pie
             data={categories}
             cx="50%"
-            cy="44%"
-            innerRadius={70}
-            outerRadius={118}
+            cy="42%"
+            innerRadius={65}
+            outerRadius={108}
             paddingAngle={2}
             dataKey="amount"
             nameKey="category"

@@ -28,7 +28,7 @@ export function DocumentCard({ document }: DocumentCardProps) {
   const categoryLabel = categoryLabels[document.category] ?? document.category;
 
   return (
-    <Link href={`/documents/${document.id}`} className="card card-hover flex h-full flex-col p-6 no-underline">
+    <Link href={`/documents/${document.id}`} className="card card-hover flex h-full flex-col p-6 no-underline overflow-hidden">
       <div className="row">
         <span className="tag">{categoryLabel}</span>
         <span className="tag tag-ok">
@@ -37,10 +37,10 @@ export function DocumentCard({ document }: DocumentCardProps) {
         </span>
       </div>
 
-      <h3 className="mt-4 font-serif text-xl font-semibold leading-7 text-[var(--ink-900)]">
+      <h3 className="mt-4 font-serif text-xl font-semibold leading-7 text-[var(--ink-900)]" style={{ overflowWrap: 'break-word', wordBreak: 'break-word' }}>
         {document.title}
       </h3>
-      <p className="mt-3 flex-1 text-sm leading-6 text-[var(--text-soft)]">
+      <p className="mt-3 flex-1 text-sm leading-6 text-[var(--text-soft)]" style={{ overflowWrap: 'break-word' }}>
         {document.description}
       </p>
 

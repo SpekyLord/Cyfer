@@ -234,8 +234,8 @@ export default function BlockchainPage() {
           </div>
           <div className="stat">
             <span className="stat-label">Latest hash</span>
-            <span className="stat-value mono text-sm">
-              {blocks.length > 0 ? `${blocks[blocks.length - 1].hash.slice(0, 10)}...` : '---'}
+            <span className="stat-value mono" style={{ fontSize: 15 }}>
+              {blocks.length > 0 ? `${blocks[blocks.length - 1].hash.slice(0, 16)}…` : '---'}
             </span>
           </div>
         </div>
