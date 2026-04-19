@@ -154,7 +154,7 @@ body {
 img,
 svg {
   display: block;
-  max-width: 100%;
+  flex-shrink: 0;
 }
 
 ::selection {
@@ -390,6 +390,7 @@ svg {
   cursor: pointer;
   user-select: none;
   text-decoration: none;
+  white-space: nowrap;
   transition:
     background var(--dur-1),
     color var(--dur-1),
