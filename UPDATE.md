@@ -284,3 +284,62 @@ But optimize it around this principle:
 > **clarity over complexity, trust over flashiness, usability over feature density, polish over expansion**
 
 If the verification flow, homepage, and shared design system become excellent, CYFER has a very strong chance of standing out.
+
+---
+
+## 13. Proposal framing compatibility
+
+The submitted proposal framing is:
+
+> **CYFER – A blockchain-powered transparency platform for local governments that enforces unanimous multi-official approval before public documents are released, with citizen-facing verification and audit tools.**
+
+This is **compatible** with the HCI final direction and should not be treated as a contradiction.
+
+The safest way to stay consistent is:
+
+- keep the original proposal claim intact
+- do **not** deny or replace the blockchain / unanimous approval / audit tool framing
+- present the final as the **interface and interaction design realization** of that same concept
+
+In other words:
+
+- the proposal explains **what CYFER is**
+- the HCI final explains **how users interact with CYFER effectively**
+
+### Best verbal framing
+
+Use language like this in your presentation:
+
+> CYFER is a blockchain-powered transparency platform for local governments. For this HCI final, I focused on designing the interface so that citizens and officials can use that system clearly, confidently, and with minimal confusion.
+
+That keeps you aligned with the proposal while shifting the grading focus toward usability and interaction design.
+
+### What not to do
+
+Avoid saying things like:
+- this is no longer about blockchain
+- I changed the project into something else
+- the consensus system is not important anymore
+
+Those can make it sound inconsistent.
+
+### What to do instead
+
+Say that the final prototype emphasizes these proposal features through HCI:
+- unanimous multi-official approval
+- citizen-facing verification
+- public audit visibility
+- trustworthy release of official documents
+
+Then explain that the interface was refined to support:
+- clear status visibility
+- understandable verification outcomes
+- intuitive navigation
+- accessible public use
+- reduced cognitive load for first-time users
+
+### One-line reconciliation statement
+
+If the instructor questions the framing, use this:
+
+> The core concept stayed the same as my proposal. What changed is that for the HCI final, I intentionally prioritized the user experience, interface clarity, and accessibility of that same transparency system.
