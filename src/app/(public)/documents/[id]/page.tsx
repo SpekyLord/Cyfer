@@ -114,7 +114,7 @@ export default function DocumentDetailPage({
 
   if (loading) {
     return (
-      <main id="main" className="container-page pb-[var(--s-11)]">
+      <main id="main" className="container-page" style={{ paddingBottom: "var(--s-11)" }}>
         <div className="page-head">
           <div className="h-5 w-40 animate-pulse rounded bg-[var(--ink-050)]" />
           <div className="mt-4 h-12 w-3/4 animate-pulse rounded bg-[var(--ink-050)]" />
@@ -162,7 +162,7 @@ export default function DocumentDetailPage({
         : 'warning';
 
   return (
-    <main id="main" className="container-page pb-[var(--s-11)]">
+    <main id="main" className="container-page" style={{ paddingBottom: "var(--s-11)" }}>
       <div className="page-head">
         <Link href="/documents" className="inline-flex">
           <Button variant="ghost" size="sm" className="mb-4">
@@ -276,7 +276,7 @@ export default function DocumentDetailPage({
             <div className="mt-4 grid min-h-72 place-items-center rounded-[var(--r-lg)] border border-[var(--line)] bg-[var(--ink-025)] p-6 text-center text-[var(--text-mute)]">
               <div>
                 <FileText size={32} className="mx-auto" />
-                <div className="mt-3 text-sm font-medium text-[var(--ink-900)]">
+                <div className="mt-3 text-sm font-medium text-[var(--ink-900)]" style={{ overflowWrap: 'break-word', wordBreak: 'break-all' }}>
                   {document.file_name}
                 </div>
                 <div className="mt-1 text-xs">

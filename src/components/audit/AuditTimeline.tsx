@@ -78,7 +78,7 @@ export function AuditTimeline({ transactions }: { transactions: Transaction[] })
                   <div className="text-sm font-medium text-[var(--ink-900)]">
                     {transaction.description}
                   </div>
-                  <div className="mt-1 row text-xs text-[var(--text-mute)]" style={{ gap: 10 }}>
+                  <div className="mt-1 row text-xs text-[var(--text-mute)]" style={{ gap: 10, flexWrap: 'wrap' }}>
                     <span>{formatDateTime(transaction.created_at)}</span>
                     <span className="mono">{transaction.performed_by}</span>
                     <span className="mono">{transaction.tx_hash.slice(0, 14)}...</span>

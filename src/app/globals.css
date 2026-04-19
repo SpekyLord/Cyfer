@@ -135,6 +135,7 @@ body {
 html {
   -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;
+  overflow-x: clip;
 }
 
 body {
@@ -146,6 +147,7 @@ body {
   line-height: var(--lh-body);
   font-feature-settings: "ss01", "cv11";
   -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
   text-rendering: optimizeLegibility;
 }
 
@@ -555,6 +557,8 @@ svg {
   border: 1px solid var(--line);
   border-radius: var(--r-lg);
   box-shadow: var(--shadow-1);
+  overflow: hidden;
+  min-width: 0;
 }
 
 .card-body {
@@ -608,6 +612,8 @@ svg {
   line-height: var(--lh-tight);
   letter-spacing: -0.02em;
   color: var(--ink-900);
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .page-head .lead {
@@ -616,6 +622,8 @@ svg {
   font-size: var(--t-lead);
   line-height: 1.5;
   color: var(--text-soft);
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .page-head-actions {
@@ -926,18 +934,25 @@ svg {
 .dropzone-body {
   flex: 1;
   min-width: 0;
+  overflow: hidden;
 }
 
 .dropzone-title {
   font-size: 16px;
   font-weight: 600;
   color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .dropzone-hint {
   margin-top: 2px;
   color: var(--text-mute);
   font-size: 13px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .chain {
@@ -1140,6 +1155,7 @@ svg {
   align-items: center;
   justify-content: space-between;
   gap: var(--s-3);
+  flex-wrap: wrap;
 }
 
 .muted {
@@ -1188,9 +1204,16 @@ svg {
 .hero-inner {
   position: relative;
   display: grid;
-  grid-template-columns: 1.15fr 0.85fr;
-  gap: var(--s-9);
+  grid-template-columns: 1fr;
+  gap: var(--s-7);
   align-items: center;
+}
+
+@media (min-width: 900px) {
+  .hero-inner {
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: var(--s-9);
+  }
 }
 
 .hero h1 {
@@ -1514,7 +1537,16 @@ textarea {
 
   .dropzone {
     flex-direction: column;
+    align-items: center;
     text-align: center;
+  }
+
+  .dropzone-body {
+    width: 100%;
+  }
+
+  .dropzone-hint {
+    white-space: normal;
   }
 
   .foot-row {

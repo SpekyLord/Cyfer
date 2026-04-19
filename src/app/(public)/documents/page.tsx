@@ -72,7 +72,7 @@ export default function DocumentsPage() {
   );
 
   return (
-    <main id="main" className="container-page pb-[var(--s-11)]">
+    <main id="main" className="container-page" style={{ paddingBottom: 'var(--s-11)' }}>
       <div className="page-head">
         <div className="eyebrow">
           <span className="eyebrow-dot" />

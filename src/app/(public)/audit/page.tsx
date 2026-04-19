@@ -79,7 +79,7 @@ export default function AuditPage() {
   const totalPages = Math.max(1, Math.ceil(total / limit));
 
   return (
-    <main id="main" className="container-page pb-[var(--s-11)]">
+    <main id="main" className="container-page" style={{ paddingBottom: "var(--s-11)" }}>
       <div className="page-head">
         <div className="eyebrow">
           <span className="eyebrow-dot" />
@@ -106,7 +106,7 @@ export default function AuditPage() {
           </div>
           <div className="stat">
             <span className="stat-label">Latest hash</span>
-            <span className="stat-value mono text-sm">
+            <span className="stat-value mono" style={{ fontSize: 15 }}>
               {transactions.length > 0 ? `${transactions[0].tx_hash.slice(0, 10)}...` : '---'}
             </span>
           </div>
@@ -115,7 +115,7 @@ export default function AuditPage() {
 
       <section className="section-tight">
         <div className="card p-6">
-          <div className="row-between gap-4">
+          <div className="row-between gap-4" style={{ flexWrap: 'wrap' }}>
             <div>
               <div className="eyebrow">
                 <ScrollText size={12} />
@@ -133,7 +133,8 @@ export default function AuditPage() {
                   setActionType(event.target.value);
                   setPage(1);
                 }}
-                className="select min-w-52"
+                className="select"
+                style={{ minWidth: 200 }}
               >
                 <option value="">All actions</option>
                 {ACTION_TYPES.map((type) => (

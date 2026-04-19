@@ -131,7 +131,7 @@ export default function VerifyPage() {
   }
 
   return (
-    <main id="main" className="container-read pb-[var(--s-11)]">
+    <main id="main" className="container-read" style={{ paddingBottom: 'var(--s-11)' }}>
       <div className="page-head">
         <div className="eyebrow">
           <span className="eyebrow-dot" />
@@ -261,9 +261,9 @@ export default function VerifyPage() {
               {result.verified && result.document ? (
                 <div className="card card-flat p-5">
                   <div className="stack-3">
-                    <div className="row-between">
-                      <span className="soft">What this is</span>
-                      <strong>{result.document.title}</strong>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                      <span className="soft" style={{ fontSize: 13 }}>What this is</span>
+                      <strong style={{ overflowWrap: 'break-word', wordBreak: 'break-word' }}>{result.document.title}</strong>
                     </div>
                     <div className="row-between">
                       <span className="soft">Type</span>
