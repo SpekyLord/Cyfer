@@ -41,14 +41,14 @@ export function Navbar() {
               <Image
                 src="/Cyfer Logo.png"
                 alt="CYFER"
-                width={56}
-                height={56}
+                width={80}
+                height={80}
                 priority
               />
             </span>
             <span>
               <span className="brand-name">CYFER</span>
-              <span className="brand-sub">Verified Civic Records</span>
+              <span className="brand-sub" style={{ whiteSpace: 'nowrap' }}>Verified Civic Records</span>
             </span>
           </Link>
 
