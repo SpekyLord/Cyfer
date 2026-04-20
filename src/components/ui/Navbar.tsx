@@ -10,6 +10,7 @@ import {
   FileText,
   Home,
   Menu,
+  ScrollText,
   Shield,
   X,
 } from 'lucide-react';
@@ -22,6 +23,7 @@ const navLinks = [
   { href: '/documents', label: 'Official records', icon: FileText },
   { href: '/budget', label: 'Where taxes went', icon: BarChart3 },
   { href: '/blockchain', label: 'How it works', icon: Blocks },
+  { href: '/audit', label: 'Audit log', icon: ScrollText },
 ];
 
 export function Navbar() {
