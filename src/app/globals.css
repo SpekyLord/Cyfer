@@ -313,9 +313,14 @@ svg {
   margin-left: auto;
 }
 
-@media (min-width: 900px) {
+@media (min-width: 560px) {
   .nav-primary {
     display: flex;
+    width: 100%;
+    order: 3;
+    margin-left: 0;
+    padding-bottom: 10px;
+    overflow-x: auto;
   }
 }
 
@@ -323,18 +328,18 @@ svg {
   display: none;
 }
 
-@media (min-width: 900px) {
+@media (min-width: 560px) {
   .topbar-signin {
     display: inline-flex;
   }
 }
 
-.topbar-hamburger {
+.topbar-hamburger.btn {
   display: inline-flex;
 }
 
-@media (min-width: 900px) {
-  .topbar-hamburger {
+@media (min-width: 560px) {
+  .topbar-hamburger.btn {
     display: none;
   }
 }
@@ -372,6 +377,33 @@ svg {
   align-items: center;
   gap: var(--s-2);
   margin-left: auto;
+}
+
+@media (min-width: 560px) {
+  .topbar-row {
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s-4);
+    min-height: auto;
+    padding-top: 14px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .topbar-row {
+    flex-wrap: nowrap;
+    gap: var(--s-6);
+    min-height: 88px;
+    padding-top: 0;
+  }
+
+  .nav-primary {
+    width: auto;
+    order: 0;
+    margin-left: auto;
+    padding-bottom: 0;
+    overflow: visible;
+  }
 }
 
 .btn {

@@ -43,6 +43,23 @@ export function Navbar() {
     };
   }, [mobileOpen]);
 
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(min-width: 560px)');
+
+    const handleViewportChange = (event: MediaQueryList | MediaQueryListEvent) => {
+      if (event.matches) {
+        setMobileOpen(false);
+      }
+    };
+
+    handleViewportChange(mediaQuery);
+    mediaQuery.addEventListener('change', handleViewportChange);
+
+    return () => {
+      mediaQuery.removeEventListener('change', handleViewportChange);
+    };
+  }, []);
+
   return (
     <header className="topbar">
       <div className="container-page">
@@ -100,7 +117,7 @@ export function Navbar() {
       </div>
 
       {mobileOpen ? (
-        <div className="fixed inset-0 z-[60] bg-[rgba(4,29,45,0.28)] md:hidden">
+        <div className="fixed inset-0 z-[60] bg-[rgba(4,29,45,0.28)]">
           <button
             type="button"
             className="absolute inset-0"
