@@ -36,20 +36,20 @@ const promises = [
 const quickActions = [
   {
     href: '/verify',
-    title: 'Check a document',
-    description: 'Upload the file you received and compare it against the official city record.',
+    title: 'Verify a Document',
+    description: 'Upload the file you received and check it against the official city record.',
     icon: CheckCircle2,
   },
   {
     href: '/documents',
-    title: 'Browse official records',
+    title: 'Browse Documents',
     description: 'Read ordinances, resolutions, contracts, budgets, and permits published by the LGU.',
     icon: FileText,
   },
   {
     href: '/budget',
-    title: 'See where taxes went',
-    description: 'Explore budget allocations in a plain-language breakdown built for public accountability.',
+    title: 'Budget Transparency',
+    description: 'Explore budget allocations and spending data for public accountability.',
     icon: BarChart3,
   },
 ];
@@ -82,13 +82,13 @@ export default function LandingPage() {
               <Link href="/verify">
                 <Button size="lg">
                   <CheckCircle2 size={17} />
-                  Check a document now
+                  Verify a Document
                 </Button>
               </Link>
               <Link href="/documents">
                 <Button variant="outline" size="lg">
                   <FileText size={16} />
-                  Browse city records
+                  Browse Documents
                 </Button>
               </Link>
             </div>
@@ -104,7 +104,7 @@ export default function LandingPage() {
 
           <div className="hero-card">
             <div className="eyebrow" style={{ color: '#cfe0e8', marginBottom: 12 }}>
-              Three things you can do here
+              What you can do here
             </div>
             <div className="stack-3">
               {quickActions.map(({ href, title, description, icon: Icon }) => (
@@ -158,7 +158,7 @@ export default function LandingPage() {
                 <Link href="/verify">
                   <Button variant="secondary">
                     <CheckCircle2 size={16} />
-                    Check a document
+                    Verify a Document
                   </Button>
                 </Link>
                 <Link href="/blockchain">
@@ -251,7 +251,7 @@ export default function LandingPage() {
               <Link href="/verify">
                 <Button size="lg">
                   <CheckCircle2 size={17} />
-                  Check it now
+                  Verify Now
                 </Button>
               </Link>
             </div>

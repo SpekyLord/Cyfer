@@ -19,11 +19,11 @@ import { Button } from '@/components/ui/Button';
 
 const navLinks = [
   { href: '/', label: 'Home', icon: Home },
-  { href: '/verify', label: 'Check a document', icon: CheckCircle2 },
-  { href: '/documents', label: 'Official records', icon: FileText },
-  { href: '/budget', label: 'Where taxes went', icon: BarChart3 },
-  { href: '/blockchain', label: 'How it works', icon: Blocks },
-  { href: '/audit', label: 'Audit log', icon: ScrollText },
+  { href: '/verify', label: 'Verify Document', icon: CheckCircle2 },
+  { href: '/documents', label: 'Documents', icon: FileText },
+  { href: '/budget', label: 'Budget', icon: BarChart3 },
+  { href: '/audit', label: 'Audit Log', icon: ScrollText },
+  { href: '/blockchain', label: 'Blockchain', icon: Blocks },
 ];
 
 export function Navbar() {
