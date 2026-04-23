@@ -134,19 +134,14 @@ export default function LandingPage() {
         }}
       >
         <div className="container-page">
-          <div
-            className="row-between gap-4"
-            style={{ marginBottom: 'var(--s-6)', justifyContent: 'center' }}
-          >
-            <div className="section-head mx-auto max-w-[720px] text-center" style={{ marginBottom: 0 }}>
-              <div className="eyebrow">
+          <div className="section-head mx-auto max-w-[720px] text-center" style={{ marginBottom: 'var(--s-6)' }}>
+            <div className="eyebrow justify-center">
                 <span className="eyebrow-dot" />
                 Need public proof?
-              </div>
-              <h2>Transparency tools</h2>
-              <p>Use these when you want to inspect the public history behind a record.</p>
             </div>
-            <Link href="/transparency" className="inline-flex justify-center">
+            <h2>Transparency tools</h2>
+            <p>Use these when you want to inspect the public history behind a record.</p>
+            <Link href="/transparency" className="mt-4 inline-flex justify-center">
               <Button variant="outline">
                 Open Transparency
                 <ArrowRight size={14} />
