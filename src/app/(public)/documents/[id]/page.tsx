@@ -15,7 +15,6 @@ import {
   Upload,
   XCircle,
 } from 'lucide-react';
-import { PublicSOP } from '@/components/public/PublicSOP';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { formatDate, formatDateTime, formatFileSize } from '@/utils/formatters';
@@ -359,26 +358,54 @@ export default function DocumentDetailPage({
         </div>
 
         <aside className="stack">
-          <PublicSOP
-            compact
-            title="What should I do here?"
-            purpose="This page shows the official published version of one city record."
-            steps={[
-              {
-                title: 'Check the status first',
-                description: 'Make sure the record is published before you rely on it.',
-              },
-              {
-                title: 'Download the official copy',
-                description: 'Use the file here if you need the trusted version.',
-              },
-              {
-                title: 'Verify your own copy if needed',
-                description: 'Go to Verify when you want to compare another file with this record.',
-              },
-            ]}
-            next="Use the official file on this page if your own copy looks different, older, or incomplete."
-          />
+          <div className="card p-5 sm:p-6">
+            <div className="eyebrow">Quick guide</div>
+            <h2 className="mt-2 font-serif text-[clamp(24px,3vw,32px)] font-semibold tracking-[-0.02em] text-[var(--ink-900)]">
+              What should I do here?
+            </h2>
+            <p className="mt-3 text-sm leading-6 text-[var(--text-soft)]">
+              This page shows the official published version of one city record.
+            </p>
+
+            <div className="stack-3 mt-5">
+              {[
+                {
+                  title: 'Check the status first',
+                  description: 'Make sure the record is published before you rely on it.',
+                },
+                {
+                  title: 'Download the official copy',
+                  description: 'Use the file here if you need the trusted version.',
+                },
+                {
+                  title: 'Verify your own copy if needed',
+                  description: 'Go to Verify when you want to compare another file with this record.',
+                },
+              ].map((step, index) => (
+                <div
+                  key={step.title}
+                  className="rounded-[var(--r-md)] border border-[var(--line)] bg-[var(--card-alt)] px-4 py-3"
+                >
+                  <div className="row flex-nowrap items-center gap-3">
+                    <span className="grid h-7 w-7 flex-none place-items-center rounded-full bg-[var(--ink-900)] text-xs font-semibold text-white">
+                      {index + 1}
+                    </span>
+                    <div className="strong text-sm">{step.title}</div>
+                  </div>
+                  <p className="mt-2 text-sm leading-6 text-[var(--text-soft)]">
+                    {step.description}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-5 rounded-[var(--r-md)] border border-[var(--ink-100)] bg-[var(--ink-025)] px-4 py-3">
+              <div className="eyebrow">What to do next</div>
+              <p className="mt-2 text-sm leading-6 text-[var(--text-soft)]">
+                Use the official file on this page if your own copy looks different, older, or incomplete.
+              </p>
+            </div>
+          </div>
         </aside>
       </section>
 

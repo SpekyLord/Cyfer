@@ -313,7 +313,7 @@ svg {
   margin-left: auto;
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 900px) {
   .nav-primary {
     display: flex;
   }
@@ -323,7 +323,7 @@ svg {
   display: none;
 }
 
-@media (min-width: 640px) {
+@media (min-width: 900px) {
   .topbar-signin {
     display: inline-flex;
   }
@@ -333,7 +333,7 @@ svg {
   display: inline-flex;
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 900px) {
   .topbar-hamburger {
     display: none;
   }

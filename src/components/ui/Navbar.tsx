@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
+  ArrowRight,
   BarChart3,
   CheckCircle2,
   FileText,
@@ -13,7 +14,7 @@ import {
   Shield,
   X,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/Button';
 
 const navLinks = [
@@ -29,6 +30,18 @@ export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const closeMenu = () => setMobileOpen(false);
+
+  useEffect(() => {
+    if (mobileOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [mobileOpen]);
 
   return (
     <header className="topbar">
@@ -87,9 +100,37 @@ export function Navbar() {
       </div>
 
       {mobileOpen ? (
-        <div className="border-t border-[var(--line)] bg-[rgba(247,245,240,0.96)]">
-          <div className="container-page py-3">
-            <nav className="stack-2" aria-label="Mobile">
+        <div className="fixed inset-0 z-[60] bg-[rgba(4,29,45,0.28)] md:hidden">
+          <button
+            type="button"
+            className="absolute inset-0"
+            aria-label="Close navigation menu"
+            onClick={closeMenu}
+          />
+
+          <div className="absolute inset-x-4 top-4 rounded-[20px] border border-[var(--line)] bg-[var(--card)] p-4 shadow-[var(--shadow-3)]">
+            <div className="row-between gap-3">
+              <div>
+                <div className="eyebrow">Menu</div>
+                <div className="mt-1 font-serif text-2xl font-semibold text-[var(--ink-900)]">
+                  Where do you want to go?
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={closeMenu}
+                className="grid h-10 w-10 place-items-center rounded-[var(--r-md)] border border-[var(--line)] bg-[var(--card)] text-[var(--ink-900)]"
+                aria-label="Close navigation menu"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <p className="mt-3 text-sm leading-6 text-[var(--text-soft)]">
+              Pick one simple path below. If you already have a file, start with Verify.
+            </p>
+
+            <nav className="stack-2 mt-4" aria-label="Mobile">
               {navLinks.map(({ href, label, icon: Icon }) => {
                 const isActive = href === '/' ? pathname === href : pathname.startsWith(href);
 
@@ -97,24 +138,36 @@ export function Navbar() {
                   <Link
                     key={href}
                     href={href}
-                    className="nav-link justify-between"
+                    className={`row-between rounded-[var(--r-md)] border px-4 py-3 no-underline transition-colors ${
+                      isActive
+                        ? 'border-[var(--ink-300)] bg-[var(--ink-025)] text-[var(--ink-900)]'
+                        : 'border-[var(--line)] bg-[var(--card)] text-[var(--text)]'
+                    }`}
                     aria-current={isActive ? 'page' : undefined}
                     onClick={closeMenu}
                   >
-                    <span className="row">
-                      <Icon size={15} />
+                    <span className="row flex-nowrap">
+                      <Icon size={16} />
                       {label}
                     </span>
+                    <ArrowRight size={14} className="text-[var(--text-mute)]" />
                   </Link>
                 );
               })}
-              <Link href="/login" onClick={closeMenu}>
+            </nav>
+
+            <div className="mt-4 rounded-[var(--r-lg)] border border-[var(--line)] bg-[var(--ink-025)] p-4">
+              <div className="eyebrow">Officials</div>
+              <p className="mt-2 text-sm leading-6 text-[var(--text-soft)]">
+                Sign in only if you are an authorized city official using the admin workspace.
+              </p>
+              <Link href="/login" onClick={closeMenu} className="mt-3 inline-flex w-full">
                 <Button variant="secondary" size="sm" className="w-full">
                   <Shield size={14} />
                   Official sign-in
                 </Button>
               </Link>
-            </nav>
+            </div>
           </div>
         </div>
       ) : null}
