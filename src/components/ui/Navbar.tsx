@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   BarChart3,
-  Blocks,
   CheckCircle2,
   FileText,
   Home,
@@ -19,11 +18,10 @@ import { Button } from '@/components/ui/Button';
 
 const navLinks = [
   { href: '/', label: 'Home', icon: Home },
-  { href: '/verify', label: 'Verify Document', icon: CheckCircle2 },
-  { href: '/documents', label: 'Documents', icon: FileText },
+  { href: '/verify', label: 'Verify', icon: CheckCircle2 },
+  { href: '/documents', label: 'Official Records', icon: FileText },
   { href: '/budget', label: 'Budget', icon: BarChart3 },
-  { href: '/audit', label: 'Audit Log', icon: ScrollText },
-  { href: '/blockchain', label: 'Blockchain', icon: Blocks },
+  { href: '/transparency', label: 'Transparency', icon: ScrollText },
 ];
 
 export function Navbar() {
@@ -38,17 +36,13 @@ export function Navbar() {
         <div className="topbar-row">
           <Link href="/" className="brand" onClick={closeMenu}>
             <span className="brand-mark">
-              <Image
-                src="/Cyfer Logo.png"
-                alt="CYFER"
-                width={80}
-                height={80}
-                priority
-              />
+              <Image src="/Cyfer Logo.png" alt="CYFER" width={80} height={80} priority />
             </span>
             <span>
               <span className="brand-name">CYFER</span>
-              <span className="brand-sub" style={{ whiteSpace: 'nowrap' }}>Verified Civic Records</span>
+              <span className="brand-sub" style={{ whiteSpace: 'nowrap' }}>
+                Verified Civic Records
+              </span>
             </span>
           </Link>
 

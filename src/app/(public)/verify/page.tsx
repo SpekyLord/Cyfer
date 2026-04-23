@@ -13,6 +13,7 @@ import {
   Upload,
   XCircle,
 } from 'lucide-react';
+import { PublicSOP } from '@/components/public/PublicSOP';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { formatDate } from '@/utils/formatters';
@@ -35,22 +36,21 @@ const faqItems = [
   {
     question: 'What happens when I upload a file?',
     answer:
-      'CYFER securely computes a document fingerprint and compares it with the official records stored in the system. The result tells you whether the file matches a published record.',
+      'CYFER compares your file with the matching published record and gives you a clear result.',
   },
   {
     question: "What if the document doesn't match?",
     answer:
-      'Do not rely on that copy as official. It may be altered, outdated, or never published through CYFER. You can browse the official records here to look for the correct version.',
+      'Do not rely on it yet. Open the official record first and compare it with the copy you have.',
   },
   {
     question: 'What kinds of files can I check?',
-    answer:
-      'PDF, Word, spreadsheet, text, and common image files are supported. Use the exact copy you received whenever possible for the most accurate result.',
+    answer: 'PDF, Word, spreadsheet, text, and common image files are supported.',
   },
   {
     question: 'Why does a tiny change matter?',
     answer:
-      'A file fingerprint changes completely if the document content changes, even by a single character. That is what makes tampering detectable.',
+      'Even a small file change creates a different fingerprint, which helps CYFER detect tampering.',
   },
 ];
 
@@ -135,15 +135,37 @@ export default function VerifyPage() {
       <div className="page-head">
         <div className="eyebrow">
           <span className="eyebrow-dot" />
-          Free · No account required · Public verification
+          Free - No account required - Public verification
         </div>
         <h1>Is this document real?</h1>
         <p className="lead">
-          Upload the copy you received and CYFER will compare it against the
-          official city record. If it matches, you can trust it. If it does not,
-          we will tell you clearly.
+          Upload the file you received. CYFER will tell you if it matches the
+          official published record.
         </p>
       </div>
+
+      <section className="section-tight">
+        <PublicSOP
+          compact
+          title="What to do on this page"
+          purpose="Use this page when someone already gave you a document and you want a quick answer."
+          steps={[
+            {
+              title: 'Upload the file you received',
+              description: 'Pick the copy from your phone or computer.',
+            },
+            {
+              title: 'Wait for the result',
+              description: 'CYFER checks if it matches the official record.',
+            },
+            {
+              title: 'Open the official copy if needed',
+              description: 'If there is no match, compare it with the published record first.',
+            },
+          ]}
+          next="If the result says no match, go to Official Records before you rely on the document."
+        />
+      </section>
 
       <section className="section" aria-labelledby="verification-upload">
         <div
@@ -177,7 +199,7 @@ export default function VerifyPage() {
             </div>
             <div id="verification-hint" className="dropzone-hint">
               {file
-                ? `${(file.size / 1024).toFixed(1)} KB · Ready to verify`
+                ? `${(file.size / 1024).toFixed(1)} KB - Ready to verify`
                 : 'Click to choose a file or drag one in. PDF, Word, spreadsheet, text, JPG, and PNG are all supported.'}
             </div>
           </div>
@@ -262,8 +284,12 @@ export default function VerifyPage() {
                 <div className="card card-flat p-5">
                   <div className="stack-3">
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                      <span className="soft" style={{ fontSize: 13 }}>What this is</span>
-                      <strong style={{ overflowWrap: 'break-word', wordBreak: 'break-word' }}>{result.document.title}</strong>
+                      <span className="soft" style={{ fontSize: 13 }}>
+                        What this is
+                      </span>
+                      <strong style={{ overflowWrap: 'break-word', wordBreak: 'break-word' }}>
+                        {result.document.title}
+                      </strong>
                     </div>
                     <div className="row-between">
                       <span className="soft">Type</span>
@@ -291,8 +317,7 @@ export default function VerifyPage() {
                         <li>It could belong to a different office or city.</li>
                       </ul>
                       <p className="mt-3 text-sm text-[var(--text-soft)]">
-                        Browse the official records to look for the correct version before
-                        relying on the document.
+                        Open the official record before you rely on the document.
                       </p>
                     </div>
                   </div>
@@ -313,8 +338,7 @@ export default function VerifyPage() {
                   {showTechnical ? (
                     <div className="stack-3 mt-3">
                       <p className="m-0 text-sm leading-6 text-[var(--text-soft)]">
-                        These are the document fingerprints used for matching. Any change to
-                        the underlying file changes its fingerprint completely.
+                        These fingerprints are the technical values CYFER used during the match check.
                       </p>
                       <div className={`hash-block ${result.verified ? 'hash-ok' : 'hash-bad'}`}>
                         <span className="mb-1 block text-[11px] uppercase tracking-[0.12em] text-[var(--text-mute)]">
@@ -340,14 +364,14 @@ export default function VerifyPage() {
                   <Link href={`/documents/${result.document.id}`}>
                     <Button>
                       <FileText size={15} />
-                      View the full record
+                      View official record
                     </Button>
                   </Link>
                 ) : (
                   <Link href="/documents">
                     <Button variant="outline">
                       <FileText size={15} />
-                      Browse official records
+                      Open official records
                     </Button>
                   </Link>
                 )}
@@ -358,50 +382,32 @@ export default function VerifyPage() {
             </div>
           </section>
         ) : null}
-      </section>
 
-      <section className="section" aria-labelledby="verify-steps">
-        <div className="section-head">
-          <h2 id="verify-steps">What happens when you verify a file</h2>
-          <p>A straightforward process built to give citizens a clear answer quickly.</p>
-        </div>
-        <div className="grid grid-3">
-          {[
-            {
-              step: '01',
-              title: 'Upload your copy',
-              description:
-                'Choose the file you received from a messenger app, email, office, or printed scan.',
-            },
-            {
-              step: '02',
-              title: 'CYFER computes a fingerprint',
-              description:
-                'The system creates a SHA-256 fingerprint for the uploaded file and compares it against official records.',
-            },
-            {
-              step: '03',
-              title: 'You get a clear result',
-              description:
-                'A match confirms that your copy aligns with the published record. No match means you should verify further before relying on it.',
-            },
-          ].map((item) => (
-            <div key={item.step} className="card p-6">
-              <div className="eyebrow">Step {item.step}</div>
-              <h3 className="mt-2 font-serif text-xl font-semibold text-[var(--ink-900)]">
-                {item.title}
-              </h3>
+        <div className="card mt-6 p-5" style={{ background: 'var(--ink-025)' }}>
+          <div className="row-between gap-4">
+            <div>
+              <div className="eyebrow">Need public proof?</div>
               <p className="mt-2 text-sm leading-6 text-[var(--text-soft)]">
-                {item.description}
+                If you want more than a yes-or-no result, open the public activity history
+                or the technical ledger view.
               </p>
             </div>
-          ))}
+            <div className="row">
+              <Link href="/audit">
+                <Button variant="outline" size="sm">Activity Log</Button>
+              </Link>
+              <Link href="/blockchain">
+                <Button variant="ghost" size="sm">Blockchain</Button>
+              </Link>
+            </div>
+          </div>
         </div>
       </section>
 
       <section className="section">
         <div className="section-head">
           <h2>Common questions</h2>
+          <p>Short answers for first-time users.</p>
         </div>
         <div className="stack-3">
           {faqItems.map((item) => (

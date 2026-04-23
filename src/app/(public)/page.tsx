@@ -1,64 +1,50 @@
 import Link from 'next/link';
 import {
   ArrowRight,
-  BarChart3,
   CheckCircle2,
-  Eye,
   FileText,
-  Lock,
+  ScrollText,
   Shield,
-  Sparkles,
-  Users,
 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 
-const promises = [
-  {
-    icon: Users,
-    title: 'No single person decides',
-    description:
-      "Every city document requires sign-off from all key officials — the Mayor, the Treasurer and the Secretary. If even one refuses, it doesn't get published. No one can sneak anything through.",
-  },
-  {
-    icon: Shield,
-    title: "Records can't be edited after the fact",
-    description:
-      "Once a document is published, it's locked into a public record that copies itself across separate computers. Changing it anywhere would break every copy — and everyone would see.",
-  },
-  {
-    icon: Eye,
-    title: "You don't need our permission to check",
-    description:
-      "No account, no email, no tracking. You can check any document right now, anonymously. Your city is paying for this so you can trust what you get.",
-  },
-];
-
-const quickActions = [
-  {
-    href: '/verify',
-    title: 'Verify a Document',
-    description: 'Upload the file you received and check it against the official city record.',
-    icon: CheckCircle2,
-  },
-  {
-    href: '/documents',
-    title: 'Browse Documents',
-    description: 'Read ordinances, resolutions, contracts, budgets, and permits published by the LGU.',
-    icon: FileText,
-  },
-  {
-    href: '/budget',
-    title: 'Budget Transparency',
-    description: 'Explore budget allocations and spending data for public accountability.',
-    icon: BarChart3,
-  },
-];
-
 const trustPoints = [
-  { icon: Lock, label: 'Free, no sign-up' },
-  { icon: Shield, label: 'Your file stays private' },
-  { icon: CheckCircle2, label: 'Approved by all officials' },
-  { icon: Sparkles, label: 'Takes 5 seconds' },
+  { icon: Shield, label: 'Free and public' },
+  { icon: CheckCircle2, label: 'Fast yes or no answer' },
+  { icon: FileText, label: 'Official records available' },
+];
+
+const startSteps = [
+  {
+    step: '1',
+    title: 'Have a file already?',
+    description: 'Start with Verify and get a clear answer first.',
+  },
+  {
+    step: '2',
+    title: 'Need the official copy?',
+    description: 'Open Official Records and find the published version.',
+  },
+  {
+    step: '3',
+    title: 'Need budget information?',
+    description: 'Use Budget for approved public totals and categories.',
+  },
+];
+
+const transparencyLinks = [
+  {
+    href: '/audit',
+    title: 'Activity Log',
+    description: 'See the public history of uploads, approvals, and publications.',
+    icon: ScrollText,
+  },
+  {
+    href: '/blockchain',
+    title: 'Blockchain',
+    description: 'Review the advanced ledger view and network status.',
+    icon: Shield,
+  },
 ];
 
 export default function LandingPage() {
@@ -69,14 +55,12 @@ export default function LandingPage() {
           <div>
             <span className="hero-badge">
               <Shield size={13} />
-              Your city · Open records for everyone
+              Public records for everyone
             </span>
-            <h1>Is this document from city hall actually real?</h1>
+            <h1>Need to check if a city document is real?</h1>
             <p className="lede">
-              Someone hands you an ordinance. A neighbor forwards you a receipt. You get a
-              permit in the mail. Before you rely on it — check it here in 5 seconds.
-              It&apos;s free, you don&apos;t need to sign up, and your file stays on your
-              own device.
+              Start with Verify when you already have a file. CYFER gives you a
+              fast, plain answer and points you to the official record if you need it.
             </p>
             <div className="hero-cta">
               <Link href="/verify">
@@ -88,7 +72,7 @@ export default function LandingPage() {
               <Link href="/documents">
                 <Button variant="outline" size="lg">
                   <FileText size={16} />
-                  Browse Documents
+                  Browse Official Records
                 </Button>
               </Link>
             </div>
@@ -104,28 +88,26 @@ export default function LandingPage() {
 
           <div className="hero-card">
             <div className="eyebrow" style={{ color: '#cfe0e8', marginBottom: 12 }}>
-              What you can do here
+              Start here
             </div>
             <div className="stack-3">
-              {quickActions.map(({ href, title, description, icon: Icon }) => (
-                <Link
-                  key={href}
-                  href={href}
-                  className="rounded-[var(--r-lg)] border border-white/15 bg-white/5 p-4 text-white transition-colors hover:bg-white/10"
+              {startSteps.map((item) => (
+                <div
+                  key={item.step}
+                  className="rounded-[var(--r-lg)] border border-white/15 bg-white/5 p-4 text-white"
                 >
-                  <div className="flex items-center gap-4">
-                    <span className="grid h-10 w-10 place-items-center rounded-[var(--r-md)] bg-white/10">
-                      <Icon size={20} />
+                  <div className="flex items-start gap-4">
+                    <span className="grid h-10 w-10 place-items-center rounded-full bg-white/10 font-serif text-lg font-semibold">
+                      {item.step}
                     </span>
                     <span className="min-w-0 flex-1">
-                      <span className="block font-serif text-lg font-semibold">{title}</span>
+                      <span className="block font-serif text-lg font-semibold">{item.title}</span>
                       <span className="mt-1 block text-sm text-[var(--text-inv-soft)]">
-                        {description}
+                        {item.description}
                       </span>
                     </span>
-                    <ArrowRight size={16} />
                   </div>
-                </Link>
+                </div>
               ))}
             </div>
           </div>
@@ -134,80 +116,49 @@ export default function LandingPage() {
 
       <section className="section">
         <div className="container-page">
-          <div className="grid gap-[var(--s-8)] lg:grid-cols-[1.1fr_1fr] lg:items-center">
-            <div>
+          <div className="card card-lead p-6 sm:p-8">
+            <div className="section-head" style={{ marginBottom: 'var(--s-5)' }}>
               <div className="eyebrow">
                 <span className="eyebrow-dot" />
-                Why this matters for you
+                Simple SOP
               </div>
-              <h2 className="mt-3 font-serif text-[clamp(28px,4vw,40px)] font-semibold leading-tight tracking-[-0.02em] text-[var(--ink-900)]">
-                A PDF on your phone isn&apos;t proof of anything — until you can check it.
-              </h2>
-              <p className="mt-4 text-[17px] leading-7 text-[var(--text-soft)]">
-                Every week, someone in your city pays a fine from a fake notice, or follows
-                a forwarded ordinance that was quietly edited, or gets turned away with a
-                permit that looks real but isn&apos;t. Most people have no way to tell the
-                difference.
-              </p>
-              <p className="mt-4 text-[17px] leading-7 text-[var(--text-soft)]">
-                CYFER fixes that. Your city officials record every official document in a
-                public, tamper-proof system. You can instantly check any copy you have
-                against it — here, for free, without signing up.
-              </p>
-              <div className="row mt-5">
-                <Link href="/verify">
-                  <Button variant="secondary">
-                    <CheckCircle2 size={16} />
-                    Verify a Document
-                  </Button>
-                </Link>
-                <Link href="/blockchain">
-                  <Button variant="ghost">
-                    How it works
-                    <ArrowRight size={14} />
-                  </Button>
-                </Link>
-              </div>
+              <h2>How to use CYFER</h2>
+              <p>Use these three steps if you are not sure where to begin.</p>
             </div>
-
-            <div className="card p-6" style={{ background: 'var(--card-alt)' }}>
-              <div className="eyebrow">A quick example</div>
-              <div className="stack-3 mt-4">
-                <div className="flex items-start gap-3">
-                  <span className="grid h-8 w-8 flex-none place-items-center rounded-full bg-[var(--ink-100)] font-serif font-semibold text-[var(--ink-900)]">
-                    1
-                  </span>
-                  <p className="m-0 text-sm text-[var(--text-soft)]">
-                    <strong className="text-[var(--ink-900)]">You receive a PDF</strong>{' '}
-                    — a friend forwards you the new tricycle fare ordinance on Messenger.
+            <div className="grid grid-3">
+              {[
+                {
+                  title: '1. Start with Verify',
+                  description: 'Use Verify when someone already sent you a file.',
+                },
+                {
+                  title: '2. Open the official record',
+                  description: 'If you need the original copy, go to Official Records.',
+                },
+                {
+                  title: '3. Review the result before acting',
+                  description: 'Only rely on the document after it matches the published record.',
+                },
+              ].map((item) => (
+                <div
+                  key={item.title}
+                  className="rounded-[var(--r-lg)] border border-[var(--line)] bg-[var(--card-alt)] p-5"
+                >
+                  <h3 className="font-serif text-xl font-semibold text-[var(--ink-900)]">
+                    {item.title}
+                  </h3>
+                  <p className="mt-2 text-sm leading-6 text-[var(--text-soft)]">
+                    {item.description}
                   </p>
                 </div>
-                <div className="flex items-start gap-3">
-                  <span className="grid h-8 w-8 flex-none place-items-center rounded-full bg-[var(--ink-100)] font-serif font-semibold text-[var(--ink-900)]">
-                    2
-                  </span>
-                  <p className="m-0 text-sm text-[var(--text-soft)]">
-                    <strong className="text-[var(--ink-900)]">You drop it in here</strong>{' '}
-                    — one click, the file never leaves your phone.
-                  </p>
-                </div>
-                <div className="flex items-start gap-3">
-                  <span className="grid h-8 w-8 flex-none place-items-center rounded-full bg-[var(--ok)] text-white">
-                    <CheckCircle2 size={16} />
-                  </span>
-                  <p className="m-0 text-sm text-[var(--text-soft)]">
-                    <strong className="text-[var(--ok)]">You get your answer</strong>{' '}
-                    — &quot;It&apos;s real.&quot; Or &quot;Something&apos;s off&quot; — with the real copy one click away.
-                  </p>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
         </div>
       </section>
 
       <section
-        className="section"
+        className="section-tight"
         style={{
           background: 'var(--ink-025)',
           borderTop: '1px solid var(--line)',
@@ -215,18 +166,27 @@ export default function LandingPage() {
         }}
       >
         <div className="container-page">
-          <div className="section-head mx-auto max-w-[620px] text-center">
-            <div className="eyebrow justify-center">
-              <span className="eyebrow-dot" />
-              Three promises to you
+          <div className="row-between gap-4" style={{ marginBottom: 'var(--s-6)' }}>
+            <div className="section-head" style={{ marginBottom: 0 }}>
+              <div className="eyebrow">
+                <span className="eyebrow-dot" />
+                Transparency
+              </div>
+              <h2>Need public proof, not just a quick answer?</h2>
+              <p>Open the public activity history or the technical ledger view.</p>
             </div>
-            <h2>Why you can trust what this site tells you</h2>
+            <Link href="/transparency" className="inline-flex">
+              <Button variant="outline">
+                Open Transparency
+                <ArrowRight size={14} />
+              </Button>
+            </Link>
           </div>
-          <div className="grid grid-3">
-            {promises.map(({ icon: Icon, title, description }) => (
+          <div className="grid grid-2">
+            {transparencyLinks.map(({ href, title, description, icon: Icon }) => (
               <div key={title} className="card p-6">
-                <span className="mb-4 grid h-12 w-12 place-items-center rounded-[12px] bg-[var(--ink-900)] text-white">
-                  <Icon size={22} />
+                <span className="mb-4 grid h-11 w-11 place-items-center rounded-[12px] bg-[var(--ink-050)] text-[var(--ink-700)]">
+                  <Icon size={20} />
                 </span>
                 <h3 className="m-0 font-serif text-xl font-semibold text-[var(--ink-900)]">
                   {title}
@@ -234,6 +194,12 @@ export default function LandingPage() {
                 <p className="mt-2 text-sm leading-6 text-[var(--text-soft)]">
                   {description}
                 </p>
+                <Link href={href} className="mt-4 inline-flex">
+                  <Button variant="outline" size="sm">
+                    Open {title}
+                    <ArrowRight size={14} />
+                  </Button>
+                </Link>
               </div>
             ))}
           </div>
@@ -242,16 +208,26 @@ export default function LandingPage() {
 
       <section className="section">
         <div className="container-page">
-          <div className="card card-lead p-6 sm:p-8" style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 24, alignItems: 'center' }}>
+          <div
+            className="card card-lead p-6 sm:p-8"
+            style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr auto',
+              gap: 24,
+              alignItems: 'center',
+            }}
+          >
             <div>
-              <div className="strong font-serif text-[22px]">Have a document in hand?</div>
-              <div className="soft mt-1 text-sm">Takes 5 seconds. No sign-up. Your file stays on your device.</div>
+              <div className="strong font-serif text-[22px]">Ready to check a file?</div>
+              <div className="soft mt-1 text-sm">
+                Start with Verify. It is the fastest path for first-time users.
+              </div>
             </div>
             <div className="row">
               <Link href="/verify">
                 <Button size="lg">
                   <CheckCircle2 size={17} />
-                  Verify Now
+                  Verify a Document
                 </Button>
               </Link>
             </div>

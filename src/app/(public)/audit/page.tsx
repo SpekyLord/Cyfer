@@ -79,16 +79,16 @@ export default function AuditPage() {
   const totalPages = Math.max(1, Math.ceil(total / limit));
 
   return (
-    <main id="main" className="container-page" style={{ paddingBottom: "var(--s-11)" }}>
+    <main id="main" className="container-page" style={{ paddingBottom: 'var(--s-11)' }}>
       <div className="page-head">
         <div className="eyebrow">
           <span className="eyebrow-dot" />
-          Activity log · public accountability
+          Advanced transparency tool
         </div>
-        <h1>Everything that happens in city hall, in the open</h1>
+        <h1>Public Activity Log</h1>
         <p className="lead">
-          Every upload, approval, rejection, publication, and verification action is
-          logged here with a hash that links it to the previous record.
+          Use this page when you want the public history behind a document,
+          approval, or publication.
         </p>
       </div>
 
@@ -119,10 +119,10 @@ export default function AuditPage() {
             <div>
               <div className="eyebrow">
                 <ScrollText size={12} />
-                Audit filter
+                Activity filter
               </div>
               <h2 className="mt-2 font-serif text-2xl font-semibold text-[var(--ink-900)]">
-                Browse transaction history
+                Browse public activity
               </h2>
             </div>
             <div className="row">
@@ -156,7 +156,7 @@ export default function AuditPage() {
         ) : transactions.length === 0 ? (
           <div className="card p-10 text-center">
             <div className="font-serif text-2xl font-semibold text-[var(--ink-900)]">
-              No audit entries found
+              No activity found
             </div>
             <p className="mt-2 text-sm text-[var(--text-soft)]">
               Try another filter or check back once more activity is recorded.
@@ -200,19 +200,19 @@ export default function AuditPage() {
               icon: ScrollText,
               title: 'Every action is recorded',
               description:
-                'Uploads, approvals, rejections, verifications, and publications are all stored as audit entries.',
+                'Uploads, approvals, rejections, verifications, and publications all appear here.',
             },
             {
               icon: Lock,
               title: 'Entries are hash-linked',
               description:
-                'Each transaction stores the previous hash so the order of events becomes tamper-evident.',
+                'Each transaction stores the previous hash so the public order stays tamper-evident.',
             },
             {
               icon: Shield,
               title: 'Anyone can inspect the trail',
               description:
-                'The public view makes accountability visible without requiring citizens to trust a hidden internal log.',
+                'This page is public so people can review activity without needing private access.',
             },
           ].map(({ icon: Icon, title, description }) => (
             <div key={title} className="card p-6">

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Search } from 'lucide-react';
+import { PublicSOP } from '@/components/public/PublicSOP';
 import { DocumentCard } from '@/components/documents/DocumentCard';
 
 interface DocumentData {
@@ -16,12 +17,12 @@ interface DocumentData {
 }
 
 const categoryFilters = [
-  { value: '', label: 'Everything' },
+  { value: '', label: 'All records' },
   { value: 'ordinance', label: 'New city rules' },
-  { value: 'budget', label: 'Money and spending' },
+  { value: 'budget', label: 'Budgets' },
   { value: 'resolution', label: 'Official decisions' },
   { value: 'contract', label: 'City agreements' },
-  { value: 'permit', label: 'Permits and licenses' },
+  { value: 'permit', label: 'Permits' },
 ];
 
 export default function DocumentsPage() {
@@ -67,7 +68,7 @@ export default function DocumentsPage() {
 
   const totalPages = Math.max(1, Math.ceil(total / limit));
   const resultLabel = useMemo(
-    () => `${total} document${total === 1 ? '' : 's'} available`,
+    () => `${total} official record${total === 1 ? '' : 's'}`,
     [total],
   );
 
@@ -76,17 +77,39 @@ export default function DocumentsPage() {
       <div className="page-head">
         <div className="eyebrow">
           <span className="eyebrow-dot" />
-          City records · free to read
+          Free public access
         </div>
-        <h1>What your city has decided</h1>
+        <h1>Official Records</h1>
         <p className="lead">
-          Browse ordinances, resolutions, contracts, permits, and budget reports
-          published through CYFER. Every file here is tied to the platform’s
-          approval and verification flow.
+          Use this page when you need the official published copy before you verify
+          or compare anything.
         </p>
       </div>
 
       <section className="section-tight">
+        <PublicSOP
+          compact
+          title="Use this page if you do not have the file yet"
+          purpose="This page helps you find the official published version of a city record."
+          steps={[
+            {
+              title: 'Search or filter',
+              description: 'Use the search bar or choose a record type.',
+            },
+            {
+              title: 'Open the record',
+              description: 'Pick the title that matches what you need.',
+            },
+            {
+              title: 'Download or compare',
+              description: 'Use the official copy before you rely on the document.',
+            },
+          ]}
+          next="After you find the record, download the official file or go to Verify to check your own copy."
+        />
+      </section>
+
+      <section className="section-tight" style={{ paddingTop: 0 }}>
         <div className="grid gap-3 lg:grid-cols-[1fr_auto] lg:items-center">
           <div className="relative">
             <Search
@@ -96,7 +119,7 @@ export default function DocumentsPage() {
             <input
               className="input"
               style={{ height: 48, paddingLeft: 42, fontSize: 15 }}
-              placeholder="What are you looking for? Try a title or keyword."
+              placeholder="Search by title or keyword"
               value={search}
               onChange={(event) => {
                 setSearch(event.target.value);
@@ -142,11 +165,10 @@ export default function DocumentsPage() {
         ) : documents.length === 0 ? (
           <div className="card mt-6 p-10 text-center">
             <div className="font-serif text-2xl font-semibold text-[var(--ink-900)]">
-              We could not find anything
+              No official records found
             </div>
             <p className="mt-2 text-sm text-[var(--text-soft)]">
-              Try different keywords, or reset the filters to browse every published
-              record.
+              Try another keyword or clear the filters to browse every published record.
             </p>
           </div>
         ) : (

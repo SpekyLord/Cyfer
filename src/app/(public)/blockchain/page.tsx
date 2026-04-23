@@ -131,13 +131,11 @@ export default function BlockchainPage() {
       <div className="page-head">
         <div className="eyebrow">
           <span className="eyebrow-dot" />
-          How we keep records honest
+          Advanced transparency tool
         </div>
-        <h1>Why no one can quietly change a city record</h1>
+        <h1>Blockchain ledger view</h1>
         <p className="lead">
-          Every approval and publication becomes part of a linked block history
-          stored across multiple nodes. Change one block and the rest of the chain
-          exposes the mismatch.
+          Use this page for the deeper technical ledger view after you check the public record itself.
         </p>
       </div>
 

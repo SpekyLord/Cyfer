@@ -5,6 +5,7 @@ import Link from 'next/link';
 import {
   ArrowLeft,
   CheckCircle2,
+  ChevronDown,
   Download,
   FileText,
   Hash,
@@ -14,6 +15,7 @@ import {
   Upload,
   XCircle,
 } from 'lucide-react';
+import { PublicSOP } from '@/components/public/PublicSOP';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { formatDate, formatDateTime, formatFileSize } from '@/utils/formatters';
@@ -114,19 +116,20 @@ export default function DocumentDetailPage({
 
   if (loading) {
     return (
-      <main id="main" className="container-page" style={{ paddingBottom: "var(--s-11)" }}>
+      <main id="main" className="container-page" style={{ paddingBottom: 'var(--s-11)' }}>
         <div className="page-head">
           <div className="h-5 w-40 animate-pulse rounded bg-[var(--ink-050)]" />
           <div className="mt-4 h-12 w-3/4 animate-pulse rounded bg-[var(--ink-050)]" />
           <div className="mt-3 h-5 w-full animate-pulse rounded bg-[var(--ink-025)]" />
           <div className="mt-2 h-5 w-5/6 animate-pulse rounded bg-[var(--ink-025)]" />
         </div>
-        <div className="grid gap-[var(--s-6)] py-[var(--s-8)] lg:grid-cols-[1.35fr_0.95fr]">
-          <div className="card h-[420px] animate-pulse" />
+        <div className="grid gap-[var(--s-6)] py-[var(--s-8)] lg:grid-cols-[1.05fr_0.95fr]">
           <div className="stack-3">
             <div className="card h-52 animate-pulse" />
-            <div className="card h-52 animate-pulse" />
+            <div className="card h-72 animate-pulse" />
+            <div className="card h-72 animate-pulse" />
           </div>
+          <div className="card h-64 animate-pulse" />
         </div>
       </main>
     );
@@ -145,7 +148,7 @@ export default function DocumentDetailPage({
           <Link href="/documents" className="mt-5 inline-flex">
             <Button variant="outline">
               <ArrowLeft size={14} />
-              Back to records
+              Back to official records
             </Button>
           </Link>
         </div>
@@ -162,12 +165,12 @@ export default function DocumentDetailPage({
         : 'warning';
 
   return (
-    <main id="main" className="container-page" style={{ paddingBottom: "var(--s-11)" }}>
+    <main id="main" className="container-page" style={{ paddingBottom: 'var(--s-11)' }}>
       <div className="page-head">
         <Link href="/documents" className="inline-flex">
           <Button variant="ghost" size="sm" className="mb-4">
             <ArrowLeft size={14} />
-            Back to all records
+            Back to official records
           </Button>
         </Link>
         <div className="row mb-2">
@@ -181,21 +184,116 @@ export default function DocumentDetailPage({
           ) : null}
         </div>
         <h1>{document.title}</h1>
-        <p className="lead">{document.description}</p>
+        <p className="lead">
+          {document.description || 'This page shows the official published version of this record.'}
+        </p>
       </div>
 
-      <section className="grid gap-[var(--s-6)] py-[var(--s-8)] lg:grid-cols-[1.35fr_0.95fr]">
+      <section className="grid gap-[var(--s-6)] py-[var(--s-8)] lg:grid-cols-[1.05fr_0.95fr]">
         <div className="stack-6">
-          <div className="card p-6" style={{ background: 'linear-gradient(180deg, var(--ink-025), var(--card))' }}>
+          <div
+            className="card p-6"
+            style={{
+              borderColor:
+                document.status === 'published' ? 'var(--ok-line)' : 'var(--warn-line)',
+            }}
+          >
+            <div className="row gap-3">
+              <span
+                className={`grid h-10 w-10 flex-none place-items-center rounded-[var(--r-md)] ${
+                  document.status === 'published'
+                    ? 'bg-[var(--ok-soft)] text-[var(--ok)]'
+                    : 'bg-[var(--warn-soft)] text-[var(--warn)]'
+                }`}
+              >
+                {document.status === 'published' ? <Shield size={20} /> : <XCircle size={20} />}
+              </span>
+              <div>
+                <div className="font-serif text-xl font-semibold text-[var(--ink-900)]">
+                  {document.status === 'published'
+                    ? 'This is the official published record'
+                    : 'This record is not fully published'}
+                </div>
+                <div className="text-sm text-[var(--text-soft)]">
+                  {document.status === 'published'
+                    ? 'Use the official file below if you need the trusted copy.'
+                    : 'Check the status before relying on this version.'}
+                </div>
+              </div>
+            </div>
+            <p className="mt-3 text-sm leading-6 text-[var(--text-soft)]">
+              {document.status === 'published'
+                ? 'The record passed the approval workflow and is safe to compare against your own copy.'
+                : 'This record exists in the system, but it is not currently marked as a final published public record.'}
+            </p>
+            <div className="row mt-4">
+              {document.file_url ? (
+                <a href={document.file_url} target="_blank" rel="noopener noreferrer">
+                  <Button>
+                    <Download size={14} />
+                    Download official copy
+                  </Button>
+                </a>
+              ) : null}
+              <Link href="/verify">
+                <Button variant="outline">
+                  <Upload size={14} />
+                  Verify my copy
+                </Button>
+              </Link>
+            </div>
+            <div className="row mt-4 text-sm">
+              <span className="soft">Need public proof?</span>
+              <Link href="/audit" className="text-[var(--ink-700)] underline-offset-2 hover:underline">
+                Activity Log
+              </Link>
+              <Link href="/blockchain" className="text-[var(--ink-700)] underline-offset-2 hover:underline">
+                Blockchain
+              </Link>
+            </div>
+          </div>
+
+          <div className="card p-6">
+            <div className="row-between gap-4">
+              <div className="eyebrow">Official file</div>
+            </div>
+            <div className="mt-4 grid min-h-72 place-items-center rounded-[var(--r-lg)] border border-[var(--line)] bg-[var(--ink-025)] p-6 text-center text-[var(--text-mute)]">
+              <div>
+                <FileText size={32} className="mx-auto" />
+                <div
+                  className="mt-3 text-sm font-medium text-[var(--ink-900)]"
+                  style={{ overflowWrap: 'break-word', wordBreak: 'break-all' }}
+                >
+                  {document.file_name}
+                </div>
+                <div className="mt-1 text-xs">
+                  {formatFileSize(document.file_size)} - uploaded {formatDate(document.created_at)}
+                </div>
+                <div className="mt-4 text-sm text-[var(--text-soft)]">
+                  Download this file if you need the official version before you compare or share it.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div
+            className="card p-6"
+            style={{ background: 'linear-gradient(180deg, var(--ink-025), var(--card))' }}
+          >
             <div className="row-between gap-4">
               <div>
                 <div className="eyebrow">
                   <Sparkles size={12} />
-                  What this means, in plain language
+                  Plain-language summary
                 </div>
               </div>
               {!summary ? (
-                <Button variant="outline" size="sm" onClick={handleSummarize} disabled={summaryLoading}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleSummarize}
+                  disabled={summaryLoading}
+                >
                   {summaryLoading ? (
                     <>
                       <Loader2 size={14} className="animate-spin" />
@@ -247,176 +345,143 @@ export default function DocumentDetailPage({
                 </div>
 
                 <p className="border-t border-dashed border-[var(--line)] pt-3 text-xs text-[var(--text-mute)]">
-                  This is an AI-generated summary. Review the original document for the
-                  authoritative wording.
+                  This is an AI-generated summary. Review the original document for the authoritative wording.
                 </p>
               </div>
             ) : (
               <div className="mt-4 rounded-[var(--r-lg)] border border-dashed border-[var(--line-2)] bg-[var(--card)] p-5">
                 <p className="m-0 text-sm leading-6 text-[var(--text-soft)]">
-                  Generate an AI summary to get a quicker explanation of the document,
-                  the likely affected groups, and its budget implications.
+                  Generate an AI summary if you want a quicker explanation after you review the official file.
                 </p>
               </div>
             )}
           </div>
-
-          <div className="card p-6">
-            <div className="row-between gap-4">
-              <div className="eyebrow">The original document</div>
-              {document.file_url ? (
-                <a href={document.file_url} target="_blank" rel="noopener noreferrer">
-                  <Button variant="outline" size="sm">
-                    <Download size={13} />
-                    Download file
-                  </Button>
-                </a>
-              ) : null}
-            </div>
-            <div className="mt-4 grid min-h-72 place-items-center rounded-[var(--r-lg)] border border-[var(--line)] bg-[var(--ink-025)] p-6 text-center text-[var(--text-mute)]">
-              <div>
-                <FileText size={32} className="mx-auto" />
-                <div className="mt-3 text-sm font-medium text-[var(--ink-900)]" style={{ overflowWrap: 'break-word', wordBreak: 'break-all' }}>
-                  {document.file_name}
-                </div>
-                <div className="mt-1 text-xs">
-                  {formatFileSize(document.file_size)} · uploaded {formatDate(document.created_at)}
-                </div>
-                <div className="mt-4 text-sm text-[var(--text-soft)]">
-                  Use the download button to review the original file stored for this
-                  record.
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
 
         <aside className="stack">
-          <div className="card p-6" style={{ borderColor: 'var(--ok-line)' }}>
-            <div className="row gap-3">
-              <span className="grid h-10 w-10 flex-none place-items-center rounded-[var(--r-md)] bg-[var(--ok-soft)] text-[var(--ok)]">
-                {document.status === 'published' ? <Shield size={20} /> : <XCircle size={20} />}
-              </span>
-              <div>
-                <div className="font-serif text-xl font-semibold text-[var(--ink-900)]">
-                  {document.status === 'published'
-                    ? 'This is a real city record'
-                    : 'This record is not fully published'}
-                </div>
-                <div className="text-sm text-[var(--text-soft)]">
-                  {document.status === 'published'
-                    ? 'Approved and safe to rely on.'
-                    : 'Check the status before treating it as final.'}
-                </div>
-              </div>
-            </div>
-            <p className="mt-3 text-sm leading-6 text-[var(--text-soft)]">
-              {document.status === 'published'
-                ? 'This document passed through the CYFER approval process and its file fingerprint matches the stored official record.'
-                : 'This document exists in the system, but it is not currently published as an approved public record.'}
-            </p>
-            <Link href="/verify" className="mt-4 inline-flex w-full">
-              <Button variant="outline" size="sm" className="w-full">
-                <Upload size={13} />
-                Check a copy I have
-              </Button>
-            </Link>
-          </div>
+          <PublicSOP
+            compact
+            title="What should I do here?"
+            purpose="This page shows the official published version of one city record."
+            steps={[
+              {
+                title: 'Check the status first',
+                description: 'Make sure the record is published before you rely on it.',
+              },
+              {
+                title: 'Download the official copy',
+                description: 'Use the file here if you need the trusted version.',
+              },
+              {
+                title: 'Verify your own copy if needed',
+                description: 'Go to Verify when you want to compare another file with this record.',
+              },
+            ]}
+            next="Use the official file on this page if your own copy looks different, older, or incomplete."
+          />
+        </aside>
+      </section>
 
-          <div className="card p-6">
-            <div className="eyebrow">Who approved this</div>
-            <p className="mt-2 text-sm text-[var(--text-soft)]">
-              Every approval recorded for this document appears in order below.
-            </p>
+      <section className="section-tight">
+        <div className="stack-3">
+          <details className="faq">
+            <summary>
+              <span>Approval history</span>
+              <ChevronDown size={16} />
+            </summary>
+            <div className="px-[18px] pb-4">
+              {approvals.length === 0 ? (
+                <p className="text-sm text-[var(--text-soft)]">No approvals are recorded yet.</p>
+              ) : (
+                <div className="chain mt-2">
+                  {approvals.map((approval) => {
+                    const approvalVariant =
+                      approval.status === 'approved'
+                        ? 'ok'
+                        : approval.status === 'rejected'
+                          ? 'bad'
+                          : 'warn';
 
-            {approvals.length === 0 ? (
-              <p className="mt-4 text-sm text-[var(--text-soft)]">No approvals are recorded yet.</p>
-            ) : (
-              <div className="chain mt-4">
-                {approvals.map((approval) => {
-                  const approvalVariant =
-                    approval.status === 'approved'
-                      ? 'ok'
-                      : approval.status === 'rejected'
-                        ? 'bad'
-                        : 'warn';
-
-                  return (
-                    <div
-                      key={approval.id}
-                      className="chain-node"
-                      data-kind={approvalVariant}
-                    >
-                      <div className="row flex-nowrap items-start gap-3">
-                        <span
-                          className={`mt-0.5 grid h-7 w-7 flex-none place-items-center rounded-full ${
-                            approval.status === 'approved'
-                              ? 'bg-[var(--ok-soft)] text-[var(--ok)]'
-                              : approval.status === 'rejected'
-                                ? 'bg-[var(--bad-soft)] text-[var(--bad)]'
-                                : 'bg-[var(--warn-soft)] text-[var(--warn)]'
-                          }`}
-                        >
-                          {approval.status === 'approved' ? (
-                            <CheckCircle2 size={14} />
-                          ) : approval.status === 'rejected' ? (
-                            <XCircle size={14} />
-                          ) : (
-                            <Loader2 size={14} />
-                          )}
-                        </span>
-                        <div>
-                          <div className="strong text-sm">
-                            {approval.users?.name ?? 'Unknown official'}
+                    return (
+                      <div key={approval.id} className="chain-node" data-kind={approvalVariant}>
+                        <div className="row flex-nowrap items-start gap-3">
+                          <span
+                            className={`mt-0.5 grid h-7 w-7 flex-none place-items-center rounded-full ${
+                              approval.status === 'approved'
+                                ? 'bg-[var(--ok-soft)] text-[var(--ok)]'
+                                : approval.status === 'rejected'
+                                  ? 'bg-[var(--bad-soft)] text-[var(--bad)]'
+                                  : 'bg-[var(--warn-soft)] text-[var(--warn)]'
+                            }`}
+                          >
+                            {approval.status === 'approved' ? (
+                              <CheckCircle2 size={14} />
+                            ) : approval.status === 'rejected' ? (
+                              <XCircle size={14} />
+                            ) : (
+                              <Loader2 size={14} />
+                            )}
+                          </span>
+                          <div>
+                            <div className="strong text-sm">
+                              {approval.users?.name ?? 'Unknown official'}
+                            </div>
+                            <div className="soft text-xs">
+                              {approval.users?.department ?? 'Department unavailable'}
+                              {approval.responded_at
+                                ? ` - ${formatDateTime(approval.responded_at)}`
+                                : ''}
+                            </div>
+                            {approval.message ? (
+                              <p className="mt-1 text-xs leading-5 text-[var(--text-soft)]">
+                                &quot;{approval.message}&quot;
+                              </p>
+                            ) : null}
                           </div>
-                          <div className="soft text-xs">
-                            {approval.users?.department ?? 'Department unavailable'}
-                            {approval.responded_at ? ` · ${formatDateTime(approval.responded_at)}` : ''}
-                          </div>
-                          {approval.message ? (
-                            <p className="mt-1 text-xs leading-5 text-[var(--text-soft)]">
-                              “{approval.message}”
-                            </p>
-                          ) : null}
                         </div>
                       </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </details>
 
-          <div className="card p-6">
-            <div className="eyebrow">About this document</div>
-            <div className="stack-2 mt-4 text-sm">
-              <div className="row-between">
-                <span className="soft">Published</span>
-                <span>{document.published_at ? formatDate(document.published_at) : 'Not yet published'}</span>
+          <details className="faq">
+            <summary>
+              <span>Document details</span>
+              <ChevronDown size={16} />
+            </summary>
+            <div className="px-[18px] pb-4">
+              <div className="stack-2 text-sm">
+                <div className="row-between">
+                  <span className="soft">Published</span>
+                  <span>{document.published_at ? formatDate(document.published_at) : 'Not yet published'}</span>
+                </div>
+                <div className="row-between">
+                  <span className="soft">Uploaded</span>
+                  <span>{formatDateTime(document.created_at)}</span>
+                </div>
+                <div className="row-between">
+                  <span className="soft">From</span>
+                  <span>{document.users?.department ?? 'Department unavailable'}</span>
+                </div>
+                <div className="row-between">
+                  <span className="soft">File size</span>
+                  <span>{formatFileSize(document.file_size)}</span>
+                </div>
               </div>
-              <div className="row-between">
-                <span className="soft">Uploaded</span>
-                <span>{formatDateTime(document.created_at)}</span>
-              </div>
-              <div className="row-between">
-                <span className="soft">From</span>
-                <span>{document.users?.department ?? 'Department unavailable'}</span>
-              </div>
-              <div className="row-between">
-                <span className="soft">File size</span>
-                <span>{formatFileSize(document.file_size)}</span>
+
+              <div className="mt-4">
+                <div className="eyebrow mb-2">
+                  <Hash size={12} />
+                  Stored file hash
+                </div>
+                <div className="hash-block">{document.file_hash}</div>
               </div>
             </div>
-
-            <div className="mt-4">
-              <div className="eyebrow mb-2">
-                <Hash size={12} />
-                Stored file hash
-              </div>
-              <div className="hash-block">{document.file_hash}</div>
-            </div>
-          </div>
-        </aside>
+          </details>
+        </div>
       </section>
     </main>
   );

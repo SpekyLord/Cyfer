@@ -1,9 +1,12 @@
 'use client';
 
+import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { BarChart3, Database, Loader2, Wallet } from 'lucide-react';
+import { BarChart3, Database, Loader2, ScrollText } from 'lucide-react';
 import { BudgetChart } from '@/components/budget/BudgetChart';
 import { BudgetTable } from '@/components/budget/BudgetTable';
+import { PublicSOP } from '@/components/public/PublicSOP';
+import { Button } from '@/components/ui/Button';
 
 interface BudgetCategory {
   category: string;
@@ -52,13 +55,12 @@ export default function BudgetPage() {
       <div className="page-head">
         <div className="eyebrow">
           <span className="eyebrow-dot" />
-          This year · Your city
+          Approved public data
         </div>
         <h1>Where your taxes went this year</h1>
         <p className="lead">
-          Explore the current fiscal breakdown using published CYFER budget data.
-          Every number here comes from entries tracked through the same approval and
-          transparency flow as the rest of the platform.
+          This page shows the approved city budget in a simpler view: totals,
+          percentages, and categories.
         </p>
       </div>
 
@@ -75,33 +77,33 @@ export default function BudgetPage() {
               No budget data is available yet
             </div>
             <p className="mt-2 text-sm text-[var(--text-soft)]">
-              Published budget entries will appear here once administrators submit and
-              approve them.
+              Published budget entries will appear here once administrators submit and approve them.
             </p>
           </div>
         </section>
       ) : (
         <>
           <section className="section-tight">
-            <div className="grid grid-4">
-              <div className="stat">
-                <span className="stat-label">Total budget</span>
-                <span className="stat-value">{formatPhp(data.totalBudget)}</span>
-              </div>
-              <div className="stat">
-                <span className="stat-label">Fiscal year</span>
-                <span className="stat-value">{data.fiscalYear}</span>
-              </div>
-              <div className="stat">
-                <span className="stat-label">Categories</span>
-                <span className="stat-value">{data.categories.length}</span>
-              </div>
-              <div className="stat">
-                <span className="stat-label">Data source</span>
-                <span className="stat-value">CYFER</span>
-                <span className="stat-delta">Published budget summary</span>
-              </div>
-            </div>
+            <PublicSOP
+              compact
+              title="How to read this page"
+              purpose="Use this page when you want a simple view of how the approved city budget is divided."
+              steps={[
+                {
+                  title: 'Look at the largest category',
+                  description: 'Start with the biggest slice or highest amount.',
+                },
+                {
+                  title: 'Compare percentages',
+                  description: 'Use the chart and table together for quick comparison.',
+                },
+                {
+                  title: 'Review approved totals only',
+                  description: 'Everything here comes from published budget entries.',
+                },
+              ]}
+              next="If you want more detail, open the Activity Log or the supporting official records."
+            />
           </section>
 
           <section className="section-tight">
@@ -141,39 +143,49 @@ export default function BudgetPage() {
           </section>
 
           <section className="section-tight">
-            <div className="grid grid-3">
-              {[
-                {
-                  icon: Wallet,
-                  title: 'Published figures only',
-                  description:
-                    'This public page is intended to show approved data, not hidden drafts or private revisions.',
-                },
-                {
-                  icon: Database,
-                  title: 'Built from live entries',
-                  description:
-                    'The summary aggregates the categories stored in the CYFER budget dataset rather than static demo content.',
-                },
-                {
-                  icon: BarChart3,
-                  title: 'Easy to compare',
-                  description:
-                    'Percentages and totals are displayed together so residents can quickly understand the scale of each allocation.',
-                },
-              ].map(({ icon: Icon, title, description }) => (
-                <div key={title} className="card p-6">
-                  <span className="mb-4 grid h-11 w-11 place-items-center rounded-[12px] bg-[var(--ink-050)] text-[var(--ink-700)]">
-                    <Icon size={20} />
-                  </span>
-                  <h3 className="font-serif text-xl font-semibold text-[var(--ink-900)]">
-                    {title}
-                  </h3>
+            <div className="grid grid-4">
+              <div className="stat">
+                <span className="stat-label">Total budget</span>
+                <span className="stat-value">{formatPhp(data.totalBudget)}</span>
+              </div>
+              <div className="stat">
+                <span className="stat-label">Fiscal year</span>
+                <span className="stat-value">{data.fiscalYear}</span>
+              </div>
+              <div className="stat">
+                <span className="stat-label">Categories</span>
+                <span className="stat-value">{data.categories.length}</span>
+              </div>
+              <div className="stat">
+                <span className="stat-label">Data source</span>
+                <span className="stat-value">CYFER</span>
+                <span className="stat-delta">Published entries only</span>
+              </div>
+            </div>
+          </section>
+
+          <section className="section-tight">
+            <div className="card p-5" style={{ background: 'var(--ink-025)' }}>
+              <div className="row-between gap-4">
+                <div>
+                  <div className="eyebrow">
+                    <ScrollText size={12} />
+                    Need more detail?
+                  </div>
                   <p className="mt-2 text-sm leading-6 text-[var(--text-soft)]">
-                    {description}
+                    Open the Activity Log or Official Records if you want to trace the
+                    public source behind these numbers.
                   </p>
                 </div>
-              ))}
+                <div className="row">
+                  <Link href="/audit">
+                    <Button variant="outline" size="sm">Open Activity Log</Button>
+                  </Link>
+                  <Link href="/documents">
+                    <Button variant="ghost" size="sm">Official Records</Button>
+                  </Link>
+                </div>
+              </div>
             </div>
           </section>
         </>

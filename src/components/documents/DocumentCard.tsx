@@ -28,7 +28,10 @@ export function DocumentCard({ document }: DocumentCardProps) {
   const categoryLabel = categoryLabels[document.category] ?? document.category;
 
   return (
-    <Link href={`/documents/${document.id}`} className="card card-hover flex h-full flex-col p-6 no-underline overflow-hidden">
+    <Link
+      href={`/documents/${document.id}`}
+      className="card card-hover flex h-full flex-col overflow-hidden p-6 no-underline"
+    >
       <div className="row">
         <span className="tag">{categoryLabel}</span>
         <span className="tag tag-ok">
@@ -37,10 +40,29 @@ export function DocumentCard({ document }: DocumentCardProps) {
         </span>
       </div>
 
-      <h3 className="mt-4 font-serif text-xl font-semibold leading-7 text-[var(--ink-900)]" style={{ overflowWrap: 'break-word', wordBreak: 'break-word' }}>
+      <h3
+        className="mt-4 font-serif text-xl font-semibold leading-7 text-[var(--ink-900)]"
+        style={{
+          overflowWrap: 'break-word',
+          wordBreak: 'break-word',
+          display: '-webkit-box',
+          WebkitLineClamp: 2,
+          WebkitBoxOrient: 'vertical',
+          overflow: 'hidden',
+        }}
+      >
         {document.title}
       </h3>
-      <p className="mt-3 flex-1 text-sm leading-6 text-[var(--text-soft)]" style={{ overflowWrap: 'break-word' }}>
+      <p
+        className="mt-3 flex-1 text-sm leading-6 text-[var(--text-soft)]"
+        style={{
+          overflowWrap: 'break-word',
+          display: '-webkit-box',
+          WebkitLineClamp: 3,
+          WebkitBoxOrient: 'vertical',
+          overflow: 'hidden',
+        }}
+      >
         {document.description}
       </p>
 
@@ -63,7 +85,7 @@ export function DocumentCard({ document }: DocumentCardProps) {
             <span className="mono truncate">{formatHash(document.file_hash)}</span>
           </span>
           <span className="row flex-nowrap font-medium text-[var(--ink-700)]" style={{ gap: 4 }}>
-            Read
+            Open record
             <ArrowRight size={12} />
           </span>
         </div>
