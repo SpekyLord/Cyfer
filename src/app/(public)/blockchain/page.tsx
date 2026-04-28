@@ -16,7 +16,10 @@ import {
   UserCheck,
   Wifi,
   WifiOff,
+  ArrowRight,
+  ScrollText,
 } from 'lucide-react';
+import Link from 'next/link';
 import { Badge } from '@/components/ui/Badge';
 import { formatDate } from '@/utils/formatters';
 
@@ -137,6 +140,16 @@ export default function BlockchainPage() {
         <p className="lead">
           Use this page for the deeper technical ledger view after you check the public record itself.
         </p>
+        <div className="page-head-actions">
+          <Link
+            href="/audit"
+            className="btn btn-outline inline-flex items-center gap-2"
+          >
+            <ScrollText size={15} />
+            View Public Audit Log
+            <ArrowRight size={14} />
+          </Link>
+        </div>
       </div>
 
       <section className="section-tight">

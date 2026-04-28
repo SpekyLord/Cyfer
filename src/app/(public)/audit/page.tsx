@@ -1,7 +1,8 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { Loader2, Lock, ScrollText, Shield } from 'lucide-react';
+import { ArrowRight, Blocks, Loader2, Lock, ScrollText, Shield } from 'lucide-react';
+import Link from 'next/link';
 import { AuditTimeline } from '@/components/audit/AuditTimeline';
 import { ACTION_TYPES } from '@/utils/constants';
 
@@ -90,6 +91,16 @@ export default function AuditPage() {
           Use this page when you want the public history behind a document,
           approval, or publication.
         </p>
+        <div className="page-head-actions">
+          <Link
+            href="/blockchain"
+            className="btn btn-outline inline-flex items-center gap-2"
+          >
+            <Blocks size={15} />
+            View Blockchain Ledger
+            <ArrowRight size={14} />
+          </Link>
+        </div>
       </div>
 
       <section className="section-tight">
