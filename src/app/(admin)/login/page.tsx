@@ -79,9 +79,9 @@ export default function LoginPage() {
         <div className="relative">
           <button
             onClick={() => router.push('/')}
-            className="group inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-medium text-white backdrop-blur-sm transition-all hover:border-white/40 hover:bg-white/20"
+            className="group inline-flex items-center gap-2 rounded-full border border-white/40 bg-white/20 px-5 py-2.5 text-sm font-semibold text-white shadow-lg backdrop-blur-sm transition-all hover:border-white/70 hover:bg-white/30 hover:shadow-xl"
           >
-            <ArrowLeft size={15} className="transition-transform group-hover:-translate-x-0.5" />
+            <ArrowLeft size={15} className="transition-transform group-hover:-translate-x-1" />
             Back to home
           </button>
         </div>

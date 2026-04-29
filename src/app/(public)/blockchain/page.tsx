@@ -174,7 +174,7 @@ export default function BlockchainPage() {
               <Loader2 size={24} className="animate-spin text-[var(--text-mute)]" />
             </div>
           ) : (
-            <div className="grid grid-3 mt-6">
+            <div className="mt-6 grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))' }}>
               {nodes.map((node) => {
                 const synced = node.status === 'synced';
                 const unreachable = node.status === 'unreachable';
@@ -226,7 +226,7 @@ export default function BlockchainPage() {
       </section>
 
       <section className="section-tight">
-        <div className="grid grid-4">
+        <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))' }}>
           <div className="stat">
             <span className="stat-label">Total blocks</span>
             <span className="stat-value">{blocks.length}</span>
@@ -270,7 +270,7 @@ export default function BlockchainPage() {
             </p>
           </div>
         ) : (
-          <div className="chain pl-11">
+          <div className="chain" style={{ paddingLeft: 'clamp(24px, 6vw, 44px)' }}>
             {reversedBlocks.map((block, index) => {
               const isExpanded = expandedId === block.id;
               const isLatest = index === 0;
@@ -281,16 +281,16 @@ export default function BlockchainPage() {
                 <div key={block.id} className="chain-node" data-kind={isLatest ? 'ok' : undefined}>
                   <button
                     type="button"
-                    className="btn-row"
+                    className="btn-row overflow-hidden"
                     aria-expanded={isExpanded}
                     onClick={() => setExpandedId((current) => (current === block.id ? null : block.id))}
                   >
-                    <div className="row flex-1 flex-nowrap items-start gap-4">
+                    <div className="flex min-w-0 flex-1 items-start gap-3">
                       <span className="grid h-11 w-11 flex-none place-items-center rounded-[var(--r-md)] bg-[var(--ink-025)]">
                         <ActionIcon size={18} className={config.accentClass} />
                       </span>
                       <div className="min-w-0 flex-1">
-                        <div className="row mb-1" style={{ gap: 8 }}>
+                        <div className="mb-1 flex flex-wrap gap-1">
                           <span className="mono text-xs text-[var(--text-mute)]">#{block.id}</span>
                           <Badge variant={config.variant}>{config.label}</Badge>
                           {isLatest ? <Badge variant="success">Latest</Badge> : null}
@@ -301,15 +301,15 @@ export default function BlockchainPage() {
                             (block.data.approved_by_name as string) ||
                             `Block #${block.id}`}
                         </div>
-                        <div className="mt-1 row text-xs text-[var(--text-mute)]" style={{ gap: 10 }}>
-                          <span>{formatDate(block.timestamp)}</span>
-                          <span className="mono">{block.hash.slice(0, 12)}...</span>
+                        <div className="mt-1 flex flex-wrap gap-x-2 gap-y-0.5 text-xs text-[var(--text-mute)]">
+                          <span className="shrink-0">{formatDate(block.timestamp)}</span>
+                          <span className="mono shrink-0">{block.hash.slice(0, 12)}…</span>
                         </div>
                       </div>
                     </div>
                     <ChevronDown
                       size={16}
-                      className={`text-[var(--text-mute)] transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                      className={`ml-2 flex-none text-[var(--text-mute)] transition-transform ${isExpanded ? 'rotate-180' : ''}`}
                     />
                   </button>
 

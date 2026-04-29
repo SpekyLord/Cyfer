@@ -50,7 +50,7 @@ export function AuditTimeline({ transactions }: { transactions: Transaction[] })
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
   return (
-    <div className="chain pl-11">
+    <div className="chain" style={{ paddingLeft: 'clamp(24px, 6vw, 44px)' }}>
       {transactions.map((transaction, index) => {
         const Icon = actionIcons[transaction.action_type] ?? ScrollText;
         const badgeVariant = actionBadgeVariant[transaction.action_type] ?? 'default';
@@ -60,34 +60,33 @@ export function AuditTimeline({ transactions }: { transactions: Transaction[] })
           <div key={transaction.id} className="chain-node" data-kind={index === 0 ? 'ok' : undefined}>
             <button
               type="button"
-              className="btn-row"
+              className="btn-row overflow-hidden"
               aria-expanded={isExpanded}
               onClick={() =>
                 setExpandedId((current) => (current === transaction.id ? null : transaction.id))
               }
             >
-              <div className="row flex-1 flex-nowrap items-start gap-4">
+              <div className="flex min-w-0 flex-1 items-start gap-3">
                 <span className="grid h-11 w-11 flex-none place-items-center rounded-[var(--r-md)] bg-[var(--ink-025)] text-[var(--ink-700)]">
                   <Icon size={18} />
                 </span>
                 <div className="min-w-0 flex-1">
-                  <div className="row mb-1" style={{ gap: 8 }}>
+                  <div className="mb-1 flex flex-wrap gap-1">
                     <Badge variant={badgeVariant}>{transaction.action_type}</Badge>
                     {index === 0 ? <Badge variant="success">Latest</Badge> : null}
                   </div>
-                  <div className="text-sm font-medium text-[var(--ink-900)]">
+                  <div className="truncate text-sm font-medium text-[var(--ink-900)]">
                     {transaction.description}
                   </div>
-                  <div className="mt-1 row text-xs text-[var(--text-mute)]" style={{ gap: 10, flexWrap: 'wrap' }}>
-                    <span>{formatDateTime(transaction.created_at)}</span>
-                    <span className="mono">{transaction.performed_by}</span>
-                    <span className="mono">{transaction.tx_hash.slice(0, 14)}...</span>
+                  <div className="mt-1 flex flex-wrap gap-x-2 gap-y-0.5 text-xs text-[var(--text-mute)]">
+                    <span className="shrink-0">{formatDateTime(transaction.created_at)}</span>
+                    <span className="mono shrink-0">{transaction.tx_hash.slice(0, 12)}…</span>
                   </div>
                 </div>
               </div>
               <ChevronDown
                 size={16}
-                className={`text-[var(--text-mute)] transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                className={`ml-2 flex-none text-[var(--text-mute)] transition-transform ${isExpanded ? 'rotate-180' : ''}`}
               />
             </button>
 
