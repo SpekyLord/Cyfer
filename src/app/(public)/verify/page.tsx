@@ -28,6 +28,7 @@ interface VerificationData {
     status: string;
     created_at: string;
     file_hash: string;
+    file_url?: string;
   } | null;
   message: string;
 }
@@ -360,12 +361,25 @@ export default function VerifyPage() {
 
               <div className="row">
                 {result.verified && result.document ? (
-                  <Link href={`/documents/${result.document.id}`}>
-                    <Button>
-                      <FileText size={15} />
-                      View official record
-                    </Button>
-                  </Link>
+                  result.document.file_url ? (
+                    <a
+                      href={result.document.file_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <Button>
+                        <FileText size={15} />
+                        View official record
+                      </Button>
+                    </a>
+                  ) : (
+                    <Link href={`/documents/${result.document.id}`}>
+                      <Button>
+                        <FileText size={15} />
+                        View official record
+                      </Button>
+                    </Link>
+                  )
                 ) : (
                   <Link href="/documents">
                     <Button variant="outline">
