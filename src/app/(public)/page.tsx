@@ -14,7 +14,7 @@ const primaryActions = [
   {
     href: '/verify',
     title: 'Verify a document',
-    description: 'Use this if someone already gave you a file and you want a quick yes-or-no answer.',
+    description: 'Check if a document you received matches the official version.',
     button: 'Start with Verify',
     icon: CheckCircle2,
     accent: 'var(--ok-soft)',
@@ -23,7 +23,7 @@ const primaryActions = [
   {
     href: '/documents',
     title: 'Find the official copy',
-    description: 'Use this if you need the city’s published version before you compare or share anything.',
+    description: 'Browse and download the city’s published documents.',
     button: 'Open Official Records',
     icon: FileText,
     accent: 'var(--ink-025)',
@@ -32,7 +32,7 @@ const primaryActions = [
   {
     href: '/budget',
     title: 'Check the budget',
-    description: 'Use this if you want a simple public view of approved spending and category totals.',
+    description: 'See approved city spending by category.',
     button: 'Open Budget',
     icon: Wallet,
     accent: 'var(--info-soft)',
@@ -44,13 +44,13 @@ const trustTools = [
   {
     href: '/audit',
     title: 'Activity Log',
-    description: 'See the public history of uploads, approvals, and publications.',
+    description: 'Every upload, approval, and publication, in order.',
     icon: ScrollText,
   },
   {
     href: '/blockchain',
     title: 'Blockchain',
-    description: 'Open the deeper technical ledger view and network status.',
+    description: 'The technical ledger and network view.',
     icon: Blocks,
   },
 ];
@@ -65,10 +65,9 @@ export default function LandingPage() {
               <Shield size={13} />
               Public records for everyone
             </span>
-            <h1>What do you need help with today?</h1>
+            <h1>Public records, made checkable.</h1>
             <p className="lede mx-auto text-center" style={{ marginInline: 'auto' }}>
-              Choose one option below. If you already have a file and just want to know
-              if it is real, start with Verify.
+              Verify a document, browse official records, or see how the city spends its budget.
             </p>
             <div className="hero-cta justify-center">
               <Link href="/verify">
@@ -85,7 +84,7 @@ export default function LandingPage() {
               </Link>
             </div>
             <div className="mt-5 text-sm text-[var(--text-inv-soft)]">
-              Not sure? Start with <strong className="text-white">Verify</strong>.
+              Start with <strong className="text-white">Verify</strong>.
             </div>
           </div>
         </div>
@@ -98,8 +97,7 @@ export default function LandingPage() {
               <span className="eyebrow-dot" />
               Start here
             </div>
-            <h2>Choose the page that matches what you need</h2>
-            <p>Each option below is written for first-time users.</p>
+            <h2>Where to start</h2>
           </div>
 
           <div className="grid grid-3">
@@ -140,7 +138,7 @@ export default function LandingPage() {
                 Need public proof?
             </div>
             <h2>Transparency tools</h2>
-            <p>Use these when you want to inspect the public history behind a record.</p>
+            <p>The public record behind every document.</p>
             <Link href="/transparency" className="mt-4 inline-flex justify-center">
               <Button variant="outline">
                 Open Transparency

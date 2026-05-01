@@ -200,7 +200,7 @@ export default function LoginPage() {
             </form>
 
             <p className="mt-6 text-center text-xs text-[var(--text-mute)]">
-              Only authorized city or municipal officials should access this workspace.
+              For authorized city officials only.
             </p>
           </div>
         </div>

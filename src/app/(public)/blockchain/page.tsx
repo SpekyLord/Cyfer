@@ -138,7 +138,7 @@ export default function BlockchainPage() {
         </div>
         <h1>Blockchain ledger view</h1>
         <p className="lead">
-          Use this page for the deeper technical ledger view after you check the public record itself.
+          The technical ledger that backs every published record.
         </p>
         <div className="page-head-actions">
           <Link
@@ -152,7 +152,48 @@ export default function BlockchainPage() {
         </div>
       </div>
 
-      <section className="section-tight">
+      <section style={{ paddingBlock: 'var(--s-3)' }}>
+        <div className="section-head mb-4">
+          <h2>How it works</h2>
+          <p>The protections behind every public record.</p>
+        </div>
+        <div className="grid gap-x-6 gap-y-4" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))' }}>
+          {[
+            {
+              icon: Hash,
+              title: 'Hash',
+              description: 'Each block gets a unique cryptographic fingerprint.',
+            },
+            {
+              icon: Lock,
+              title: 'Link',
+              description: 'Every block stores the previous hash, chaining records together.',
+            },
+            {
+              icon: Network,
+              title: 'Distribute',
+              description: 'The same chain is stored across multiple nodes rather than one server.',
+            },
+            {
+              icon: Shield,
+              title: 'Verify',
+              description: "If a block changes unexpectedly, the hashes stop matching and the issue becomes visible.",
+            },
+          ].map(({ icon: Icon, title, description }) => (
+            <div key={title} className="flex items-start gap-3">
+              <span className="grid h-8 w-8 flex-none place-items-center rounded-[var(--r-md)] bg-[var(--ink-050)] text-[var(--ink-700)]">
+                <Icon size={16} />
+              </span>
+              <div className="min-w-0">
+                <div className="text-sm font-semibold text-[var(--ink-900)]">{title}</div>
+                <p className="mt-0.5 text-sm leading-6 text-[var(--text-soft)]">{description}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section style={{ paddingBlock: 'var(--s-3)' }}>
         <div className="card p-6">
           <div className="row-between">
             <div>
@@ -169,12 +210,40 @@ export default function BlockchainPage() {
             </Badge>
           </div>
 
+          <div className="mt-5 flex flex-wrap gap-x-8 gap-y-3 border-y border-[var(--line)] py-4">
+            <div className="min-w-0">
+              <div className="eyebrow">Total blocks</div>
+              <div className="mt-1 font-serif text-xl font-semibold text-[var(--ink-900)]">{blocks.length}</div>
+            </div>
+            <div className="min-w-0">
+              <div className="eyebrow">Chain integrity</div>
+              <div
+                className="mt-1 font-serif text-xl font-semibold"
+                style={{ color: chainValid ? 'var(--ok)' : 'var(--bad)' }}
+              >
+                {chainValid === null ? '…' : chainValid ? 'Valid' : 'Broken'}
+              </div>
+            </div>
+            <div className="min-w-0">
+              <div className="eyebrow">Published docs</div>
+              <div className="mt-1 font-serif text-xl font-semibold text-[var(--ink-900)]">
+                {blocks.filter((block) => (block.data.action as string) === 'document_published').length}
+              </div>
+            </div>
+            <div className="min-w-0">
+              <div className="eyebrow">Latest hash</div>
+              <div className="mono mt-1 truncate text-sm text-[var(--ink-900)]">
+                {blocks.length > 0 ? `${blocks[blocks.length - 1].hash.slice(0, 16)}…` : '---'}
+              </div>
+            </div>
+          </div>
+
           {nodesLoading ? (
             <div className="flex justify-center py-10">
               <Loader2 size={24} className="animate-spin text-[var(--text-mute)]" />
             </div>
           ) : (
-            <div className="mt-6 grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))' }}>
+            <div className="mt-6 grid gap-3" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))' }}>
               {nodes.map((node) => {
                 const synced = node.status === 'synced';
                 const unreachable = node.status === 'unreachable';
@@ -182,7 +251,7 @@ export default function BlockchainPage() {
                 return (
                   <div
                     key={node.id}
-                    className={`card card-flat p-4 ${
+                    className={`card card-flat flex flex-col items-center p-3 text-center ${
                       synced
                         ? 'border-[var(--ok-line)] bg-[var(--ok-soft)]'
                         : unreachable
@@ -190,31 +259,28 @@ export default function BlockchainPage() {
                           : 'border-[var(--bad-line)] bg-[var(--bad-soft)]'
                     }`}
                   >
-                    <div className="row-between">
-                      <div className="row">
-                        <span
-                          className={`grid h-10 w-10 place-items-center rounded-[var(--r-md)] ${
-                            synced
-                              ? 'bg-white text-[var(--ok)]'
-                              : unreachable
-                                ? 'bg-white text-[var(--text-mute)]'
-                                : 'bg-white text-[var(--bad)]'
-                          }`}
-                        >
-                          {unreachable ? <WifiOff size={18} /> : <Wifi size={18} />}
-                        </span>
-                        <div>
-                          <div className="strong text-sm">{node.name}</div>
-                          <div className="text-xs text-[var(--text-soft)]">{node.block_count} blocks</div>
-                        </div>
-                      </div>
-                      <Badge variant={synced ? 'success' : unreachable ? 'default' : 'error'}>
-                        {node.status === 'out_of_sync' ? 'Out of sync' : node.status}
-                      </Badge>
-                    </div>
+                    <span
+                      className={`mb-2 grid h-8 w-8 place-items-center rounded-[var(--r-md)] ${
+                        synced
+                          ? 'bg-white text-[var(--ok)]'
+                          : unreachable
+                            ? 'bg-white text-[var(--text-mute)]'
+                            : 'bg-white text-[var(--bad)]'
+                      }`}
+                    >
+                      {unreachable ? <WifiOff size={15} /> : <Wifi size={15} />}
+                    </span>
+                    <div className="strong text-sm">{node.name}</div>
+                    <div className="text-xs text-[var(--text-soft)]">{node.block_count} blocks</div>
+                    <Badge
+                      className="mt-2"
+                      variant={synced ? 'success' : unreachable ? 'default' : 'error'}
+                    >
+                      {node.status === 'out_of_sync' ? 'Out of sync' : node.status}
+                    </Badge>
                     {node.latest_hash ? (
-                      <div className="mt-3 text-xs text-[var(--text-mute)]">
-                        Latest hash: <span className="mono">{node.latest_hash.slice(0, 16)}...</span>
+                      <div className="mt-3 break-all text-xs text-[var(--text-mute)]">
+                        Latest hash: <span className="mono">{node.latest_hash.slice(0, 16)}…</span>
                       </div>
                     ) : null}
                   </div>
@@ -225,37 +291,10 @@ export default function BlockchainPage() {
         </div>
       </section>
 
-      <section className="section-tight">
-        <div className="grid gap-4" style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))' }}>
-          <div className="stat">
-            <span className="stat-label">Total blocks</span>
-            <span className="stat-value">{blocks.length}</span>
-          </div>
-          <div className="stat">
-            <span className="stat-label">Chain integrity</span>
-            <span className="stat-value" style={{ color: chainValid ? 'var(--ok)' : 'var(--bad)' }}>
-              {chainValid === null ? '...' : chainValid ? 'Valid' : 'Broken'}
-            </span>
-          </div>
-          <div className="stat">
-            <span className="stat-label">Published docs</span>
-            <span className="stat-value">
-              {blocks.filter((block) => (block.data.action as string) === 'document_published').length}
-            </span>
-          </div>
-          <div className="stat">
-            <span className="stat-label">Latest hash</span>
-            <span className="stat-value mono" style={{ fontSize: 15 }}>
-              {blocks.length > 0 ? `${blocks[blocks.length - 1].hash.slice(0, 16)}…` : '---'}
-            </span>
-          </div>
-        </div>
-      </section>
-
       <section className="section">
         <div className="section-head">
           <h2>Recent blocks</h2>
-          <p>Expand a block to inspect its hashes, metadata, and linkage to the previous block.</p>
+          <p>Expand any block to see its hashes and links.</p>
         </div>
 
         {loading ? (
@@ -266,7 +305,7 @@ export default function BlockchainPage() {
           <div className="card p-10 text-center">
             <div className="font-serif text-2xl font-semibold text-[var(--ink-900)]">No blocks found</div>
             <p className="mt-2 text-sm text-[var(--text-soft)]">
-              The blockchain explorer will populate when ledger data becomes available.
+              Blocks will appear here once ledger data is available.
             </p>
           </div>
         ) : (
@@ -368,46 +407,6 @@ export default function BlockchainPage() {
         )}
       </section>
 
-      <section className="section-tight">
-        <div className="card p-6">
-          <div className="section-head mb-0">
-            <h2>How the blockchain works here</h2>
-            <p>A simplified explanation of the protections behind the public record.</p>
-          </div>
-          <div className="grid grid-4 mt-6">
-            {[
-              {
-                icon: Hash,
-                title: 'Hash',
-                description: 'Each block gets a unique cryptographic fingerprint.',
-              },
-              {
-                icon: Lock,
-                title: 'Link',
-                description: 'Every block stores the previous hash, chaining records together.',
-              },
-              {
-                icon: Network,
-                title: 'Distribute',
-                description: 'The same chain is stored across multiple nodes rather than one server.',
-              },
-              {
-                icon: Shield,
-                title: 'Verify',
-                description: 'If a block changes unexpectedly, the hashes stop matching and the issue becomes visible.',
-              },
-            ].map(({ icon: Icon, title, description }) => (
-              <div key={title} className="card card-flat p-4">
-                <span className="mb-3 grid h-10 w-10 place-items-center rounded-[var(--r-md)] bg-[var(--ink-050)] text-[var(--ink-700)]">
-                  <Icon size={18} />
-                </span>
-                <div className="font-serif text-lg font-semibold text-[var(--ink-900)]">{title}</div>
-                <p className="mt-2 text-sm leading-6 text-[var(--text-soft)]">{description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
     </main>
   );
 }

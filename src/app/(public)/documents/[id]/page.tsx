@@ -215,15 +215,15 @@ export default function DocumentDetailPage({
                 </div>
                 <div className="text-sm text-[var(--text-soft)]">
                   {document.status === 'published'
-                    ? 'Use the official file below if you need the trusted copy.'
+                    ? 'Download below if you need the trusted copy.'
                     : 'Check the status before relying on this version.'}
                 </div>
               </div>
             </div>
             <p className="mt-3 text-sm leading-6 text-[var(--text-soft)]">
               {document.status === 'published'
-                ? 'The record passed the approval workflow and is safe to compare against your own copy.'
-                : 'This record exists in the system, but it is not currently marked as a final published public record.'}
+                ? 'Approved through consensus. Safe to compare against.'
+                : "This record is in the system but isn't a final published version yet."}
             </p>
             <div className="row mt-4">
               {document.file_url ? (
@@ -269,7 +269,7 @@ export default function DocumentDetailPage({
                   {formatFileSize(document.file_size)} - uploaded {formatDate(document.created_at)}
                 </div>
                 <div className="mt-4 text-sm text-[var(--text-soft)]">
-                  Download this file if you need the official version before you compare or share it.
+                  The official, signed file.
                 </div>
               </div>
             </div>
@@ -350,7 +350,7 @@ export default function DocumentDetailPage({
             ) : (
               <div className="mt-4 rounded-[var(--r-lg)] border border-dashed border-[var(--line-2)] bg-[var(--card)] p-5">
                 <p className="m-0 text-sm leading-6 text-[var(--text-soft)]">
-                  Generate an AI summary if you want a quicker explanation after you review the official file.
+                  Get a plain-language summary of this document.
                 </p>
               </div>
             )}
@@ -361,25 +361,25 @@ export default function DocumentDetailPage({
           <div className="card p-5 sm:p-6">
             <div className="eyebrow">Quick guide</div>
             <h2 className="mt-2 font-serif text-[clamp(24px,3vw,32px)] font-semibold tracking-[-0.02em] text-[var(--ink-900)]">
-              What should I do here?
+              On this page
             </h2>
             <p className="mt-3 text-sm leading-6 text-[var(--text-soft)]">
-              This page shows the official published version of one city record.
+              The full record for one city document.
             </p>
 
             <div className="stack-3 mt-5">
               {[
                 {
                   title: 'Check the status first',
-                  description: 'Make sure the record is published before you rely on it.',
+                  description: "Confirm it's published before relying on it.",
                 },
                 {
                   title: 'Download the official copy',
-                  description: 'Use the file here if you need the trusted version.',
+                  description: 'Get the trusted version.',
                 },
                 {
                   title: 'Verify your own copy if needed',
-                  description: 'Go to Verify when you want to compare another file with this record.',
+                  description: 'Compare another file against this record in Verify.',
                 },
               ].map((step, index) => (
                 <div
@@ -402,7 +402,7 @@ export default function DocumentDetailPage({
             <div className="mt-5 rounded-[var(--r-md)] border border-[var(--ink-100)] bg-[var(--ink-025)] px-4 py-3">
               <div className="eyebrow">What to do next</div>
               <p className="mt-2 text-sm leading-6 text-[var(--text-soft)]">
-                Use the official file on this page if your own copy looks different, older, or incomplete.
+                If your copy looks different, this is the file to trust.
               </p>
             </div>
           </div>

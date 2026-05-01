@@ -15,8 +15,7 @@ const transparencyCards = [
     title: 'Activity Log',
     description:
       'See the public history of uploads, approvals, rejections, verifications, and publications.',
-    whenToUse:
-      'Use this when you want to see who did what and when.',
+    whenToUse: 'For who did what, and when.',
     icon: ScrollText,
   },
   {
@@ -24,8 +23,7 @@ const transparencyCards = [
     title: 'Blockchain',
     description:
       'Open the technical ledger view, node status, and linked block history.',
-    whenToUse:
-      'Use this when you want the deeper technical proof behind the record.',
+    whenToUse: 'For the technical proof.',
     icon: Blocks,
   },
 ];
@@ -40,20 +38,19 @@ export default function TransparencyPage() {
         </div>
         <h1>Transparency</h1>
         <p className="lead">
-          Use these pages when you want more than a quick answer. They show the
-          public history and technical record behind CYFER.
+          The public history and technical record behind CYFER.
         </p>
       </div>
 
       <section className="section-tight">
         <div className="grid grid-2">
           {transparencyCards.map(({ href, title, description, whenToUse, icon: Icon }) => (
-            <div key={title} className="card p-6">
+            <div key={title} className="card flex h-full flex-col p-6">
               <span className="mb-4 grid h-12 w-12 place-items-center rounded-[12px] bg-[var(--ink-050)] text-[var(--ink-700)]">
                 <Icon size={22} />
               </span>
               <h2 className="font-serif text-2xl font-semibold text-[var(--ink-900)]">{title}</h2>
-              <p className="mt-3 text-sm leading-6 text-[var(--text-soft)]">{description}</p>
+              <p className="mt-3 flex-1 text-sm leading-6 text-[var(--text-soft)]">{description}</p>
               <div className="mt-4 rounded-[var(--r-lg)] border border-[var(--line)] bg-[var(--ink-025)] p-4">
                 <div className="eyebrow">Use this when</div>
                 <p className="mt-2 text-sm leading-6 text-[var(--text-soft)]">{whenToUse}</p>
@@ -75,17 +72,17 @@ export default function TransparencyPage() {
             {
               icon: CheckCircle2,
               title: 'Best after Verify',
-              description: 'Start with Verify if you already have a document. Use Transparency when you want deeper proof.',
+              description: "Have a file? Start with Verify. Want deeper proof? You're in the right place.",
             },
             {
               icon: FileText,
               title: 'Best after Official Records',
-              description: 'Open Official Records first if you need the published file before reviewing the logs behind it.',
+              description: 'Looking for a file? Try Official Records first.',
             },
             {
               icon: Shield,
               title: 'Public and open',
-              description: 'These pages are available without signing in so citizens can inspect the system openly.',
+              description: 'No sign-in needed. Inspect anything.',
             },
           ].map(({ icon: Icon, title, description }) => (
             <div key={title} className="card p-6">

@@ -88,8 +88,7 @@ export default function AuditPage() {
         </div>
         <h1>Public Activity Log</h1>
         <p className="lead">
-          Use this page when you want the public history behind a document,
-          approval, or publication.
+          Every public action on CYFER, in order.
         </p>
         <div className="page-head-actions">
           <Link
@@ -170,7 +169,7 @@ export default function AuditPage() {
               No activity found
             </div>
             <p className="mt-2 text-sm text-[var(--text-soft)]">
-              Try another filter or check back once more activity is recorded.
+              Try a different filter, or check back later.
             </p>
           </div>
         ) : (
@@ -211,19 +210,19 @@ export default function AuditPage() {
               icon: ScrollText,
               title: 'Every action is recorded',
               description:
-                'Uploads, approvals, rejections, verifications, and publications all appear here.',
+                'Uploads, approvals, rejections, verifications, publications.',
             },
             {
               icon: Lock,
               title: 'Entries are hash-linked',
               description:
-                'Each transaction stores the previous hash so the public order stays tamper-evident.',
+                "Each entry stores the previous hash, so the order can't be changed.",
             },
             {
               icon: Shield,
               title: 'Anyone can inspect the trail',
               description:
-                'This page is public so people can review activity without needing private access.',
+                'Open to everyone, no account required.',
             },
           ].map(({ icon: Icon, title, description }) => (
             <div key={title} className="card p-6">

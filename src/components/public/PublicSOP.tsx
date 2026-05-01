@@ -48,14 +48,12 @@ export function PublicSOP({
             {steps.map((step, index) => (
               <div
                 key={`${step.title}-${index}`}
-                className="flex h-full flex-col rounded-[var(--r-md)] border border-[var(--line)] bg-[var(--card)] px-3 py-2.5"
+                className="flex h-full flex-col items-center rounded-[var(--r-md)] border border-[var(--line)] bg-[var(--card)] px-3 py-3 text-center"
               >
-                <div className="row flex-nowrap items-center gap-2">
-                  <span className="grid h-6 w-6 flex-none place-items-center rounded-full bg-[var(--ink-900)] text-[11px] font-semibold text-white">
-                    {index + 1}
-                  </span>
-                  <div className="strong text-sm leading-5">{step.title}</div>
-                </div>
+                <span className="grid h-7 w-7 flex-none place-items-center rounded-full bg-[var(--ink-900)] text-[12px] font-semibold text-white">
+                  {index + 1}
+                </span>
+                <div className="strong mt-2 text-sm leading-5">{step.title}</div>
                 <p className="mt-1.5 text-sm leading-6 text-[var(--text-soft)]">{step.description}</p>
               </div>
             ))}
@@ -83,15 +81,13 @@ export function PublicSOP({
         {steps.map((step, index) => (
           <div
             key={`${step.title}-${index}`}
-            className="flex h-full flex-col rounded-[var(--r-lg)] border border-[var(--line)] bg-[var(--card)] p-4 sm:p-5"
+            className="flex h-full flex-col items-center rounded-[var(--r-lg)] border border-[var(--line)] bg-[var(--card)] p-5 text-center"
           >
-            <div className="row flex-nowrap items-center gap-3">
-              <span className="grid h-8 w-8 flex-none place-items-center rounded-full bg-[var(--ink-900)] text-sm font-semibold text-white">
-                {index + 1}
-              </span>
-              <div className="strong text-sm">{step.title}</div>
-            </div>
-            <p className="mt-3 text-sm leading-6 text-[var(--text-soft)]">{step.description}</p>
+            <span className="grid h-9 w-9 flex-none place-items-center rounded-full bg-[var(--ink-900)] text-sm font-semibold text-white">
+              {index + 1}
+            </span>
+            <div className="strong mt-3 text-sm">{step.title}</div>
+            <p className="mt-2 text-sm leading-6 text-[var(--text-soft)]">{step.description}</p>
           </div>
         ))}
       </div>

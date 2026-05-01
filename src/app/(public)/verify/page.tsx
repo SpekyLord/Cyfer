@@ -36,12 +36,12 @@ const faqItems = [
   {
     question: 'What happens when I upload a file?',
     answer:
-      'CYFER compares your file with the matching published record and gives you a clear result.',
+      'Your file is compared against the matching official record.',
   },
   {
     question: "What if the document doesn't match?",
     answer:
-      'Do not rely on it yet. Open the official record first and compare it with the copy you have.',
+      "Don't trust it yet. Open the official record and compare.",
   },
   {
     question: 'What kinds of files can I check?',
@@ -135,35 +135,34 @@ export default function VerifyPage() {
       <div className="page-head">
         <div className="eyebrow">
           <span className="eyebrow-dot" />
-          Free - No account required - Public verification
+          Free · No account needed
         </div>
         <h1>Is this document real?</h1>
         <p className="lead">
-          Upload the file you received. CYFER will tell you if it matches the
-          official published record.
+          Upload a file. We&apos;ll tell you if it matches the official record.
         </p>
       </div>
 
       <section className="section-tight">
         <PublicSOP
           compact
-          title="What to do on this page"
-          purpose="Use this page when someone already gave you a document and you want a quick answer."
+          title="How it works"
+          purpose="Confirm whether a document you received is the real one."
           steps={[
             {
               title: 'Upload the file you received',
-              description: 'Pick the copy from your phone or computer.',
+              description: 'From your phone or computer.',
             },
             {
               title: 'Wait for the result',
-              description: 'CYFER checks if it matches the official record.',
+              description: 'We compare it against the official record.',
             },
             {
               title: 'Open the official copy if needed',
-              description: 'If there is no match, compare it with the published record first.',
+              description: "If it doesn't match, open the official copy.",
             },
           ]}
-          next="If the result says no match, go to Official Records before you rely on the document."
+          next="No match? Open Official Records before trusting the file."
         />
       </section>
 
@@ -200,7 +199,7 @@ export default function VerifyPage() {
             <div id="verification-hint" className="dropzone-hint">
               {file
                 ? `${(file.size / 1024).toFixed(1)} KB - Ready to verify`
-                : 'Click to choose a file or drag one in. PDF, Word, spreadsheet, text, JPG, and PNG are all supported.'}
+                : 'PDF, Word, Excel, text, or image. Click or drag in.'}
             </div>
           </div>
           {file ? (
@@ -338,7 +337,7 @@ export default function VerifyPage() {
                   {showTechnical ? (
                     <div className="stack-3 mt-3">
                       <p className="m-0 text-sm leading-6 text-[var(--text-soft)]">
-                        These fingerprints are the technical values CYFER used during the match check.
+                        The fingerprints used for the comparison.
                       </p>
                       <div className={`hash-block ${result.verified ? 'hash-ok' : 'hash-bad'}`}>
                         <span className="mb-1 block text-[11px] uppercase tracking-[0.12em] text-[var(--text-mute)]">
@@ -407,7 +406,6 @@ export default function VerifyPage() {
       <section className="section">
         <div className="section-head">
           <h2>Common questions</h2>
-          <p>Short answers for first-time users.</p>
         </div>
         <div className="stack-3">
           {faqItems.map((item) => (

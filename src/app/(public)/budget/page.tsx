@@ -59,8 +59,7 @@ export default function BudgetPage() {
         </div>
         <h1>Where your taxes went this year</h1>
         <p className="lead">
-          This page shows the approved city budget in a simpler view: totals,
-          percentages, and categories.
+          The approved city budget — by total, share, and category.
         </p>
       </div>
 
@@ -77,7 +76,7 @@ export default function BudgetPage() {
               No budget data is available yet
             </div>
             <p className="mt-2 text-sm text-[var(--text-soft)]">
-              Published budget entries will appear here once administrators submit and approve them.
+              Approved entries will appear here once published.
             </p>
           </div>
         </section>
@@ -86,24 +85,46 @@ export default function BudgetPage() {
           <section className="section-tight">
             <PublicSOP
               compact
-              title="How to read this page"
-              purpose="Use this page when you want a simple view of how the approved city budget is divided."
+              title="Reading the budget"
+              purpose="See how the approved budget is divided."
               steps={[
                 {
                   title: 'Look at the largest category',
-                  description: 'Start with the biggest slice or highest amount.',
+                  description: "The biggest slice — that's where most money goes.",
                 },
                 {
                   title: 'Compare percentages',
-                  description: 'Use the chart and table together for quick comparison.',
+                  description: 'Use the chart and table side by side.',
                 },
                 {
                   title: 'Review approved totals only',
-                  description: 'Everything here comes from published budget entries.',
+                  description: 'Only published, approved entries appear here.',
                 },
               ]}
-              next="If you want more detail, open the Activity Log or the supporting official records."
+              next="Need more detail? Open Activity Log or Official Records."
             />
+          </section>
+
+          <section className="section-tight">
+            <div className="grid grid-4">
+              <div className="stat">
+                <span className="stat-label">Total budget</span>
+                <span className="stat-value">{formatPhp(data.totalBudget)}</span>
+              </div>
+              <div className="stat">
+                <span className="stat-label">Fiscal year</span>
+                <span className="stat-value">{data.fiscalYear}</span>
+              </div>
+              <div className="stat">
+                <span className="stat-label">Categories</span>
+                <span className="stat-value">{data.categories.length}</span>
+              </div>
+              <div className="stat">
+                <span className="stat-label">Data source</span>
+                <span className="stat-value">CYFER</span>
+                <span className="stat-delta">Published entries only</span>
+              </div>
+            </div>
           </section>
 
           <section className="section-tight">
@@ -143,28 +164,6 @@ export default function BudgetPage() {
           </section>
 
           <section className="section-tight">
-            <div className="grid grid-4">
-              <div className="stat">
-                <span className="stat-label">Total budget</span>
-                <span className="stat-value">{formatPhp(data.totalBudget)}</span>
-              </div>
-              <div className="stat">
-                <span className="stat-label">Fiscal year</span>
-                <span className="stat-value">{data.fiscalYear}</span>
-              </div>
-              <div className="stat">
-                <span className="stat-label">Categories</span>
-                <span className="stat-value">{data.categories.length}</span>
-              </div>
-              <div className="stat">
-                <span className="stat-label">Data source</span>
-                <span className="stat-value">CYFER</span>
-                <span className="stat-delta">Published entries only</span>
-              </div>
-            </div>
-          </section>
-
-          <section className="section-tight">
             <div className="card p-5" style={{ background: 'var(--ink-025)' }}>
               <div className="row-between gap-4">
                 <div>
@@ -173,8 +172,7 @@ export default function BudgetPage() {
                     Need more detail?
                   </div>
                   <p className="mt-2 text-sm leading-6 text-[var(--text-soft)]">
-                    Open the Activity Log or Official Records if you want to trace the
-                    public source behind these numbers.
+                    Trace these numbers in Activity Log or Official Records.
                   </p>
                 </div>
                 <div className="row">

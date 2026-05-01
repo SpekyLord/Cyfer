@@ -81,31 +81,30 @@ export default function DocumentsPage() {
         </div>
         <h1>Official Records</h1>
         <p className="lead">
-          Use this page when you need the official published copy before you verify
-          or compare anything.
+          The city&apos;s published documents — searchable and free.
         </p>
       </div>
 
       <section className="section-tight">
         <PublicSOP
           compact
-          title="Use this page if you do not have the file yet"
-          purpose="This page helps you find the official published version of a city record."
+          title="Finding a document"
+          purpose="Find and download the city's published version."
           steps={[
             {
               title: 'Search or filter',
-              description: 'Use the search bar or choose a record type.',
+              description: 'By keyword or category.',
             },
             {
               title: 'Open the record',
-              description: 'Pick the title that matches what you need.',
+              description: 'Click to view full details.',
             },
             {
               title: 'Download or compare',
-              description: 'Use the official copy before you rely on the document.',
+              description: 'Get the official file before relying on any copy.',
             },
           ]}
-          next="After you find the record, download the official file or go to Verify to check your own copy."
+          next="Download the official file, or use Verify to check your own copy."
         />
       </section>
 
@@ -168,7 +167,7 @@ export default function DocumentsPage() {
               No official records found
             </div>
             <p className="mt-2 text-sm text-[var(--text-soft)]">
-              Try another keyword or clear the filters to browse every published record.
+              Try a different keyword or clear filters.
             </p>
           </div>
         ) : (

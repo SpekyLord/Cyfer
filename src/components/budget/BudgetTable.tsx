@@ -15,7 +15,7 @@ export function BudgetTable({
 }) {
   return (
     <div className="space-y-2">
-      {categories.map((category) => (
+      {[...categories].sort((a, b) => b.amount - a.amount).map((category) => (
         <div
           key={category.category}
           className="flex items-center justify-between border-b border-[var(--line)] py-3 last:border-0"
